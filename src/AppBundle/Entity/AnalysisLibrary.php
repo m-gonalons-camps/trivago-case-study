@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * AnalysisLibrary
  *
- * @ORM\Table(name="analysis_library")
+ * @ORM\Table(name="analysis_libraries")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\AnalysisLibraryRepository")
  */
 class AnalysisLibrary

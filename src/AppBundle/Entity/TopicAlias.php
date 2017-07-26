@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * TopicAlias
  *
- * @ORM\Table(name="topic_alias")
+ * @ORM\Table(name="topics_aliases")
  * @ORM\Entity(repositoryClass="AppBundle\Repository\TopicAliasRepository")
  */
 class TopicAlias
