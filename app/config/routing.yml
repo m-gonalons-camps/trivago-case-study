@@ -1,3 +1,6 @@
 app:
     resource: '@AppBundle/Controller/'
-    type: annotation
+
+gui:
+    path: /
+    defaults: {_controller: AppBundle\Controller\GUIController::indexAction}
