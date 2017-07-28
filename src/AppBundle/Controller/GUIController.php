@@ -11,4 +11,8 @@ class GUIController extends Controller {
         return new Response('gui');
         
     }
+
+    public function workAction() {
+        
+    }
 }

@@ -22,37 +22,62 @@ class DBPopulationCommand extends ContainerAwareCommand {
             'analysis_libraries with the default and minimum data needed for running the application.');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output) : void {
-        // TODO: Check if the tables are empty. If they are not empty, do nothing.
-        if (! file_exists($this->dbDataFilePath)) {
-            throw new \Exception($this->dbDatafilePath . ' file does not exist.');
-        }
-
-        // CHECK IF VALID JSON
-        // IF INVALID, EXCEPTION
-        $this->jsonData = json_decode(file_get_contents($this->dbDataFilePath));
-
+    protected function execute(InputInterface $input, OutputInterface $output) {
         $this->doctrineManager = $this->getContainer()->get('doctrine')->getManager();
+        if (! $this->initializationChecks($output)) return NULL;
 
         $this->generateTopics();
         $this->generateCriteria();
         $this->generateAnalysisLibraries();
 
         $this->doctrineManager->flush();
+
+        $output->writeln('Success.');
+    }
+
+    private function initializationChecks(OutputInterface $output) : bool {
+        if (! $this->areTablesEmpty()) {
+            $output->writeln('Tables are not empty; nothing has changed.');
+            return FALSE;
+        }
+
+        if (! file_exists($this->dbDataFilePath)) {
+            $output->writeln($this->dbDatafilePath . ' file does not exist.');
+            return FALSE;
+        }
+
+        try {
+            $this->jsonData = json_decode(file_get_contents($this->dbDataFilePath));
+        } catch (\Exception $e) {
+            $output->writeln('The file ' . $this->dbDataFilePath . ' does not contain a valid JSON.');
+            return FALSE;
+        }
+
+        return TRUE;
+    }
+
+    private function areTablesEmpty() : bool {
+        $genericRepository = $this->getApplication()->getKernel()->getContainer()->get('AppBundle.genericRepository');
+
+        return $genericRepository->areTablesEmpty([
+            "AppBundle:Topic",
+            "AppBundle:TopicAlias",
+            "AppBundle:Criteria",
+            "AppBundle:AnalysisLibrary"
+        ]);
     }
 
     private function generateTopics() : void {
         foreach ($this->jsonData->topics as $topicName => $topicAliases) {
             $topicEntity = new Entity\Topic();
-
             $topicEntity->setName($topicName);
+            
             $this->doctrineManager->persist($topicEntity);
-
             foreach ($topicAliases as $alias) {
                 $aliasEntity = new Entity\TopicAlias();
-
                 $aliasEntity->setAlias($alias);
                 $aliasEntity->setTopic($topicEntity);
+
                 $this->doctrineManager->persist($aliasEntity);
             }
         }
@@ -61,7 +86,6 @@ class DBPopulationCommand extends ContainerAwareCommand {
     private function generateCriteria() : void {
         foreach ($this->jsonData->criteria as $keyword => $score) {
             $criteriaEntity = new Entity\Criteria();
-
             $criteriaEntity->setKeyword($keyword);
             $criteriaEntity->setScore($score);
             
@@ -72,9 +96,7 @@ class DBPopulationCommand extends ContainerAwareCommand {
     private function generateAnalysisLibraries() : void {
         foreach ($this->jsonData->analysisLibraries as $libraryName) {
             $libraryEntity = new Entity\AnalysisLibrary;
-
             $libraryEntity->setName($libraryName);
-            
             $this->doctrineManager->persist($libraryEntity);
         }
     }
