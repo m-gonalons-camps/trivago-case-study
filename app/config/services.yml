@@ -36,6 +36,9 @@ services:
         class: AppBundle\Repository\GenericRepository
         arguments: ['@doctrine.orm.entity_manager']
     
+    AppBundle.AnalyzerResponse:
+        class: AppBundle\Service\AnalyzerResponse
+
     AppBundle.DefaultAnalyzer:
-        public: true
         class: AppBundle\Service\DefaultAnalyzer
+        arguments: ['@AppBundle.AnalyzerResponse']
