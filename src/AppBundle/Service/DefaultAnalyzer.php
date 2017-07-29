@@ -2,11 +2,16 @@
 
 namespace AppBundle\Service;
 
-final class DefaultAnalyzer implements IAnalyzer {
+class DefaultAnalyzer implements IAnalyzer {
+
+    private $AnalyzerResponse;
+
+    public function __construct(AnalyzerResponse $ar) {
+        $this->AnalyzerResponse = $ar;
+    }
 
     public function analyze(string $review) : AnalyzerResponse {
-        $response = new AnalyzerResponse();
-        return $response;
+        return $this->AnalyzerResponse;
     }
 
 }
