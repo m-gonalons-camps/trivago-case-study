@@ -11,9 +11,21 @@ class AnalyzerResponseTest extends WebTestCase {
 
     public function __construct() {
         parent::__construct();
+        $this->AnalyzerResponse = new AnalyzerResponse();
     }
 
-    public function testAddTopic() {
+    public function testAnalyzerResponse() {
+        $this->_testAddTopic();
+        $this->_testAlreadyExistingTopic();
+        $this->_testSumScore();
+        $this->_testInvalidSumScore();
+        $this->_testGetTotalScore();
+        $this->_testAddFoundCriteria();
+        $this->_testInvalidAddFoundCriteria();
+        $this->_testGetAllCriteria();
+    }
+
+    private function _testAddTopic() {
         $topics = ['hotel', 'bathroom'];
 
         foreach ($topics as $topic) {
@@ -27,7 +39,7 @@ class AnalyzerResponseTest extends WebTestCase {
         }
     }
 
-    public function testAlreadyExistingTopic() {
+    private function _testAlreadyExistingTopic() {
         try {
             $this->AnalyzerResponse->addTopic('bar');
             $this->AnalyzerResponse->addTopic('bar');
@@ -36,7 +48,7 @@ class AnalyzerResponseTest extends WebTestCase {
         }
     }
 
-    public function testSumScore() {
+    private function _testSumScore() {
         $this->AnalyzerResponse->sumScore('hotel', 3);
         $this->assertEquals(3, $this->AnalyzerResponse->getScore('hotel'));
 
@@ -44,7 +56,7 @@ class AnalyzerResponseTest extends WebTestCase {
         $this->assertEquals(3, $this->AnalyzerResponse->getScore('hotel'));
     }
 
-    public function testInvalidSumScore() {
+    private function _testInvalidSumScore() {
         try {
             $this->AnalyzerResponse->sumScore('non-existant topic', 123);
         } catch (\Exception $e) {
@@ -52,12 +64,12 @@ class AnalyzerResponseTest extends WebTestCase {
         }
     }
 
-    public function testGetTotalScore() {
+    private function _testGetTotalScore() {
         $totalScore = $this->AnalyzerResponse->getScore();
         $this->assertEquals(1, $totalScore);
     }
 
-    public function testAddFoundCriteria() {
+    private function _testAddFoundCriteria() {
         $this->AnalyzerResponse->addCriteria('hotel', 'good');
         $this->assertContains('good', $this->AnalyzerResponse->getCriteria('hotel'));
 
@@ -65,15 +77,15 @@ class AnalyzerResponseTest extends WebTestCase {
         $this->assertContains('bad', $this->AnalyzerResponse->getCriteria('bar'));
     }
 
-    public function testInvalidAddFoundCriteria() {
+    private function _testInvalidAddFoundCriteria() {
         try {
             $this->AnalyzerResponse->addCriteria('non-existant topic', 'good');
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $this->assertEquals($e->getMessage(), 'Topic does not exist.');
         }
     }
 
-    public function testGetAllCriteria() {
+    private function _testGetAllCriteria() {
         $criteria = $this->AnalyzerResponse->getCriteria();
         $this->assertArraySubset(['good', 'bad'], $criteria);
     }
