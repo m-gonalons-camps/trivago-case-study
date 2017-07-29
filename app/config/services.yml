@@ -31,7 +31,11 @@ services:
     #     arguments:
     #         $someArgument: 'some_value'
 
-    AppBundle.genericRepository:
+    AppBundle.GenericRepository:
         public: true
         class: AppBundle\Repository\GenericRepository
         arguments: ['@doctrine.orm.entity_manager']
+    
+    AppBundle.DefaultAnalyzer:
+        public: true
+        class: AppBundle\Service\DefaultAnalyzer

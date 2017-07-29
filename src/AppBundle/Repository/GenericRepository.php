@@ -36,4 +36,11 @@ class GenericRepository {
         return TRUE;
     }
 
+    public function truncateTable(string $entityName) : void {
+        $tableName = $this->doctrineManager->getClassMetadata($entityName)->getTableName();
+        $connection = $this->doctrineManager->getConnection();
+        $dbPlatform = $connection->getDatabasePlatform();
+        $connection->executeUpdate($dbPlatform->getTruncateTableSql($tableName));
+    }
+
 }

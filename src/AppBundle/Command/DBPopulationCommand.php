@@ -57,7 +57,7 @@ class DBPopulationCommand extends ContainerAwareCommand {
     }
 
     private function areTablesEmpty() : bool {
-        $genericRepository = $this->getApplication()->getKernel()->getContainer()->get('AppBundle.genericRepository');
+        $genericRepository = $this->getApplication()->getKernel()->getContainer()->get('AppBundle.GenericRepository');
 
         return $genericRepository->areTablesEmpty([
             "AppBundle:Topic",

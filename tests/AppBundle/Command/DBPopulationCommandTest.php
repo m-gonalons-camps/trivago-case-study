@@ -14,19 +14,25 @@ class DBPopulationCommandTest extends KernelTestCase {
     private $commandTester;
     private $doctrineManager;
 
+    private $GenericRepository;
+
     private $entitiesToCheck = [
-        "AppBundle:Topic",
         "AppBundle:TopicAlias",
+        "AppBundle:Topic",
         "AppBundle:Criteria",
         "AppBundle:AnalysisLibrary"
     ];
 
     public function testExecute() : void {
         $this->initializations();
-        
-        if ($this->areTablesEmpty()) {
+
+        if ($this->GenericRepository->areTablesEmpty($this->entitiesToCheck)) {
             $this->commandTester->execute(['command' => $this->command->getName()]);
             $this->assertEquals("Success.\n", $this->commandTester->getDisplay());
+
+            foreach ($this->entitiesToCheck as $entityName) { 
+                $this->GenericRepository->truncateTable($entityName);
+            }
         } else {
             $this->commandTester->execute(['command' => $this->command->getName()]);
             $this->assertNotEquals("Success.\n", $this->commandTester->getDisplay());
@@ -34,21 +40,15 @@ class DBPopulationCommandTest extends KernelTestCase {
 
     }
 
-
     private function initializations() : void {
         self::bootKernel();
-        $this->application = new Application(self::$kernel);
+        $this->application = new Application(static::$kernel);
         $this->application->add(new DBPopulationCommand());
         $this->command = $this->application->find('db:populate');
         $this->commandTester = new CommandTester($this->command);
 
         $this->doctrineManager = static::$kernel->getContainer()->get('doctrine')->getManager();
-    }
-
-
-    private function areTablesEmpty() : bool {
-        $genericRepository = static::$kernel->getContainer()->get('AppBundle.genericRepository');
-        return $genericRepository->areTablesEmpty($this->entitiesToCheck);
+        $this->GenericRepository = static::$kernel->getContainer()->get('AppBundle.GenericRepository');
     }
 
 }
