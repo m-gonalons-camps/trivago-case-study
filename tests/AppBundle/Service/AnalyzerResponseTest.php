@@ -23,6 +23,8 @@ class AnalyzerResponseTest extends WebTestCase {
         $this->_testAddFoundCriteria();
         $this->_testInvalidAddFoundCriteria();
         $this->_testGetAllCriteria();
+        $this->_testInvalidTopicForGetScore();
+        $this->_testInvalidTopicForGetCriteria();
     }
 
     private function _testAddTopic() {
@@ -88,6 +90,22 @@ class AnalyzerResponseTest extends WebTestCase {
     private function _testGetAllCriteria() {
         $criteria = $this->AnalyzerResponse->getCriteria();
         $this->assertArraySubset(['good', 'bad'], $criteria);
+    }
+
+    private function _testInvalidTopicForGetScore() {
+        try {
+            $this->AnalyzerResponse->getCriteria('non-existant topic');
+        } catch (\Exception $e) {
+            $this->assertEquals($e->getMessage(), 'Topic does not exist.');
+        }
+    }
+
+    private function _testInvalidTopicForGetCriteria() {
+        try {
+            $this->AnalyzerResponse->getScore('non-existant topic');
+        } catch (\Exception $e) {
+            $this->assertEquals($e->getMessage(), 'Topic does not exist.');
+        }
     }
 
 }
