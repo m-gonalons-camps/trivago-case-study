@@ -25,6 +25,7 @@ class AnalyzerResponseTest extends WebTestCase {
         $this->_testGetAllCriteria();
         $this->_testInvalidTopicForGetScore();
         $this->_testInvalidTopicForGetCriteria();
+        $this->_testGetFullResults();
     }
 
     private function _testAddTopic() {
@@ -106,6 +107,26 @@ class AnalyzerResponseTest extends WebTestCase {
         } catch (\Exception $e) {
             $this->assertEquals($e->getMessage(), 'Topic does not exist.');
         }
+    }
+
+    private function _testGetFullResults() {
+        $expectedResult = [
+            'hotel' => [
+                'score' => 3,
+                'criteria' => ['good']
+            ],
+            'bathroom' => [
+                'score' => 0,
+                'criteria' => []
+            ],
+            'bar' => [
+                'score' => -2,
+                'criteria' => ['bad']
+            ]
+        ];
+
+        $result = $this->AnalyzerResponse->getFullResults();
+        $this->assertEquals(json_encode($expectedResult), json_encode($result));
     }
 
 }

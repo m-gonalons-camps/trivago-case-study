@@ -2,7 +2,7 @@
 
 namespace AppBundle\Service;
 
-class AnalyzerResponse {
+final class AnalyzerResponse {
 
     private $finalScore;
 
@@ -71,6 +71,11 @@ class AnalyzerResponse {
 
         return $criteria;
     }
+
+    public function getFullResults() : array {
+        return $this->finalScore;
+    }
+   
 
     private function topicExists(string $topic) : bool {
         return array_key_exists($topic, $this->finalScore);
