@@ -3,6 +3,7 @@
 namespace Tests\AppBundle\Service;
 
 use AppBundle\Service\DefaultAnalyzer;
+use AppBundle\Service\AnalyzerResponse;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class DefaultAnalyzerTest extends WebTestCase {
@@ -11,29 +12,16 @@ class DefaultAnalyzerTest extends WebTestCase {
 
     public function __construct() {
         parent::__construct();
-        $this->DefaultAnalyzer = new DefaultAnalyzer();
+        $this->DefaultAnalyzer = new DefaultAnalyzer(new AnalyzerResponse());
     }
 
-    public function testAnalyze() {
-        $this->DefaultAnalyzer->analyze('caca');
-        // 
-        // 
-        // 
+    public function testDefaultAnalyzer() {
+        $review = 'Across the road from Santa Monica Pier is exactly where you want to be when visiting Santa Monica, as well as not far from lots of shops and restaurants/bars. Hotel itself is very new & modern, rooms were great. Comfortable beds & possibly the best shower ever!';
+        $result = $this->DefaultAnalyzer->analyze($review)->getFullResults();
 
-        /*  ANALYZE
-            -> REVIEW IN
-            <- SCORE RESULT OUT
+        $expectedResult = [
 
-            SCORE RESULT
-                {
-                    "bathroom": {
-                        "score": "1"
-                        "foundCriteria": [""]
-                    },
-                    ...
-
-                }
-        */
+        ];
     }
 
 }
