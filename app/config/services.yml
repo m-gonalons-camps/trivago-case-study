@@ -35,10 +35,13 @@ services:
         public: true
         class: AppBundle\Repository\GenericRepository
         arguments: ['@doctrine.orm.entity_manager']
+
+    AppBundle.TypoFixer:
+        class: AppBundle\Service\TypoFixer
     
     AppBundle.AnalyzerResponse:
         class: AppBundle\Service\AnalyzerResponse
 
     AppBundle.DefaultAnalyzer:
         class: AppBundle\Service\DefaultAnalyzer
-        arguments: ['@AppBundle.AnalyzerResponse']
+        arguments: ['@AppBundle.AnalyzerResponse', '@AppBundle.TypoFixer']

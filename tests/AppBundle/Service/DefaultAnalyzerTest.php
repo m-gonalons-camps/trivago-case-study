@@ -4,6 +4,7 @@ namespace Tests\AppBundle\Service;
 
 use AppBundle\Service\DefaultAnalyzer;
 use AppBundle\Service\AnalyzerResponse;
+use AppBundle\Service\TypoFixer;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class DefaultAnalyzerTest extends WebTestCase {
@@ -12,16 +13,48 @@ class DefaultAnalyzerTest extends WebTestCase {
 
     public function __construct() {
         parent::__construct();
-        $this->DefaultAnalyzer = new DefaultAnalyzer(new AnalyzerResponse());
+        $this->DefaultAnalyzer = new DefaultAnalyzer(new AnalyzerResponse(), new TypoFixer());
     }
 
     public function testDefaultAnalyzer() {
-        $review = 'Across the road from Santa Monica Pier is exactly where you want to be when visiting Santa Monica, as well as not far from lots of shops and restaurants/bars. Hotel itself is very new & modern, rooms were great. Comfortable beds & possibly the best shower ever!';
+        $this->_testSimpleReview();
+        $this->_testReviewWithTypos();
+    }
+
+    private function _testSimpleReview() {
+        $review = 'The room was great and the staff was nice. The restaurant was not bad. The room is also very spacious.';
         $result = $this->DefaultAnalyzer->analyze($review)->getFullResults();
 
         $expectedResult = [
-
+            'room' => [
+                'score' => 200,
+                'criteria' => ['great', 'spacious']
+            ],
+            'staff' => [
+                'score' => 100,
+                'criteria' => ['nice']
+            ],
+            'restaurant' => [
+                'score' => 0,
+                'criteria' => ['not bad']
+            ]
         ];
+
+        $this->assertEquals(json_encode($expectedResult), json_encode($result));
+    }
+
+    private function _testReviewWithTypos() {
+        $review = 'The restaurnt is fantassticc!';
+        $result = $this->DefaultAnalyzer->analyze($review)->getFullResults();
+
+        $expectedResult = [
+            'restaurant' => [
+                'score' => 100,
+                'criteria' => ['fantastic']
+            ]
+        ];
+
+        $this->assertEquals(json_encode($expectedResult), json_encode($result));
     }
 
 }

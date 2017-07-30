@@ -8,6 +8,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use AppBundle\Service\AnalyzerResponse;
+use AppBundle\Service\TypoFixer;
 
 class AnalyzeCommand extends ContainerAwareCommand {
 
@@ -25,7 +26,7 @@ class AnalyzeCommand extends ContainerAwareCommand {
         $fullClassPath = 'AppBundle\\Service\\'.$analyzerLibrary.'Analyzer';
 
         if (class_exists($fullClassPath)) {
-            $analyzer = new $fullClassPath(new AnalyzerResponse);
+            $analyzer = new $fullClassPath(new AnalyzerResponse(), new TypoFixer());
             $result = $analyzer->analyze($input->getArgument('review'));
             $output->writeln(json_encode($result));
         } else {
