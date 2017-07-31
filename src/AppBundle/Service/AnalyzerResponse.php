@@ -71,6 +71,12 @@ final class AnalyzerResponse {
         return $criteria;
     }
 
+    public function removeTopic(string $topic) : void {
+        if (! $this->topicExists($topic)) return;
+
+        unset($this->finalScore[$topic]);
+    }
+
     public function getFullResults() : array {
         return $this->finalScore;
     }

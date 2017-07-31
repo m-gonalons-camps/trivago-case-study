@@ -25,6 +25,7 @@ class AnalyzerResponseTest extends WebTestCase {
         $this->_testGetAllCriteria();
         $this->_testInvalidTopicForGetScore();
         $this->_testInvalidTopicForGetCriteria();
+        $this->_testRemoveTopic();
         $this->_testGetFullResults();
     }
 
@@ -105,6 +106,13 @@ class AnalyzerResponseTest extends WebTestCase {
         } catch (\Exception $e) {
             $this->assertEquals($e->getMessage(), 'Topic does not exist.');
         }
+    }
+
+    private function _testRemoveTopic() {
+        $this->AnalyzerResponse->addTopic('staff');
+        $this->AnalyzerResponse->removeTopic('staff');
+
+        $this->assertEquals(['hotel', 'bathroom', 'bar'], $this->AnalyzerResponse->getTopics());
     }
 
     private function _testGetFullResults() {

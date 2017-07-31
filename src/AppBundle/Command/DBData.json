@@ -2,7 +2,7 @@
     "topics": {
         "room": ["apartment", "chamber"],
         "hotel": ["property", "lodge", "resort"],
-        "staff": ["service", "personnel", "crew", "he", "she", "manager"],
+        "staff": ["service", "personnel", "crew", "he", "she", "manager", "receptionist"],
         "location": ["spot"],
         "breakfast": [],
         "bed": ["sleep quality", "mattresses", "linens"],

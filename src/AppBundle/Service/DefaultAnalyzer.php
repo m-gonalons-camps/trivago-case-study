@@ -10,7 +10,7 @@ class DefaultAnalyzer implements IAnalyzer {
     private $DoctrineManager;
 
     private $lastKnownTopic;
-    private $negators = ['not', 'isn\'t', 'aren\'t', 'wasn\'t', 'weren\'t', 'doesn\'t', 'didn\'t', 'won\'t', 'wouldn\'t', 'shouldn\'t'];
+    private $negators = ['not', 'isn\'t', 'aren\'t', 'wasn\'t', 'weren\'t', 'doesn\'t', 'didn\'t', 'won\'t', 'wouldn\'t', 'shouldn\'t', 'don\'t'];
 
     public function __construct(ITypoFixer $tf, EntityManagerInterface $em) {
         $this->TypoFixer = $tf;
@@ -25,18 +25,36 @@ class DefaultAnalyzer implements IAnalyzer {
         $divisions = $this->getReviewSentencesDivisions($review);
         $this->lastKnownTopic = "unknown";
         $AnalyzerResponse = new AnalyzerResponse();
+
         foreach ($divisions as $division) {
             $topic = $this->getDivisionTopic($division);
-            $this->lastKnownTopic = $topic;
             $AnalyzerResponse->addTopic($topic);
 
             $divisionScore = $this->getDivisionScore($division);
-
             foreach ($divisionScore as $criteriaKeyword => $score) {
                 $AnalyzerResponse->addCriteria($topic, $criteriaKeyword);
                 $AnalyzerResponse->sumScore($topic, $score);
             }
+
+            if ($topic !== 'unknown' && $this->lastKnownTopic === 'unknown' && in_array("unknown", $AnalyzerResponse->getTopics())) {
+                $criteria = $AnalyzerResponse->getCriteria('unknown');
+                $score = $AnalyzerResponse->getScore('unknown');
+
+                $AnalyzerResponse->removeTopic('unknown');
+
+                foreach ($criteria as $keyword) {
+                    $AnalyzerResponse->addCriteria($topic, $keyword);
+                }
+                $AnalyzerResponse->sumScore($topic, $score);
+            }
+
+            $this->lastKnownTopic = $topic;
         }
+
+        // TODO: If there is criteria asigned to "unknown" topic,
+        // reasign that criteria to the next topic in the array.
+        // Example
+        // 
 
         return $AnalyzerResponse;
     }
@@ -71,9 +89,9 @@ class DefaultAnalyzer implements IAnalyzer {
 
     private function topicExistsInDivision(string $topic, string $division) : bool {
         return (
-            preg_match('/\\b'.$topic.'\\b/', $division)
+            preg_match('/\\b'.$topic.'\\b/i', $division)
                 ||
-            preg_match('/\\b'.$this->pluralize($topic).'\\b/', $division)
+            preg_match('/\\b'.$this->pluralize($topic).'\\b/i', $division)
         );
     }
 
@@ -96,7 +114,7 @@ class DefaultAnalyzer implements IAnalyzer {
                 if (! $negatorInCriteria) {
                     $negatorFoundInDivision = FALSE;
                     foreach ($this->negators as $negator) {
-                        if (stripos($division, $negator) !== FALSE) {
+                        if (preg_match('/\\b'.$negator.'\\b/i', $division)) {
                             if ($score > 0) {
                                 $score = -$score;
                             } else { 
