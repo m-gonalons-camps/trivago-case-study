@@ -12,16 +12,16 @@ use Doctrine\ORM\EntityManagerInterface;
  */
 class GenericRepository {
 
-    private $doctrineManager;
+    private $DoctrineManager;
 
     public function __construct(EntityManagerInterface $em) {
-        $this->doctrineManager = $em;
+        $this->DoctrineManager = $em;
     }
 
     public function isTableEmpty(string $entityName) : bool {
-        $tableName = $this->doctrineManager->getClassMetadata($entityName)->getTableName();
+        $tableName = $this->DoctrineManager->getClassMetadata($entityName)->getTableName();
 
-        $numberOfRows = $this->doctrineManager->createQueryBuilder()
+        $numberOfRows = $this->DoctrineManager->createQueryBuilder()
             ->select('count('.$tableName.'.id)')
             ->from($entityName, $tableName)
             ->getQuery()->getSingleScalarResult();
@@ -37,8 +37,8 @@ class GenericRepository {
     }
 
     public function truncateTable(string $entityName) : void {
-        $tableName = $this->doctrineManager->getClassMetadata($entityName)->getTableName();
-        $connection = $this->doctrineManager->getConnection();
+        $tableName = $this->DoctrineManager->getClassMetadata($entityName)->getTableName();
+        $connection = $this->DoctrineManager->getConnection();
         $dbPlatform = $connection->getDatabasePlatform();
         $connection->executeUpdate($dbPlatform->getTruncateTableSql($tableName));
     }

@@ -13,7 +13,12 @@ class DefaultAnalyzerTest extends WebTestCase {
 
     public function __construct() {
         parent::__construct();
-        $this->DefaultAnalyzer = new DefaultAnalyzer(new AnalyzerResponse(), new TypoFixer());
+        self::bootKernel();
+        $this->DefaultAnalyzer = new DefaultAnalyzer(
+            new AnalyzerResponse(),
+            new TypoFixer(),
+            static::$kernel->getContainer()->get('doctrine')->getManager()
+        );
     }
 
     public function testDefaultAnalyzer() {

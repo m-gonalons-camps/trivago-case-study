@@ -26,7 +26,11 @@ class AnalyzeCommand extends ContainerAwareCommand {
         $fullClassPath = 'AppBundle\\Service\\'.$analyzerLibrary.'Analyzer';
 
         if (class_exists($fullClassPath)) {
-            $analyzer = new $fullClassPath(new AnalyzerResponse(), new TypoFixer());
+            $analyzer = new $fullClassPath(
+                new AnalyzerResponse(),
+                new TypoFixer(),
+                $this->getContainer()->get('doctrine')->getManager()
+            );
             $result = $analyzer->analyze($input->getArgument('review'));
             $output->writeln(json_encode($result));
         } else {
