@@ -43,12 +43,10 @@ class AnalyzerResponseTest extends WebTestCase {
     }
 
     private function _testAlreadyExistingTopic() {
-        try {
-            $this->AnalyzerResponse->addTopic('bar');
-            $this->AnalyzerResponse->addTopic('bar');
-        } catch (\Exception $e) {
-            $this->assertEquals($e->getMessage(), 'Topic already exists in response.');
-        }
+        $this->AnalyzerResponse->addTopic('bar');
+        $this->AnalyzerResponse->addTopic('bar');
+
+        $this->assertEquals(['hotel', 'bathroom', 'bar'], $this->AnalyzerResponse->getTopics());
     }
 
     private function _testSumScore() {

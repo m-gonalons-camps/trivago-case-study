@@ -7,7 +7,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
 
-use AppBundle\Service\AnalyzerResponse;
 use AppBundle\Service\TypoFixer;
 
 class AnalyzeCommand extends ContainerAwareCommand {
@@ -27,7 +26,6 @@ class AnalyzeCommand extends ContainerAwareCommand {
 
         if (class_exists($fullClassPath)) {
             $analyzer = new $fullClassPath(
-                new AnalyzerResponse(),
                 new TypoFixer(),
                 $this->getContainer()->get('doctrine')->getManager()
             );

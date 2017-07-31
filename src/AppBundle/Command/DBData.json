@@ -15,6 +15,7 @@
 
     "criteria": {
         "great": 100,
+        "spacious": 100,
         "good": 100,
         "nice": 100,
         "amazing": 100,

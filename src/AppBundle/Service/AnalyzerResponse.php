@@ -11,8 +11,7 @@ final class AnalyzerResponse {
     }
 
     public function addTopic(string $topic) : void {
-        if ($this->topicExists($topic))
-            throw new \Exception('Topic already exists in response.');
+        if ($this->topicExists($topic)) return;
 
         $this->finalScore[$topic] = [
             'score' => 0,

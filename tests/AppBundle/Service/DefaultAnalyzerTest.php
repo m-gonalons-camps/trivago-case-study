@@ -3,7 +3,6 @@
 namespace Tests\AppBundle\Service;
 
 use AppBundle\Service\DefaultAnalyzer;
-use AppBundle\Service\AnalyzerResponse;
 use AppBundle\Service\TypoFixer;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -15,7 +14,6 @@ class DefaultAnalyzerTest extends WebTestCase {
         parent::__construct();
         self::bootKernel();
         $this->DefaultAnalyzer = new DefaultAnalyzer(
-            new AnalyzerResponse(),
             new TypoFixer(),
             static::$kernel->getContainer()->get('doctrine')->getManager()
         );
