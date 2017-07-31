@@ -84,7 +84,7 @@ class DefaultAnalyzer implements IAnalyzer {
             $keyword = $criteriaEntity->getKeyword();
             $score = $criteriaEntity->getScore();
 
-            if (preg_match('/\\b'.$keyword.'\\b/', $division)) {
+            if ($this->criteriaExistsInDivision($keyword, $division)) {
                 $negatorInCriteria = false;
                 foreach ($this->negators as $negator) {
                     if (stripos($keyword, $negator) !== FALSE) {
@@ -115,11 +115,23 @@ class DefaultAnalyzer implements IAnalyzer {
 
                         $sentenceScore[$keyword] += $score;
                     }
-                }            
+                } else {
+                    if (!isset($sentenceScore[$keyword])) $sentenceScore[$keyword] = 0;
+                    $sentenceScore[$keyword] += $score;
+                }
             }
         }
 
         return $sentenceScore;
+    }
+
+
+    private function criteriaExistsInDivision(string $keyword, string $division) : bool {
+        if (count(str_word_count($keyword, 1)) > 1) {
+            return stripos($division, $keyword) !== FALSE;
+        } else {
+            return preg_match('/\\b'.$keyword.'\\b/', $division);
+        }
     }
 
     private function pluralize(string $singularWord) : string {
