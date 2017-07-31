@@ -10,16 +10,15 @@ class DefaultAnalyzer implements IAnalyzer {
     private $TypoFixer;
     private $DoctrineManager;
 
-    private $criteria;
-    private $topics;
+    private $criteria = [];
+    private $topics = [];
 
     public function __construct(AnalyzerResponse $ar, ITypoFixer $tf, EntityManagerInterface $em) {
         $this->AnalyzerResponse = $ar;
         $this->TypoFixer = $tf;
         $this->DoctrineManager = $em;
 
-        $this->setCriteria();
-        $this->setTopics();
+        $this->setCriteria()->setTopics();
     }
 
     public function analyze(string $review) : AnalyzerResponse {
@@ -29,12 +28,12 @@ class DefaultAnalyzer implements IAnalyzer {
     }
 
     private function setCriteria() : DefaultAnalyzer {
-
+        $this->criteria = $this->DoctrineManager->getRepository('AppBundle:Criteria')->findAll();
         return $this;
     }
 
     private function setTopics() : DefaultAnalyzer {
-
+        $this->topics = $this->DoctrineManager->getRepository('AppBundle:Topic')->findAll();
         return $this;
     }
 

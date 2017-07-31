@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\PersistentCollection;
 
 /**
  * Topic
@@ -28,6 +29,17 @@ class Topic
      */
     private $name;
 
+    /**
+    * @var PersistentCollection
+    *
+    * @ORM\OneToMany(targetEntity="TopicAlias", mappedBy="topic")
+    */
+    private $aliases;
+
+
+    public function getAliases() : PersistentCollection {
+        return $this->aliases;
+    }
 
     public function getId() : int {
         return $this->id;
