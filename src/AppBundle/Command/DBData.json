@@ -1,11 +1,11 @@
 {
     "topics": {
         "room": ["apartment", "chamber"],
-        "hotel": ["property", "lodge", "resort"],
+        "hotel": ["property", "lodge", "resort", "building"],
         "staff": ["service", "personnel", "crew", "he", "she", "manager", "receptionist"],
         "location": ["spot"],
         "breakfast": [],
-        "bed": ["sleep quality", "mattresses", "linens"],
+        "bed": ["sleep quality", "mattress", "linens", "sheets"],
         "food": ["dinner", "lunch", "chef"],
         "bathroom": ["lavatory", "shower", "toilet", "bath", "wc"],
         "restaurant": ["waiter", "waitress"],
@@ -39,6 +39,7 @@
         "was fun": 100,
         "not far from": 100,
         "exceptional": 100,
+        "enjoyable": 100,
 
         "problem": -100,
         "unfriendly": -100,
@@ -66,6 +67,7 @@
         "junk": -100,
         "awful": -100,
         "worst": -100,
+        "worse": -100,
         "disgusting": -100,
         "falling out": -100,
         "minty": -100,
@@ -79,7 +81,13 @@
         "rotten": -100,
         "mess": -100,
         "surly": -100,
-        "shit": -100
+        "shit": -100,
+        "stinking": -100,
+        "rotting": -100,
+        "stank": -100,
+        "mould": -100,
+        "rot": -100,
+        "blood": -100
     },
 
     "analysisLibraries": ["Default"]

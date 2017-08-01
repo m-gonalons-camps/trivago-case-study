@@ -94,14 +94,14 @@ class DefaultAnalyzerTest extends WebTestCase {
                         ' made themselves very at home by laying all over my car.',
             'expectedResult' => [
                 'room' => [
-                    'score' => -500,
-                    'criteria' => ['awful', 'dirty', 'stinking', 'rotting', 'stank']
+                    'score' => -600,
+                    'criteria' => ['tiny', 'awful', 'dirty', 'stinking', 'rotting', 'stank']
                 ],
                 'hotel' => [
                     'score' => -200,
                     'criteria' => ['mould', 'rot']
                 ],
-                'food' => [
+                'breakfast' => [
                     'score' => -100,
                     'criteria' => ['junk']
                 ]
@@ -132,20 +132,20 @@ class DefaultAnalyzerTest extends WebTestCase {
                 ],
                 'food' => [
                     'score' => -100,
-                    'criteria' => ['isn\'t great']
+                    'criteria' => ['not great']
                 ],
                 'bed' => [
                     'score' => -200,
-                    'criteria' => ['wasn\'t clean', 'wasn\'t nightmare', 'not good']
+                    'criteria' => ['not clean', 'not nightmare', 'not good']
                 ]
             ]
         ],[
-            'review' => 'This hotel is not only a very beautiful place, '.
+            'review' => 'This hotel is not only a very enjoyable place, '.
                         'but also has the best food ever.',
             'expectedResult' => [
                 'hotel' => [
                     'score' => 100,
-                    'criteria' => ['beautiful'],
+                    'criteria' => ['enjoyable'],
                 ],
                 'food' => [
                     'score' => 100,
