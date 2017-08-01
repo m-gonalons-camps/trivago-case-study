@@ -9,7 +9,7 @@
         "food": ["dinner", "lunch", "chef"],
         "bathroom": ["lavatory", "shower", "toilet", "bath", "wc"],
         "restaurant": ["waiter", "waitress"],
-        "pool": ["spa", "wellness", "whirlpool"],
+        "pool": ["spa", "wellness", "whirlpool", "swimming-pool"],
         "bar": []
     },
 
@@ -38,6 +38,7 @@
         "made our stay": 100,
         "was fun": 100,
         "not far from": 100,
+        "exceptional": 100,
 
         "problem": -100,
         "unfriendly": -100,
@@ -78,8 +79,6 @@
         "rotten": -100,
         "mess": -100,
         "surly": -100,
-        "never": -100,
-        "not going to come back": -100,
         "shit": -100
     },
 

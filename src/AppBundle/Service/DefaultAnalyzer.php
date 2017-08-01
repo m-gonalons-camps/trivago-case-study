@@ -112,23 +112,18 @@ class DefaultAnalyzer implements IAnalyzer {
                 }
 
                 if (! $negatorInCriteria) {
-                    $negatorFoundInDivision = FALSE;
-                    foreach ($this->negators as $negator) {
-                        if (preg_match('/\\b'.$negator.'\\b/i', $division)) {
-                            if ($score > 0) {
-                                $score = -$score;
-                            } else { 
-                                $score = 0;
-                            }
-
-                            if (!isset($sentenceScore[$negator." ".$keyword])) $sentenceScore[$negator." ".$keyword] = 0;
-                            
-                            $sentenceScore[$negator." ".$keyword] += $score;
-                            $negatorFoundInDivision = TRUE;
-                            break;
+                    if ($this->isCriteriaNegated($keyword, $division)) {
+                        if ($score > 0) {
+                            $score = -$score;
+                        } else { 
+                            $score = 0;
                         }
-                    }    
-                    if (! $negatorFoundInDivision) {
+
+                        if (!isset($sentenceScore["not " . $keyword])) $sentenceScore["not ".$keyword] = 0;
+                        
+                        $sentenceScore["not ".$keyword] += $score;
+                        break;
+                    } else {
                         if (!isset($sentenceScore[$keyword])) $sentenceScore[$keyword] = 0;
 
                         $sentenceScore[$keyword] += $score;
@@ -150,6 +145,22 @@ class DefaultAnalyzer implements IAnalyzer {
         } else {
             return preg_match('/\\b'.$keyword.'\\b/', $division);
         }
+    }
+
+    private function isCriteriaNegated(string $keyword, string $division) : bool {
+        $divisionWords = str_word_count($division, 1);
+        foreach ($this->negators as $negator) {
+            if (! preg_match('/\\b'.$negator.'\\b/i', $division)) continue;
+
+            $pos = array_search($negator, $divisionWords);
+            if ($pos === FALSE) continue;
+
+            if (strtolower($divisionWords[$pos+1]) === 'only') continue;
+
+            return TRUE;
+        }
+
+        return FALSE;
     }
 
     private function pluralize(string $singularWord) : string {

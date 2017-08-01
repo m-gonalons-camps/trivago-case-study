@@ -57,18 +57,99 @@ class DefaultAnalyzerTest extends WebTestCase {
         ],[
             'review' => 'Most friendly and helpful receptionist ever, so lovely and great first impression of hotel. '.
                         'Couldn\'t have been more sweet, giving me directions to a function I was attending along '.
-                        'with a helpful map, ensuring parking in car park and facilitating an early check in.'.
-                        ' If nothing else had gone right with hotel this lady ensured I would have left with a good impression. '.
                         'Fortunately everything about the hotel was exceptional, and I don\'t give praise lightly. '.
                         'It was clean, stylish, roomy with excellent service in both bar where we had lunch and restaurant'.
                         ' where we had dinner. Food was beyond good and great value for money and service in both places '.
-                        'attentive and efficient. Room itself was well equipped and comfortable. '.
-                        'I could go on but suffice it to say I was very pleased with my stay, and although short and sweet this time,'.
-                        ' I hope to be back for a longer visit in the future.',
+                        'Room itself was well equipped and comfortable. ',
             'expectedResult' => [
                 'staff' => [
+                    'score' => 300,
+                    'criteria' => ['helpful', 'friendly', 'excellent']
+                ],
+                'hotel' => [
+                    'score' => 300,
+                    'criteria' => ['great', 'exceptional', 'clean']
+                ],
+                'food' => [
                     'score' => 200,
-                    'criteria' => ['friendly', 'helpful']
+                    'criteria' => ['good', 'great']
+                ],
+                'room' => [
+                    'score' => 200,
+                    'criteria' => ['well', 'comfortable']
+                ]
+            ]
+        ],[
+            'review' => 'How can a place so awful be a part of such a beautiful city? '.
+                        'As soon as we pulled up outside and looked at the dirty, '.
+                        'holey curtains hanging like rags behind the stinking glass of the rotting windows '.
+                        'we should have turned and run.'.
+                        'The room was tiny and stank, as did the rest of the building.'.
+                        'It was a combination of cats, mould, rot, damp, the local petting'.
+                        'farm and a pair of Zoo Keepers’ wellies.'.
+                        'We went out early and stayed out as late as we could manage.'.
+                        'Next morning we were up and out, didn’t have breakfast as we saw the state of the'.
+                        ' kitchen when we parked the car around the back in ‘Steptoes’ yard! '.
+                        'Which was not only full of junk but also half the cat population of Oxford, who incidentally,'.
+                        ' made themselves very at home by laying all over my car.',
+            'expectedResult' => [
+                'room' => [
+                    'score' => -500,
+                    'criteria' => ['awful', 'dirty', 'stinking', 'rotting', 'stank']
+                ],
+                'hotel' => [
+                    'score' => -200,
+                    'criteria' => ['mould', 'rot']
+                ],
+                'food' => [
+                    'score' => -100,
+                    'criteria' => ['junk']
+                ]
+            ]
+        ],[
+            'review' => 'The most disgusting and creepy hotel imaginable.'.
+                        ' Only place that had vacancies. dirty sheets, porn on the TV. weird screams in the morning, '.
+                        'possible blood drips on plastic mattress covering. '.
+                        'This was the most frightening experience, seriously debated sleeping in Central Park instead.'.
+                        ' This was worse than anything I’ve ever seen on television! Feared for my life!',
+            'expectedResult' => [
+                'hotel' => [
+                    'score' => -100,
+                    'criteria' => ['disgusting']
+                ],
+                'bed' => [
+                    'score' => -300,
+                    'criteria' => ['dirty', 'blood', 'worse']
+                ],
+            ]
+        ],[
+            'review' => 'This is not a good hotel to stay in. It is not very bad, but it is not good neither. '.
+                        'The food isn\'t great and the bed wasn\'t clean. The stay wasn\'t a nightmare but it was not a good experience.',
+            'expectedResult' => [
+                'hotel' => [
+                    'score' => -200,
+                    'criteria' => ['not good', 'not bad', 'not good']
+                ],
+                'food' => [
+                    'score' => -100,
+                    'criteria' => ['isn\'t great']
+                ],
+                'bed' => [
+                    'score' => -200,
+                    'criteria' => ['wasn\'t clean', 'wasn\'t nightmare', 'not good']
+                ]
+            ]
+        ],[
+            'review' => 'This hotel is not only a very beautiful place, '.
+                        'but also has the best food ever.',
+            'expectedResult' => [
+                'hotel' => [
+                    'score' => 100,
+                    'criteria' => ['beautiful'],
+                ],
+                'food' => [
+                    'score' => 100,
+                    'criteria' => ['best']
                 ]
             ]
         ]];
