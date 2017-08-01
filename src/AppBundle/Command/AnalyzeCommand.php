@@ -29,8 +29,10 @@ class AnalyzeCommand extends ContainerAwareCommand {
                 new TypoFixer(),
                 $this->getContainer()->get('doctrine')->getManager()
             );
-            $result = $analyzer->analyze($input->getArgument('review'))->getFullResults();
-            $output->writeln(json_encode($result));
+            $response = $analyzer->analyze($input->getArgument('review'));
+            
+            $output->writeln('TOTAL SCORE: ' . $response->getScore());
+            $output->writeln(print_r($response->getFullResults(), TRUE));
         } else {
             $output->writeln('Invalid library: ' . $analyzerLibrary);
         }

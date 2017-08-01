@@ -51,11 +51,6 @@ class DefaultAnalyzer implements IAnalyzer {
             $this->lastKnownTopic = $topic;
         }
 
-        // TODO: If there is criteria asigned to "unknown" topic,
-        // reasign that criteria to the next topic in the array.
-        // Example
-        // 
-
         return $AnalyzerResponse;
     }
 
