@@ -24,6 +24,7 @@ class DefaultAnalyzerTest extends WebTestCase {
 
         foreach ($testCases as $testCase) {
             $result = $this->DefaultAnalyzer->analyze($testCase['review'])->getFullResults();
+            // TODO: SORT THE THE EXPECTED RESULT AND THE RESULT.
             $this->assertEquals(json_encode($testCase['expectedResult']), json_encode($result));
         }
     }
@@ -64,7 +65,7 @@ class DefaultAnalyzerTest extends WebTestCase {
             'expectedResult' => [
                 'staff' => [
                     'score' => 300,
-                    'criteria' => ['helpful', 'friendly', 'excellent']
+                    'criteria' => ['friendly', 'helpful', 'excellent']
                 ],
                 'hotel' => [
                     'score' => 300,
@@ -95,7 +96,7 @@ class DefaultAnalyzerTest extends WebTestCase {
             'expectedResult' => [
                 'room' => [
                     'score' => -600,
-                    'criteria' => ['tiny', 'awful', 'dirty', 'stinking', 'rotting', 'stank']
+                    'criteria' => ['awful', 'dirty', 'stinking', 'rotting', 'tiny', 'stank']
                 ],
                 'hotel' => [
                     'score' => -200,
@@ -141,7 +142,8 @@ class DefaultAnalyzerTest extends WebTestCase {
             ]
         ],[
             'review' => 'This hotel is not only a very enjoyable place, '.
-                        'but also has the best food ever.',
+                        'but also has the best food ever.'.
+                        'The pool isn\'t especially very good',
             'expectedResult' => [
                 'hotel' => [
                     'score' => 100,
@@ -150,6 +152,10 @@ class DefaultAnalyzerTest extends WebTestCase {
                 'food' => [
                     'score' => 100,
                     'criteria' => ['best']
+                ],
+                'pool' => [
+                    'score' => -100,
+                    'criteria' => ['not good']
                 ]
             ]
         ]];
