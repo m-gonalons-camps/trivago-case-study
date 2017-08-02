@@ -15,7 +15,7 @@ class DefaultAnalyzer implements IAnalyzer {
     private $criteria;
     private $lastKnownTopic;
 
-    private $negators = ['not', 'isn\'t', 'aren\'t', 'wasn\'t', 'weren\'t', 'doesn\'t', 'didn\'t', 'won\'t', 'wouldn\'t', 'shouldn\'t', 'don\'t'];
+    private $negators = ['not', 'isn\'t', 'aren\'t', 'wasn\'t', 'weren\'t', 'doesn\'t', 'didn\'t', 'won\'t', 'wouldn\'t', 'shouldn\'t', 'don\'t', 'isnt', 'arent', 'wasnt', 'werent', 'doesnt', 'didnt', 'wont', 'wouldnt', 'shouldnt', 'dont'];
 
     public function __construct(EntityManagerInterface $em, ?ITypoFixer $tf = NULL) {
         $this->DoctrineManager = $em;
@@ -39,6 +39,8 @@ class DefaultAnalyzer implements IAnalyzer {
             $this->setTopicCriteriaAndScore($topic, $division);
             $this->lastKnownTopic = $topic;
         }
+
+        $this->removeTopicsWithoutCriteria();
 
         return $this->AnalyzerResponse;
     }
@@ -118,7 +120,7 @@ class DefaultAnalyzer implements IAnalyzer {
         if (count(str_word_count($keyword, 1)) > 1)
             return stripos($division, $keyword) !== FALSE;
         else
-            return preg_match('/\\b'.$keyword.'\\b/', $division);
+            return preg_match('/\\b'.$keyword.'\\b/i', $division);
     }
 
     private function isCriteriaNegated(string $keyword, string $division) : bool {
@@ -167,6 +169,13 @@ class DefaultAnalyzer implements IAnalyzer {
 
     private function pluralize(string $singularWord) : string {
         return Pluralizator::get()->pluralize($singularWord);
+    }
+
+    private function removeTopicsWithoutCriteria() : void {
+        $topics = $this->AnalyzerResponse->getTopics();
+        foreach ($topics as $topic)
+            if (! count($this->AnalyzerResponse->getCriteria($topic)))
+                $this->AnalyzerResponse->removeTopic($topic);
     }
 
     private function setCriteria() : DefaultAnalyzer {

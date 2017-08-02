@@ -1,8 +1,8 @@
 {
     "topics": {
         "room": ["apartment", "chamber"],
-        "hotel": ["property", "lodge", "resort", "building"],
-        "staff": ["service", "personnel", "crew", "he", "she", "manager", "receptionist"],
+        "hotel": ["property", "lodge", "resort", "building", "ambience"],
+        "staff": ["service", "personnel", "crew", "he", "she", "manager", "receptionist", "owner"],
         "location": ["spot"],
         "breakfast": [],
         "bed": ["sleep quality", "mattress", "linen", "sheet"],
@@ -10,7 +10,7 @@
         "bathroom": ["lavatory", "shower", "toilet", "bath", "wc"],
         "restaurant": ["waiter", "waitress"],
         "pool": ["spa", "wellness", "whirlpool", "swimming-pool", "swimmingpool"],
-        "bar": []
+        "bar": ["cafeteria"]
     },
 
     "criteria": {
@@ -20,7 +20,8 @@
         "nice": 100,
         "amazing": 100,
         "careful": 100,
-        "well": 100,
+        "well done": 100,
+        "well equipped": 100,
         "helpful": 100,
         "friendly": 100,
         "clean": 100,
@@ -40,8 +41,12 @@
         "not far from": 100,
         "exceptional": 100,
         "enjoyable": 100,
+        "very new": 100,
+        "exemplary": 100,
+        "absolute favourite": 100,
 
         "problem": -100,
+        "minuscule": -100,
         "unfriendly": -100,
         "horrible": -100,
         "stue": -100,
@@ -76,6 +81,7 @@
         "did not sleep": -100,
         "didn't sleep": -100,
         "rude": -100,
+        "clogged": -100,
         "undisciplined": -100,
         "fell off": -100,
         "rotten": -100,
@@ -87,7 +93,9 @@
         "stank": -100,
         "mould": -100,
         "rot": -100,
-        "blood": -100
+        "blood": -100,
+        "disappointed": -100,
+        "annoying": -100
     },
 
     "analysisLibraries": ["Default"]
