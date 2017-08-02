@@ -19,8 +19,9 @@ class DefaultAnalyzerTest extends WebTestCase {
 
         foreach ($testCases as $testCase) {
             $result = $this->DefaultAnalyzer->analyze($testCase['review'])->getFullResults();
-            // TODO: SORT THE THE EXPECTED RESULT AND THE RESULT.
-            $this->assertEquals(json_encode($testCase['expectedResult']), json_encode($result));
+            $this->recursiveSort($testCase['expectedResult']);
+            $this->recursiveSort($result);
+            $this->assertEquals($testCase['expectedResult'], $result);
         }
     }
 
@@ -31,7 +32,7 @@ class DefaultAnalyzerTest extends WebTestCase {
             'expectedResult' => [
                 'room' => [
                     'score' => 200,
-                    'criteria' => ['great', 'spacious']
+                    'criteria' => ['spacious', 'great']
                 ],
                 'staff' => [
                     'score' => 100,
@@ -60,7 +61,7 @@ class DefaultAnalyzerTest extends WebTestCase {
             'expectedResult' => [
                 'staff' => [
                     'score' => 300,
-                    'criteria' => ['friendly', 'helpful', 'excellent']
+                    'criteria' => ['friendly', 'excellent', 'helpful']
                 ],
                 'hotel' => [
                     'score' => 300,
@@ -158,7 +159,7 @@ class DefaultAnalyzerTest extends WebTestCase {
             'expectedResult' => [
                 'bed' => [
                     'score' => 200,
-                    'criteria' => ['good', 'clean']
+                    'criteria' => ['clean', 'good']
                 ],
                 'staff' => [
                     'score' => -100,
@@ -170,5 +171,14 @@ class DefaultAnalyzerTest extends WebTestCase {
                 ]
             ]
         ]];
+    }
+
+
+    private function recursiveSort(&$array) : void {
+        foreach ($array as &$value)
+            is_array($value) && $this->recursiveSort($value);
+
+        ksort($array) && asort($array);
+        $array = array_values($array);
     }
 }
