@@ -37,8 +37,8 @@ class DefaultAnalyzerTest extends WebTestCase {
             ',
             'expectedResult' => [
                 'room' => [
-                    'score' => 200,
-                    'criteria' => ['spacious', 'great']
+                    'score' => 250,
+                    'criteria' => ['very spacious', 'great']
                 ],
                 'staff' => [
                     'score' => 100,
@@ -68,8 +68,8 @@ class DefaultAnalyzerTest extends WebTestCase {
             ',
             'expectedResult' => [
                 'staff' => [
-                    'score' => 300,
-                    'criteria' => ['friendly', 'excellent', 'helpful']
+                    'score' => 350,
+                    'criteria' => ['most friendly', 'excellent', 'helpful']
                 ],
                 'hotel' => [
                     'score' => 300,
@@ -119,12 +119,12 @@ class DefaultAnalyzerTest extends WebTestCase {
                 Only place that had vacancies. dirty sheets, porn on the TV. weird screams in the morning, 
                 possible blood drips on plastic mattress covering. 
                 This was the most frightening experience, seriously debated sleeping in Central Park instead.
-                This was worse than anything I’ve ever seen on television! Feared for my life!
+                This was worse than anything I’ve ever seen! Feared for my life!
             ',
             'expectedResult' => [
                 'hotel' => [
-                    'score' => -100,
-                    'criteria' => ['disgusting']
+                    'score' => -150,
+                    'criteria' => ['most disgusting']
                 ],
                 'bed' => [
                     'score' => -300,
@@ -159,8 +159,8 @@ class DefaultAnalyzerTest extends WebTestCase {
             ',
             'expectedResult' => [
                 'hotel' => [
-                    'score' => 100,
-                    'criteria' => ['enjoyable'],
+                    'score' => 150,
+                    'criteria' => ['very enjoyable'],
                 ],
                 'food' => [
                     'score' => 100,
@@ -179,8 +179,8 @@ class DefaultAnalyzerTest extends WebTestCase {
             ',
             'expectedResult' => [
                 'bed' => [
-                    'score' => 200,
-                    'criteria' => ['clean', 'good']
+                    'score' => 250,
+                    'criteria' => ['very clean', 'good']
                 ],
                 'staff' => [
                     'score' => -100,
@@ -212,8 +212,8 @@ class DefaultAnalyzerTest extends WebTestCase {
                     'criteria' => ['clean']
                 ],
                 'staff' => [
-                    'score' => 300,
-                    'criteria' => ['helpful', 'helpful', 'great']
+                    'score' => 400,
+                    'criteria' => ['very helpful', 'very helpful', 'great']
                 ],
                 'room' => [
                     'score' => 100,
@@ -276,7 +276,7 @@ class DefaultAnalyzerTest extends WebTestCase {
                     'criteria' => ['comfortable']
                 ],
                 'hotel' => [
-                    'score' => 100,
+                    'score' => 150,
                     'criteria' => ['very new']
                 ],
                 'room' => [

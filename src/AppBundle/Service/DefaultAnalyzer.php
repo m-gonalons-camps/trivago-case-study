@@ -7,6 +7,8 @@ use ICanBoogie\Inflector as Pluralizator;
 
 class DefaultAnalyzer implements IAnalyzer {
 
+    const EMPHASIZERS_SCORE = 50;
+
     private $DoctrineManager;
     private $TypoFixer;
     private $AnalyzerResponse;
@@ -106,6 +108,12 @@ class DefaultAnalyzer implements IAnalyzer {
             if ($this->isCriteriaNegated($keyword, $division)) {
                 $score = $this->adaptNegatedCriteriaScore($score);
                 $keyword = "not " . $keyword;
+            } else {
+                $emphasizedKeyword = $this->emphasizedCriteriaCheck($keyword, $division);
+                if ($emphasizedKeyword != $keyword) {
+                    $score = $this->adaptEmphasizedCriteriaScore($score);
+                    $keyword = $emphasizedKeyword;
+                }
             }
             $this->AnalyzerResponse->addCriteria($topic, $keyword);
             $this->AnalyzerResponse->sumScore($topic, $score);
@@ -144,6 +152,18 @@ class DefaultAnalyzer implements IAnalyzer {
         return FALSE;
     }
 
+    private function emphasizedCriteriaCheck(string $keyword, string $division) : string {
+        $emphasizers = ['very', 'most'];
+        $emphasizerUsed = '';
+        foreach ($emphasizers as $possibleEmphasizer) {
+            if (stripos($division, $possibleEmphasizer . ' ' . $keyword) !== FALSE) {
+                $emphasizerUsed = $possibleEmphasizer;
+                break;
+            }
+        }
+        return trim($emphasizerUsed . ' ' . $keyword);
+    }
+
     private function criteriaKeywordHasNegators(string $keyword) : bool {
         // Some criteria like "did not sleep" or "didn't work" have negators in them.
         // We need to check for this cases to avoid returning an score like this: "not did not sleep"
@@ -165,6 +185,10 @@ class DefaultAnalyzer implements IAnalyzer {
         // I don't think that "not bad hotel" should be treated as equally as "good hotel", so I decided 
         // to treat the negated bad criteria with a neutral score of 0.
         return $score > 0 ? -$score : 0;
+    }
+
+    private function adaptEmphasizedCriteriaScore(int $score) : int {
+        return $score > 0 ? $score + self::EMPHASIZERS_SCORE : $score - self::EMPHASIZERS_SCORE;
     }
 
     private function pluralize(string $singularWord) : string {
