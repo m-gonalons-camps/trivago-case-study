@@ -2,8 +2,6 @@
 
 namespace Tests\AppBundle\Service;
 
-use AppBundle\Service\DefaultAnalyzer;
-use AppBundle\Service\TypoFixer;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class DefaultAnalyzerTest extends WebTestCase {
@@ -13,10 +11,7 @@ class DefaultAnalyzerTest extends WebTestCase {
     public function __construct() {
         parent::__construct();
         self::bootKernel();
-        $this->DefaultAnalyzer = new DefaultAnalyzer(
-            new TypoFixer(),
-            static::$kernel->getContainer()->get('doctrine')->getManager()
-        );
+        $this->DefaultAnalyzer = static::$kernel->getContainer()->get('AppBundle.DefaultAnalyzer');
     }
 
     public function testDefaultAnalyzer() {
@@ -156,6 +151,22 @@ class DefaultAnalyzerTest extends WebTestCase {
                 'pool' => [
                     'score' => -100,
                     'criteria' => ['not good']
+                ]
+            ]
+        ],[
+            'review' => 'The linens is good and the sheets were very clean. The managers are not helpful though. Pools aren\'t dirty.',
+            'expectedResult' => [
+                'bed' => [
+                    'score' => 200,
+                    'criteria' => ['good', 'clean']
+                ],
+                'staff' => [
+                    'score' => -100,
+                    'criteria' => ['not helpful']
+                ],
+                'pool' => [
+                    'score' => 0,
+                    'criteria' => ['not dirty']
                 ]
             ]
         ]];

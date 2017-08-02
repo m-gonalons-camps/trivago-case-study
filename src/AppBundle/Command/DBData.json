@@ -5,11 +5,11 @@
         "staff": ["service", "personnel", "crew", "he", "she", "manager", "receptionist"],
         "location": ["spot"],
         "breakfast": [],
-        "bed": ["sleep quality", "mattress", "linens", "sheets"],
+        "bed": ["sleep quality", "mattress", "linen", "sheet"],
         "food": ["dinner", "lunch", "chef"],
         "bathroom": ["lavatory", "shower", "toilet", "bath", "wc"],
         "restaurant": ["waiter", "waitress"],
-        "pool": ["spa", "wellness", "whirlpool", "swimming-pool"],
+        "pool": ["spa", "wellness", "whirlpool", "swimming-pool", "swimmingpool"],
         "bar": []
     },
 

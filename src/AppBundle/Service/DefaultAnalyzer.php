@@ -3,27 +3,29 @@
 namespace AppBundle\Service;
 
 use Doctrine\ORM\EntityManagerInterface;
+use ICanBoogie\Inflector as Pluralizator;
 
 class DefaultAnalyzer implements IAnalyzer {
 
-    private $TypoFixer;
     private $DoctrineManager;
+    private $TypoFixer;
     private $AnalyzerResponse;
 
+    private $topics;
+    private $criteria;
     private $lastKnownTopic;
 
-    // TODO: Think about adding the negator "never" and test it with a couple of reviews with that word.
     private $negators = ['not', 'isn\'t', 'aren\'t', 'wasn\'t', 'weren\'t', 'doesn\'t', 'didn\'t', 'won\'t', 'wouldn\'t', 'shouldn\'t', 'don\'t'];
 
-    public function __construct(ITypoFixer $tf, EntityManagerInterface $em) {
-        $this->TypoFixer = $tf;
+    public function __construct(EntityManagerInterface $em, ?ITypoFixer $tf = NULL) {
         $this->DoctrineManager = $em;
+        $this->TypoFixer = $tf;
 
         $this->setCriteria()->setTopics();
     }
 
     public function analyze(string $review) : AnalyzerResponse {
-        $this->TypoFixer->fix($review);
+        $this->TypoFixer && $this->TypoFixer->fix($review);
 
         $divisions = $this->getSentencesDivisions($review);
         $this->lastKnownTopic = "unknown";
@@ -34,9 +36,8 @@ class DefaultAnalyzer implements IAnalyzer {
 
             $this->AnalyzerResponse->addTopic($topic);
             $this->canReassignUnkownTopicCriteria($topic) && $this->reassignUnknownTopicCriteria($topic);
-            $this->lastKnownTopic = $topic;
-
             $this->setTopicCriteriaAndScore($topic, $division);
+            $this->lastKnownTopic = $topic;
         }
 
         return $this->AnalyzerResponse;
@@ -55,23 +56,6 @@ class DefaultAnalyzer implements IAnalyzer {
         return $sentences;
     }
 
-    private function reassignUnknownTopicCriteria(string $correctTopic) : void {
-        $unknownTopicCriteria = $this->AnalyzerResponse->getCriteria('unknown');
-        foreach ($unknownTopicCriteria as $keyword) {
-            $this->AnalyzerResponse->addCriteria($correctTopic, $keyword);
-        }
-        $this->AnalyzerResponse->sumScore($correctTopic, $this->AnalyzerResponse->getScore('unknown'));
-        $this->AnalyzerResponse->removeTopic('unknown');
-    }
-
-    private function canReassignUnkownTopicCriteria(string $possibleCorrectTopic) : bool {
-        return (
-            $possibleCorrectTopic !== 'unknown' &&
-            $this->lastKnownTopic === 'unknown' &&
-            in_array("unknown", $this->AnalyzerResponse->getTopics())
-        );
-    }
-
     private function getDivisionTopic(string $division) : string {
         foreach ($this->topics as $topicEntity) {
             if ($this->topicExistsInDivision($topicEntity->getName(), $division)) 
@@ -86,12 +70,29 @@ class DefaultAnalyzer implements IAnalyzer {
         
         return $this->lastKnownTopic;
     }
-
+    
     private function topicExistsInDivision(string $topic, string $division) : bool {
         return (
             preg_match('/\\b'.$topic.'\\b/i', $division) ||
             preg_match('/\\b'.$this->pluralize($topic).'\\b/i', $division)
         );
+    }
+
+    private function canReassignUnkownTopicCriteria(string $possibleCorrectTopic) : bool {
+        return (
+            $possibleCorrectTopic !== 'unknown' &&
+            $this->lastKnownTopic === 'unknown' &&
+            in_array("unknown", $this->AnalyzerResponse->getTopics())
+        );
+    }
+
+    private function reassignUnknownTopicCriteria(string $correctTopic) : void {
+        $unknownTopicCriteria = $this->AnalyzerResponse->getCriteria('unknown');
+        foreach ($unknownTopicCriteria as $keyword) {
+            $this->AnalyzerResponse->addCriteria($correctTopic, $keyword);
+        }
+        $this->AnalyzerResponse->sumScore($correctTopic, $this->AnalyzerResponse->getScore('unknown'));
+        $this->AnalyzerResponse->removeTopic('unknown');
     }
 
     private function setTopicCriteriaAndScore(string $topic, string $division) : void {
@@ -141,16 +142,6 @@ class DefaultAnalyzer implements IAnalyzer {
         return FALSE;
     }
 
-    private function adaptNegatedCriteriaScore(int $score) : int {
-        // Negating a good criteria, for example "was not a good hotel", results in the score being inverted.
-        // If "good" has a score of 100, negating it results in a score of -100
-        // On the other hand, negating negative criteria, for example "is not a bad hotel", I think it's better
-        // to treat that as neutral instead of inverting the bad criteria score.
-        // I don't think that "not bad hotel" should be treated as equally as "good hotel", so I decided 
-        // to treat the negated bad criteria with a neutral score of 0.
-        return $score > 0 ? -$score : 0;
-    }
-
     private function criteriaKeywordHasNegators(string $keyword) : bool {
         // Some criteria like "did not sleep" or "didn't work" have negators in them.
         // We need to check for this cases to avoid returning an score like this: "not did not sleep"
@@ -164,9 +155,18 @@ class DefaultAnalyzer implements IAnalyzer {
         return FALSE;
     }
 
+    private function adaptNegatedCriteriaScore(int $score) : int {
+        // Negating a good criteria, for example "was not a good hotel", results in the score being inverted.
+        // If "good" has a score of 100, negating it results in a score of -100
+        // On the other hand, negating negative criteria, for example "is not a bad hotel", I think it's better
+        // to treat that as neutral instead of inverting the bad criteria score.
+        // I don't think that "not bad hotel" should be treated as equally as "good hotel", so I decided 
+        // to treat the negated bad criteria with a neutral score of 0.
+        return $score > 0 ? -$score : 0;
+    }
+
     private function pluralize(string $singularWord) : string {
-        // TODO: PLURALIZATION SERVICE
-        return $singularWord;
+        return Pluralizator::get()->pluralize($singularWord);
     }
 
     private function setCriteria() : DefaultAnalyzer {
