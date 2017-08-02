@@ -15,7 +15,7 @@ class DefaultAnalyzer implements IAnalyzer {
     private $criteria;
     private $lastKnownTopic;
 
-    private $negators = ['not', 'isn\'t', 'aren\'t', 'wasn\'t', 'weren\'t', 'doesn\'t', 'didn\'t', 'won\'t', 'wouldn\'t', 'shouldn\'t', 'don\'t', 'isnt', 'arent', 'wasnt', 'werent', 'doesnt', 'didnt', 'wont', 'wouldnt', 'shouldnt', 'dont'];
+    private $negators = ['not', 'isn\'t', 'aren\'t', 'wasn\'t', 'weren\'t', 'doesn\'t', 'didn\'t', 'won\'t', 'wouldn\'t', 'shouldn\'t', 'don\'t', 'isnt', 'arent', 'wasnt', 'werent', 'doesnt', 'didnt', 'wont', 'wouldnt', 'shouldnt', 'dont', 'no'];
 
     public function __construct(EntityManagerInterface $em, ?ITypoFixer $tf = NULL) {
         $this->DoctrineManager = $em;

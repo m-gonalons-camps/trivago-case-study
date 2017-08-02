@@ -1,7 +1,7 @@
 {
     "topics": {
         "room": {
-            "aliases": ["apartment", "chamber"],
+            "aliases": ["apartment", "chamber", "tv", "television"],
             "priority": 50
         },
         "hotel": {
