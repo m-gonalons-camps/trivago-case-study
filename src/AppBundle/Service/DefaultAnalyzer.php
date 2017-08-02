@@ -184,7 +184,7 @@ class DefaultAnalyzer implements IAnalyzer {
     }
 
     private function setTopics() : DefaultAnalyzer {
-        $this->topics = $this->DoctrineManager->getRepository('AppBundle:Topic')->findAll();
+        $this->topics = $this->DoctrineManager->getRepository('AppBundle:Topic')->findBy([], ['priority' => 'DESC']);
         return $this;
     }
 

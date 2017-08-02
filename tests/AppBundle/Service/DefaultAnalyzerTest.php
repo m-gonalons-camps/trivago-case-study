@@ -63,7 +63,7 @@ class DefaultAnalyzerTest extends WebTestCase {
                 Couldn\'t have been more sweet, giving me directions to a function I was attending along.
                 Fortunately everything about the hotel was exceptional, and I don\'t give praise lightly.
                 It was clean, stylish, roomy with excellent service in both bar where we had lunch and restaurant 
-                where we had dinner. Food was beyond good and great value for money and service in both places
+                where we had dinner. Food was beyond good and great value for money and service in both places.
                 Room itself was well equipped and comfortable. 
             ',
             'expectedResult' => [
@@ -208,12 +208,12 @@ class DefaultAnalyzerTest extends WebTestCase {
                     'criteria' => ['perfect']
                 ],
                 'hotel' => [
-                    'score' => 200,
-                    'criteria' => ['clean', 'great']
+                    'score' => 100,
+                    'criteria' => ['clean']
                 ],
                 'staff' => [
-                    'score' => 200,
-                    'criteria' => ['helpful', 'helpful']
+                    'score' => 300,
+                    'criteria' => ['helpful', 'helpful', 'great']
                 ],
                 'room' => [
                     'score' => 100,
@@ -356,6 +356,31 @@ class DefaultAnalyzerTest extends WebTestCase {
                 'room' => [
                     'score' => -100,
                     'criteria' => ['small']
+                ]
+            ]
+        ],[
+            'review' => '
+                Excellent location of the hotel in the center of city.
+                Good food and good hospitality by Mr. Bhatia.
+                Dessert safari was a great experience arranged by the hotel.
+                I recommend this hotel to everyone, who is looking for a good stay, good food and great hospitality
+            ',
+            'expectedResult' => [
+                'location' => [
+                    'score' => 100,
+                    'criteria' => ['excellent']
+                ],
+                'food' => [
+                    'score' => 200,
+                    'criteria' => ['good', 'good']
+                ],
+                'staff' => [
+                    'score' => 200,
+                    'criteria' => ['good', 'great']
+                ],
+                'hotel' => [
+                    'score' => 200,
+                    'criteria' => ['good', 'great']
                 ]
             ]
         ]];

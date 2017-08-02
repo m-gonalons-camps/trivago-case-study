@@ -1,16 +1,49 @@
 {
     "topics": {
-        "room": ["apartment", "chamber"],
-        "hotel": ["property", "lodge", "resort", "building", "ambience"],
-        "staff": ["service", "personnel", "crew", "he", "she", "manager", "receptionist", "owner"],
-        "location": ["spot"],
-        "breakfast": [],
-        "bed": ["sleep quality", "mattress", "linen", "sheet"],
-        "food": ["dinner", "lunch", "chef"],
-        "bathroom": ["lavatory", "shower", "toilet", "bath", "wc"],
-        "restaurant": ["waiter", "waitress"],
-        "pool": ["spa", "wellness", "whirlpool", "swimming-pool", "swimmingpool"],
-        "bar": ["cafeteria"]
+        "room": {
+            "aliases": ["apartment", "chamber"],
+            "priority": 50
+        },
+        "hotel": {
+            "aliases": ["property", "lodge", "resort", "building", "ambience"],
+            "priority": 0
+        },
+        "staff": {
+            "aliases": ["service", "personnel", "crew", "he", "she", "manager", "receptionist", "owner", "hospitality"],
+            "priority": 90
+        },
+        "location": {
+            "aliases": ["spot"],
+            "priority": 100
+        },
+        "breakfast": {
+            "aliases": [],
+            "priority": 95
+        },
+        "bed": {
+            "aliases": ["sleep quality", "mattress", "linen", "sheet"],
+            "priority": 20
+        },
+        "food": {
+            "aliases": ["dinner", "lunch", "chef"],
+            "priority": 80
+        },
+        "bathroom": {
+            "aliases": ["lavatory", "shower", "toilet", "bath", "wc"],
+            "priority": 70
+        },
+        "restaurant": {
+            "aliases": ["waiter", "waitress"],
+            "priority": 40
+        },
+        "pool": {
+            "aliases": ["spa", "wellness", "whirlpool", "swimming-pool", "swimmingpool"],
+            "priority": 40
+        },
+        "bar": {
+            "aliases": ["cafeteria"],
+            "priority": 30
+        }
     },
 
     "criteria": {

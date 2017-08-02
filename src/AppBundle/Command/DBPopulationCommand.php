@@ -67,12 +67,13 @@ class DBPopulationCommand extends ContainerAwareCommand {
     }
 
     private function generateTopics() : void {
-        foreach ($this->jsonData->topics as $topicName => $topicAliases) {
+        foreach ($this->jsonData->topics as $topicName => $topicDetails) {
             $topicEntity = new Entity\Topic();
             $topicEntity->setName($topicName);
+            $topicEntity->setPriority($topicDetails->priority);
             
             $this->doctrineManager->persist($topicEntity);
-            foreach ($topicAliases as $alias) {
+            foreach ($topicDetails->aliases as $alias) {
                 $aliasEntity = new Entity\TopicAlias();
                 $aliasEntity->setAlias($alias);
                 $aliasEntity->setTopic($topicEntity);

@@ -30,6 +30,14 @@ class Topic
     private $name;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(name="priority", type="integer", nullable=false)
+     */
+    private $priority = 0;
+
+
+    /**
     * @var PersistentCollection
     *
     * @ORM\OneToMany(targetEntity="TopicAlias", mappedBy="topic")
@@ -52,6 +60,15 @@ class Topic
 
     public function getName() : string {
         return $this->name;
+    }
+
+    public function setPriority(int $priority) : Topic {
+        $this->priority = $priority;
+        return $this;
+    }
+
+    public function getPriority() : int {
+        return $this->priority;
     }
 }
 
