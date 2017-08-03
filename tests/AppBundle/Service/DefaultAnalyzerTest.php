@@ -29,7 +29,7 @@ class DefaultAnalyzerTest extends WebTestCase {
 
 
     private function getTestCases() {
-        return [[
+        $cases =  [[
             'review' => '
                 The room was great and the staff was nice.
                 The restaurant was not bad.
@@ -45,7 +45,7 @@ class DefaultAnalyzerTest extends WebTestCase {
                     'criteria' => ['nice']
                 ],
                 'restaurant' => [
-                    'score' => 0,
+                    'score' => 10,
                     'criteria' => ['not bad']
                 ]
             ]
@@ -101,8 +101,8 @@ class DefaultAnalyzerTest extends WebTestCase {
             ',
             'expectedResult' => [
                 'room' => [
-                    'score' => -600,
-                    'criteria' => ['awful', 'dirty', 'stinking', 'rotting', 'tiny', 'stank']
+                    'score' => -650,
+                    'criteria' => ['so awful', 'dirty', 'stinking', 'rotting', 'tiny', 'stank']
                 ],
                 'hotel' => [
                     'score' => -200,
@@ -139,7 +139,7 @@ class DefaultAnalyzerTest extends WebTestCase {
             ',
             'expectedResult' => [
                 'hotel' => [
-                    'score' => -200,
+                    'score' => -190,
                     'criteria' => ['not good', 'not bad', 'not good']
                 ],
                 'food' => [
@@ -147,7 +147,7 @@ class DefaultAnalyzerTest extends WebTestCase {
                     'criteria' => ['not great']
                 ],
                 'bed' => [
-                    'score' => -200,
+                    'score' => -190,
                     'criteria' => ['not clean', 'not nightmare', 'not good']
                 ]
             ]
@@ -187,7 +187,7 @@ class DefaultAnalyzerTest extends WebTestCase {
                     'criteria' => ['not helpful']
                 ],
                 'pool' => [
-                    'score' => 0,
+                    'score' => 10,
                     'criteria' => ['not dirty']
                 ]
             ]
@@ -255,8 +255,8 @@ class DefaultAnalyzerTest extends WebTestCase {
             ',
             'expectedResult' => [
                 'hotel' => [
-                    'score' => 100,
-                    'criteria' => ['good']
+                    'score' => 150,
+                    'criteria' => ['really good']
                 ],
                 'staff' => [
                     'score' => 200,
@@ -307,8 +307,8 @@ class DefaultAnalyzerTest extends WebTestCase {
             ',
             'expectedResult' => [
                 'hotel' => [
-                    'score' => 500,
-                    'criteria' => ['best', 'absolute favourite', 'exemplary', 'nice', 'perfect']
+                    'score' => 550,
+                    'criteria' => ['best', 'absolute favourite', 'exemplary', 'so nice', 'perfect']
                 ],
                 'location' => [
                     'score' => 200,
@@ -384,6 +384,9 @@ class DefaultAnalyzerTest extends WebTestCase {
                 ]
             ]
         ]];
+
+        return $cases;
+        
     }
 
 

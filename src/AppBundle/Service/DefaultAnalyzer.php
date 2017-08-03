@@ -7,8 +7,6 @@ use ICanBoogie\Inflector as Pluralizator;
 
 class DefaultAnalyzer implements IAnalyzer {
 
-    const EMPHASIZERS_SCORE = 50;
-
     private $DoctrineManager;
     private $TypoFixer;
     private $AnalyzerResponse;
@@ -16,8 +14,6 @@ class DefaultAnalyzer implements IAnalyzer {
     private $topics;
     private $criteria;
     private $lastKnownTopic;
-
-    private $negators = ['not', 'isn\'t', 'aren\'t', 'wasn\'t', 'weren\'t', 'doesn\'t', 'didn\'t', 'won\'t', 'wouldn\'t', 'shouldn\'t', 'don\'t', 'isnt', 'arent', 'wasnt', 'werent', 'doesnt', 'didnt', 'wont', 'wouldnt', 'shouldnt', 'dont', 'no'];
 
     public function __construct(EntityManagerInterface $em, ?ITypoFixer $tf = NULL) {
         $this->DoctrineManager = $em;
@@ -29,7 +25,7 @@ class DefaultAnalyzer implements IAnalyzer {
     public function analyze(string $review) : AnalyzerResponse {
         $this->TypoFixer && $this->TypoFixer->fix($review);
 
-        $divisions = $this->getSentencesDivisions($review);
+        $divisions = $this->getSentencesDivisions(strtolower($review));
         $this->lastKnownTopic = "unknown";
         $this->AnalyzerResponse = new AnalyzerResponse();
 
@@ -111,7 +107,7 @@ class DefaultAnalyzer implements IAnalyzer {
             } else {
                 $emphasizedKeyword = $this->emphasizedCriteriaCheck($keyword, $division);
                 if ($emphasizedKeyword != $keyword) {
-                    $score = $this->adaptEmphasizedCriteriaScore($score);
+                    $score += ($score * DefaultAnalyzerConstants::EMPHASIZERS_SCORE_MODIFIER);
                     $keyword = $emphasizedKeyword;
                 }
             }
@@ -135,7 +131,7 @@ class DefaultAnalyzer implements IAnalyzer {
         if ($this->criteriaKeywordHasNegators($keyword)) return FALSE;
 
         $divisionWords = str_word_count($division, 1);
-        foreach ($this->negators as $negator) {
+        foreach (DefaultAnalyzerConstants::NEGATORS as $negator) {
             $negatorIndex = array_search($negator, $divisionWords);
 
             if ($negatorIndex === FALSE) continue;
@@ -144,7 +140,7 @@ class DefaultAnalyzer implements IAnalyzer {
             // "Not only this is a good place, but it has nice food"
             // In this case, the "not" is not negating the "good" criteria.
             // That's why we check the word right after the negator for this particular case.
-            if (strtolower($divisionWords[$negatorIndex+1]) === 'only') continue;
+            if ($divisionWords[$negatorIndex+1] === 'only') continue;
 
             return TRUE;
         }
@@ -153,9 +149,8 @@ class DefaultAnalyzer implements IAnalyzer {
     }
 
     private function emphasizedCriteriaCheck(string $keyword, string $division) : string {
-        $emphasizers = ['very', 'most'];
         $emphasizerUsed = '';
-        foreach ($emphasizers as $possibleEmphasizer) {
+        foreach (DefaultAnalyzerConstants::EMPHASIZERS as $possibleEmphasizer) {
             if (stripos($division, $possibleEmphasizer . ' ' . $keyword) !== FALSE) {
                 $emphasizerUsed = $possibleEmphasizer;
                 break;
@@ -170,7 +165,7 @@ class DefaultAnalyzer implements IAnalyzer {
         // If the criteria has a negator in itself, we will always return that the criteria
         // is not negated, since things like "not didn't sleep" or "not not going to come back"
         // are never going to bee seen in a real hotel review.
-        foreach ($this->negators as $negator)
+        foreach (DefaultAnalyzerConstants::NEGATORS as $negator)
             if (stripos($keyword, $negator) !== FALSE)
                 return TRUE;
         
@@ -178,13 +173,20 @@ class DefaultAnalyzer implements IAnalyzer {
     }
 
     private function adaptNegatedCriteriaScore(int $score) : int {
-        // Negating a good criteria, for example "was not a good hotel", results in the score being inverted.
-        // If "good" has a score of 100, negating it results in a score of -100
-        // On the other hand, negating negative criteria, for example "is not a bad hotel", I think it's better
-        // to treat that as neutral instead of inverting the bad criteria score.
-        // I don't think that "not bad hotel" should be treated as equally as "good hotel", so I decided 
-        // to treat the negated bad criteria with a neutral score of 0.
-        return $score > 0 ? -$score : 0;
+        // I don't think that negators should treat positive and negative criteria equally.
+        // In my opinion, saying "not good" is clearly a negative thing, but saying "not bad" is not
+        // necessarily a positive thing. Thus, I think there should be different score modifiers for
+        // positive and negative crtieria.
+        // Example: BAD criteria has -100 points. The modifier for the negative criteria is -0.1, so
+        // saying "not bad" will result in a score of -100 * -0.1 = +10 points
+        // Example 2: GOOD criteria has +100 points. The modifier for positive criteria is -1, so
+        // saying "not good" will result in a score of 100 * -1 = -100 points.
+        return $score * (
+            $score > 0 ? 
+            DefaultAnalyzerConstants::NEGATED_POSITIVE_CRITERIA_SCORE_MODIFIER : 
+            DefaultAnalyzerConstants::NEGATED_NEGATIVE_CRITERIA_SCORE_MODIFIER
+        );
+
     }
 
     private function adaptEmphasizedCriteriaScore(int $score) : int {

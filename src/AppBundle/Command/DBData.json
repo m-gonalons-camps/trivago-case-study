@@ -1,7 +1,7 @@
 {
     "topics": {
         "room": {
-            "aliases": ["apartment", "chamber", "tv", "television"],
+            "aliases": ["apartment", "chamber", "tv", "television", "bedroom"],
             "priority": 50
         },
         "hotel": {
@@ -128,7 +128,8 @@
         "rot": -100,
         "blood": -100,
         "disappointed": -100,
-        "annoying": -100
+        "annoying": -100,
+        "incompetent": -100
     },
 
     "analysisLibraries": ["Default"]
