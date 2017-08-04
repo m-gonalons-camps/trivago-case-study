@@ -37,6 +37,21 @@ class AnalysisCriteria
      */
     private $criteria;
 
+    /**
+     * @var Entity\Emphasizer
+     *
+     * @ORM\ManyToOne(targetEntity="Emphasizer")
+     * @ORM\JoinColumn(name="id_emphasizer", referencedColumnName="id", nullable=true)
+     */
+    private $emphasizer;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="negated", type="boolean")
+     */
+    private $negated;
+
 
     public function getId() : int {
         return $this->id;
@@ -59,5 +74,24 @@ class AnalysisCriteria
     public function getCriteria() : Criteria {
         return $this->criteria;
     }
+
+    public function setEmphasizer(Emphasizer $emphasizer) : AnalysisCriteria {
+        $this->emphasizer = $emphasizer;
+        return $this;
+    }
+
+    public function getEmphasizer() : Emphasizer {
+        return $this->emphasizer;
+    }
+
+    public function setNegated(bool $negated) : AnalysisCriteria {
+        $this->negated = $negated;
+        return $this;
+    }
+
+    public function getNegated() : bool {
+        return $this->negated;
+    }
+
 }
 

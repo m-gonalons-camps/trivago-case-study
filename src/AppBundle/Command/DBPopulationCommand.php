@@ -16,8 +16,8 @@ class DBPopulationCommand extends ContainerAwareCommand {
 
     protected function configure() : void {
         $this->setName('db:populate')
-            ->setDescription('Populates the criteria, topics, topics_aliases and analysis_libraries tables.')
-            ->setHelp('This command will populate the tables criteria, topics, topics_aliases and '.
+            ->setDescription('Populates the criteria, emphasizers, topics, topics_aliases and analysis_libraries tables.')
+            ->setHelp('This command will populate the tables criteria, emphasizers topics, topics_aliases and '.
             'analysis_libraries with the default and minimum data needed for running the application.');
     }
 
@@ -28,6 +28,7 @@ class DBPopulationCommand extends ContainerAwareCommand {
         $this->generateTopics();
         $this->generateCriteria();
         $this->generateAnalysisLibraries();
+        $this->generateEmphasizers();
 
         $this->doctrineManager->flush();
 
@@ -61,6 +62,7 @@ class DBPopulationCommand extends ContainerAwareCommand {
         return $genericRepository->areTablesEmpty([
             "AppBundle:Topic",
             "AppBundle:TopicAlias",
+            "AppBundle:Emphasizer",
             "AppBundle:Criteria",
             "AppBundle:AnalysisLibrary"
         ]);
@@ -98,6 +100,15 @@ class DBPopulationCommand extends ContainerAwareCommand {
             $libraryEntity = new Entity\AnalysisLibrary;
             $libraryEntity->setName($libraryName);
             $this->doctrineManager->persist($libraryEntity);
+        }
+    }
+
+    private function generateEmphasizers() : void {
+        foreach ($this->jsonData->emphasizers as $emphasizerName => $scoreModifier) {
+            $emphasizerEntity = new Entity\Emphasizer;
+            $emphasizerEntity->setName($emphasizerName);
+            $emphasizerEntity->setScoreModifier($scoreModifier);
+            $this->doctrineManager->persist($emphasizerEntity);
         }
     }
 }

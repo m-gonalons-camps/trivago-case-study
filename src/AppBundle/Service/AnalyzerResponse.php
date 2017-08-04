@@ -2,6 +2,9 @@
 
 namespace AppBundle\Service;
 
+use AppBundle\Entity\Criteria;
+use AppBundle\Entity\Emphasizer;
+
 final class AnalyzerResponse {
 
     private $finalScore;
@@ -27,11 +30,15 @@ final class AnalyzerResponse {
         return $this->finalScore[$topic]['score'];
     }
 
-    public function addCriteria(string $topic, string $keyword) : void {
+    public function addCriteria(string $topic, Criteria $criteria, ?Emphasizer $emphasizer = NULL, ?bool $negated = FALSE) : void {
         if (! $this->topicExists($topic))
             throw new \Exception('Topic does not exist.');
 
-        $this->finalScore[$topic]['criteria'][] = $keyword;
+        $this->finalScore[$topic]['criteria'][] = [
+            'entity' => $criteria,
+            'emphasizer' => $emphasizer,
+            'negated' => $negated
+        ];
     }
 
     public function getTopics() : array {

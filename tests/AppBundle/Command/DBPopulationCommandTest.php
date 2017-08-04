@@ -19,6 +19,7 @@ class DBPopulationCommandTest extends KernelTestCase {
     private $entitiesToCheck = [
         "AppBundle:TopicAlias",
         "AppBundle:Topic",
+        "AppBundle:Emphasizer",
         "AppBundle:Criteria",
         "AppBundle:AnalysisLibrary"
     ];

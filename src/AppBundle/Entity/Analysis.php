@@ -16,14 +16,13 @@ class Analysis
      * @var int
      *
      * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
      * @var Entity\Review
      *
+     * @ORM\Id
      * @ORM\ManyToOne(targetEntity="Review")
      * @ORM\JoinColumn(name="id_review", referencedColumnName="id", nullable=false)
      */
@@ -32,6 +31,7 @@ class Analysis
     /**
      * @var Entity\Topic
      *
+     * @ORM\Id
      * @ORM\ManyToOne(targetEntity="Topic")
      * @ORM\JoinColumn(name="id_topic", referencedColumnName="id", nullable=false)
      */
@@ -40,6 +40,7 @@ class Analysis
     /**
      * @var Entity\AnalysisLibrary
      *
+     * @ORM\Id
      * @ORM\ManyToOne(targetEntity="AnalysisLibrary")
      * @ORM\JoinColumn(name="id_library", referencedColumnName="id", nullable=false)
      */

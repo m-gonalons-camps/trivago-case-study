@@ -13,13 +13,14 @@ class DefaultAnalyzer implements IAnalyzer {
 
     private $topics;
     private $criteria;
+    private $emphasizers;
     private $lastKnownTopic;
 
     public function __construct(EntityManagerInterface $em, ?ITypoFixer $tf = NULL) {
         $this->DoctrineManager = $em;
         $this->TypoFixer = $tf;
 
-        $this->setCriteria()->setTopics();
+        $this->setCriteria()->setTopics()->setEmphasizers();
     }
 
     public function analyze(string $review) : AnalyzerResponse {
@@ -78,9 +79,9 @@ class DefaultAnalyzer implements IAnalyzer {
         );
     }
 
-    private function canReassignUnkownTopicCriteria(string $possibleCorrectTopic) : bool {
+    private function canReassignUnkownTopicCriteria(string $newTopic) : bool {
         return (
-            $possibleCorrectTopic !== 'unknown' &&
+            $newTopic !== 'unknown' &&
             $this->lastKnownTopic === 'unknown' &&
             in_array("unknown", $this->AnalyzerResponse->getTopics())
         );
@@ -88,8 +89,8 @@ class DefaultAnalyzer implements IAnalyzer {
 
     private function reassignUnknownTopicCriteria(string $correctTopic) : void {
         $unknownTopicCriteria = $this->AnalyzerResponse->getCriteria('unknown');
-        foreach ($unknownTopicCriteria as $keyword) {
-            $this->AnalyzerResponse->addCriteria($correctTopic, $keyword);
+        foreach ($unknownTopicCriteria as $criteria) {
+            $this->AnalyzerResponse->addCriteria($correctTopic, $criteria['entity'], $criteria['emphasizer'], $criteria['negated']);
         }
         $this->AnalyzerResponse->sumScore($correctTopic, $this->AnalyzerResponse->getScore('unknown'));
         $this->AnalyzerResponse->removeTopic('unknown');
@@ -102,16 +103,14 @@ class DefaultAnalyzer implements IAnalyzer {
 
             $score = $criteriaEntity->getScore();
             if ($this->isCriteriaNegated($keyword, $division)) {
-                $score = $this->adaptNegatedCriteriaScore($score);
-                $keyword = "not " . $keyword;
+                $score = $this->getNegatedCriteriaScore($score);
+                $negated = TRUE;
             } else {
-                $emphasizedKeyword = $this->emphasizedCriteriaCheck($keyword, $division);
-                if ($emphasizedKeyword != $keyword) {
-                    $score += ($score * DefaultAnalyzerConstants::EMPHASIZERS_SCORE_MODIFIER);
-                    $keyword = $emphasizedKeyword;
-                }
+                $negated = FALSE;
+                if ($emphasizer = $this->getEmphasizer($keyword, $division))
+                    $score += round($score * $emphasizer->getScoreModifier());
             }
-            $this->AnalyzerResponse->addCriteria($topic, $keyword);
+            $this->AnalyzerResponse->addCriteria($topic, $criteriaEntity, $emphasizer ?? NULL, $negated);
             $this->AnalyzerResponse->sumScore($topic, $score);
         }
     }
@@ -148,17 +147,6 @@ class DefaultAnalyzer implements IAnalyzer {
         return FALSE;
     }
 
-    private function emphasizedCriteriaCheck(string $keyword, string $division) : string {
-        $emphasizerUsed = '';
-        foreach (DefaultAnalyzerConstants::EMPHASIZERS as $possibleEmphasizer) {
-            if (stripos($division, $possibleEmphasizer . ' ' . $keyword) !== FALSE) {
-                $emphasizerUsed = $possibleEmphasizer;
-                break;
-            }
-        }
-        return trim($emphasizerUsed . ' ' . $keyword);
-    }
-
     private function criteriaKeywordHasNegators(string $keyword) : bool {
         // Some criteria like "did not sleep" or "didn't work" have negators in them.
         // We need to check for this cases to avoid returning an score like this: "not did not sleep"
@@ -172,7 +160,15 @@ class DefaultAnalyzer implements IAnalyzer {
         return FALSE;
     }
 
-    private function adaptNegatedCriteriaScore(int $score) : int {
+    private function getEmphasizer(string $keyword, string $division) : ?\AppBundle\Entity\Emphasizer {
+        foreach ($this->emphasizers as $possibleEmphasizer) {
+            if (stripos($division, $possibleEmphasizer->getName() . ' ' . $keyword) === FALSE) continue;
+            return $possibleEmphasizer;
+        }
+        return NULL;
+    }
+
+    private function getNegatedCriteriaScore(int $score) : int {
         // I don't think that negators should treat positive and negative criteria equally.
         // In my opinion, saying "not good" is clearly a negative thing, but saying "not bad" is not
         // necessarily a positive thing. Thus, I think there should be different score modifiers for
@@ -181,12 +177,11 @@ class DefaultAnalyzer implements IAnalyzer {
         // saying "not bad" will result in a score of -100 * -0.1 = +10 points
         // Example 2: GOOD criteria has +100 points. The modifier for positive criteria is -1, so
         // saying "not good" will result in a score of 100 * -1 = -100 points.
-        return $score * (
+        return round($score * (
             $score > 0 ? 
             DefaultAnalyzerConstants::NEGATED_POSITIVE_CRITERIA_SCORE_MODIFIER : 
             DefaultAnalyzerConstants::NEGATED_NEGATIVE_CRITERIA_SCORE_MODIFIER
-        );
-
+        ));
     }
 
     private function adaptEmphasizedCriteriaScore(int $score) : int {
@@ -211,6 +206,11 @@ class DefaultAnalyzer implements IAnalyzer {
 
     private function setTopics() : DefaultAnalyzer {
         $this->topics = $this->DoctrineManager->getRepository('AppBundle:Topic')->findBy([], ['priority' => 'DESC']);
+        return $this;
+    }
+
+    private function setEmphasizers() : DefaultAnalyzer {
+        $this->emphasizers = $this->DoctrineManager->getRepository('AppBundle:Emphasizer')->findAll();
         return $this;
     }
 

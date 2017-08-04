@@ -3,6 +3,8 @@
 namespace Tests\AppBundle\Service;
 
 use AppBundle\Service\AnalyzerResponse;
+use AppBundle\Entity\Criteria;
+use AppBundle\Entity\Emphasizer;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class AnalyzerResponseTest extends WebTestCase {
@@ -72,16 +74,27 @@ class AnalyzerResponseTest extends WebTestCase {
     }
 
     private function _testAddFoundCriteria() {
-        $this->AnalyzerResponse->addCriteria('hotel', 'good');
-        $this->assertContains('good', $this->AnalyzerResponse->getCriteria('hotel'));
+        $criteria = new Criteria();
+        $criteria->setKeyword('good');
 
-        $this->AnalyzerResponse->addCriteria('bar', 'bad');
-        $this->assertContains('bad', $this->AnalyzerResponse->getCriteria('bar'));
+        $this->AnalyzerResponse->addCriteria('hotel', $criteria, NULL, TRUE);
+        $this->assertEquals('good', $this->AnalyzerResponse->getCriteria('hotel')[0]['entity']->getKeyword());
+        $this->assertEquals(TRUE, $this->AnalyzerResponse->getCriteria('hotel')[0]['negated']);
+
+        $criteria = new Criteria();
+        $criteria->setKeyword('bad');
+        $emphasizer = new Emphasizer();
+        $emphasizer->setName('astonishingly');
+
+        $this->AnalyzerResponse->addCriteria('bar', $criteria, $emphasizer);
+        $this->assertEquals('bad', $this->AnalyzerResponse->getCriteria('bar')[0]['entity']->getKeyword());
+        $this->assertEquals(FALSE, $this->AnalyzerResponse->getCriteria('bar')[0]['negated']);
+        $this->assertEquals('astonishingly', $this->AnalyzerResponse->getCriteria('bar')[0]['emphasizer']->getName());
     }
 
     private function _testInvalidAddFoundCriteria() {
         try {
-            $this->AnalyzerResponse->addCriteria('non-existant topic', 'good');
+            $this->AnalyzerResponse->addCriteria('non-existant topic', new Criteria());
         } catch (\Exception $e) {
             $this->assertEquals($e->getMessage(), 'Topic does not exist.');
         }
@@ -89,7 +102,11 @@ class AnalyzerResponseTest extends WebTestCase {
 
     private function _testGetAllCriteria() {
         $criteria = $this->AnalyzerResponse->getCriteria();
-        $this->assertArraySubset(['good', 'bad'], $criteria);
+        $names = [];
+        foreach ($criteria as $criterion) {
+            $names[] = $criterion['entity']->getKeyword();
+        }
+        $this->assertArraySubset(['good', 'bad'], $names);
     }
 
     private function _testInvalidTopicForGetScore() {
@@ -116,10 +133,21 @@ class AnalyzerResponseTest extends WebTestCase {
     }
 
     private function _testGetFullResults() {
+        $hotelCriteria = new Criteria();
+        $hotelCriteria->setKeyword('good');
+
+        $barCriteria = new Criteria();
+        $barCriteria->setKeyword('bad');
+        $barEmphasizer = new Emphasizer();
+        $barEmphasizer->setName('astonishingly');
         $expectedResult = [
             'hotel' => [
                 'score' => 3,
-                'criteria' => ['good']
+                'criteria' => [[
+                    'entity' => $hotelCriteria,
+                    'emphasizer' => NULL,
+                    'negated' => TRUE
+                ]]
             ],
             'bathroom' => [
                 'score' => 0,
@@ -127,7 +155,11 @@ class AnalyzerResponseTest extends WebTestCase {
             ],
             'bar' => [
                 'score' => -2,
-                'criteria' => ['bad']
+                'criteria' => [[
+                    'entity' => $barCriteria,
+                    'emphasizer' => $barEmphasizer,
+                    'negated' => FALSE
+                ]]
             ]
         ];
 
