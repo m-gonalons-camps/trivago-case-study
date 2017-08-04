@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * AnalysisLibrary
  *
- * @ORM\Table(name="analysis_libraries")
+ * @ORM\Table(name="analysis_libraries", uniqueConstraints={@ORM\UniqueConstraint(name="unique_library", columns={"name"})})))
  * @ORM\Entity(repositoryClass="AppBundle\Repository\AnalysisLibraryRepository")
  */
 class AnalysisLibrary

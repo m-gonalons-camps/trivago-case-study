@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * TopicAlias
  *
- * @ORM\Table(name="topics_aliases")
+ * @ORM\Table(name="topics_aliases", uniqueConstraints={@ORM\UniqueConstraint(name="unique_topic_alias", columns={"alias"})})))
  * @ORM\Entity(repositoryClass="AppBundle\Repository\TopicAliasRepository")
  */
 class TopicAlias

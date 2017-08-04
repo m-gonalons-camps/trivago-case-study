@@ -8,7 +8,7 @@ use Doctrine\ORM\PersistentCollection;
 /**
  * Topic
  *
- * @ORM\Table(name="topics")
+ * @ORM\Table(name="topics", uniqueConstraints={@ORM\UniqueConstraint(name="unqiue_topic", columns={"name"})})))
  * @ORM\Entity(repositoryClass="AppBundle\Repository\TopicRepository")
  */
 class Topic

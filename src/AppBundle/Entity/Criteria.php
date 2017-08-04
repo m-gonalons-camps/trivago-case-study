@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Criteria
  *
- * @ORM\Table(name="criteria")
+ * @ORM\Table(name="criteria", uniqueConstraints={@ORM\UniqueConstraint(name="unique_criteria", columns={"keyword"})})))
  * @ORM\Entity(repositoryClass="AppBundle\Repository\CriteriaRepository")
  */
 class Criteria

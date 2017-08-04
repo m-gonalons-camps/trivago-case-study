@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Topic
  *
- * @ORM\Table(name="emphasizers")
+ * @ORM\Table(name="emphasizers", uniqueConstraints={@ORM\UniqueConstraint(name="unique_emphasizer", columns={"name"})})))
  * @ORM\Entity(repositoryClass="AppBundle\Repository\EmphasizerRepository")
  */
 class Emphasizer
