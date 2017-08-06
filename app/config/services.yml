@@ -38,8 +38,14 @@ services:
 
     AppBundle.TypoFixer:
         class: AppBundle\Service\TypoFixer
+
+    AppBundle.AnalyzerResponse:
+        public: true
+        shared: false
+        class: AppBundle\Service\AnalyzerResponse
+        arguments: ['@jms_serializer']
     
     AppBundle.DefaultAnalyzer:
         public: true
         class: AppBundle\Service\DefaultAnalyzer
-        arguments: ['@doctrine.orm.entity_manager', '@AppBundle.TypoFixer']
+        arguments: ['@doctrine.orm.entity_manager', '@service_container', '@AppBundle.TypoFixer']

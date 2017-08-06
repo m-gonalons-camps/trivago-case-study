@@ -13,7 +13,8 @@ class AnalyzerResponseTest extends WebTestCase {
 
     public function __construct() {
         parent::__construct();
-        $this->AnalyzerResponse = new AnalyzerResponse();
+        self::bootKernel();
+        $this->AnalyzerResponse = static::$kernel->getContainer()->get('AppBundle.AnalyzerResponse');
     }
 
     public function testAnalyzerResponse() {
@@ -165,6 +166,9 @@ class AnalyzerResponseTest extends WebTestCase {
 
         $result = $this->AnalyzerResponse->getFullResults();
         $this->assertEquals(json_encode($expectedResult), json_encode($result));
+
+        $serializedResult = $this->AnalyzerResponse->getFullResults(TRUE);
+        $this->assertEquals('{"hotel":{"score":3,"criteria":[{"entity":{"keyword":"good"},"negated":true}]},"bathroom":{"score":0,"criteria":[]},"bar":{"score":-2,"criteria":[{"entity":{"keyword":"bad"},"emphasizer":{"name":"astonishingly","score_modifier":0},"negated":false}]}}', $serializedResult);
     }
 
 }

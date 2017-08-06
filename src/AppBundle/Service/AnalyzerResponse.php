@@ -5,11 +5,16 @@ namespace AppBundle\Service;
 use AppBundle\Entity\Criteria;
 use AppBundle\Entity\Emphasizer;
 
+use JMS\Serializer\Serializer;
+
 final class AnalyzerResponse {
+
+    private $Serializer;
 
     private $finalScore;
 
-    public function __construct() {
+    public function __construct(Serializer $s) {
+        $this->Serializer = $s;
         $this->finalScore = [];
     }
 
@@ -84,8 +89,11 @@ final class AnalyzerResponse {
         unset($this->finalScore[$topic]);
     }
 
-    public function getFullResults() : array {
-        return $this->finalScore;
+    public function getFullResults(bool $serialized = FALSE) {
+        if ($serialized)
+            return $this->Serializer->serialize($this->finalScore, 'json');
+        else 
+            return $this->finalScore;
     }
    
 

@@ -3,11 +3,13 @@
 namespace AppBundle\Service;
 
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use ICanBoogie\Inflector as Pluralizator;
 
 class DefaultAnalyzer implements IAnalyzer {
 
     private $DoctrineManager;
+    private $ServiceContainer;
     private $TypoFixer;
     private $AnalyzerResponse;
 
@@ -16,8 +18,9 @@ class DefaultAnalyzer implements IAnalyzer {
     private $emphasizers;
     private $lastKnownTopic;
 
-    public function __construct(EntityManagerInterface $em, ?ITypoFixer $tf = NULL) {
+    public function __construct(EntityManagerInterface $em, ContainerInterface $container, ?ITypoFixer $tf = NULL) {
         $this->DoctrineManager = $em;
+        $this->ServiceContainer = $container;
         $this->TypoFixer = $tf;
 
         $this->setCriteria()->setTopics()->setEmphasizers();
@@ -28,7 +31,7 @@ class DefaultAnalyzer implements IAnalyzer {
 
         $divisions = $this->getSentencesDivisions(strtolower($review));
         $this->lastKnownTopic = "unknown";
-        $this->AnalyzerResponse = new AnalyzerResponse();
+        $this->AnalyzerResponse = $this->ServiceContainer->get('AppBundle.AnalyzerResponse');
 
         foreach ($divisions as $division) {
             $topic = $this->getDivisionTopic($division);

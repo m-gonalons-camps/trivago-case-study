@@ -2,6 +2,8 @@
 
 namespace Tests\AppBundle\Service;
 
+use AppBundle\Entity\Criteria;
+use AppBundle\Entity\Emphasizer;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class DefaultAnalyzerTest extends WebTestCase {
@@ -19,11 +21,7 @@ class DefaultAnalyzerTest extends WebTestCase {
 
         foreach ($testCases as $testCase) {
             $result = $this->DefaultAnalyzer->analyze($testCase['review'])->getFullResults();
-
-            $this->recursiveSort($testCase['expectedResult']);
-            $this->recursiveSort($result);
-
-            $this->assertEquals(json_encode($testCase['expectedResult']), json_encode($result));
+            $this->assertEquals($testCase['expectedResult'], $result);
         }
     }
 
@@ -38,15 +36,31 @@ class DefaultAnalyzerTest extends WebTestCase {
             'expectedResult' => [
                 'room' => [
                     'score' => 250,
-                    'criteria' => ['very spacious', 'great']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('great'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ],[
+                        'entity' => $this->getCriteria('spacious'),
+                        'emphasizer' => $this->getEmphasizer('very'),
+                        'negated' => FALSE
+                    ]]
                 ],
                 'staff' => [
                     'score' => 100,
-                    'criteria' => ['nice']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('nice'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ]]
                 ],
                 'restaurant' => [
                     'score' => 10,
-                    'criteria' => ['not bad']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('bad'),
+                        'emphasizer' => NULL,
+                        'negated' => TRUE
+                    ]]
                 ]
             ]
         ],[
@@ -54,7 +68,11 @@ class DefaultAnalyzerTest extends WebTestCase {
             'expectedResult' => [
                 'restaurant' => [
                     'score' => 100,
-                    'criteria' => ['fantastic']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('fantastic'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ]]
                 ]
             ]
         ],[
@@ -69,19 +87,59 @@ class DefaultAnalyzerTest extends WebTestCase {
             'expectedResult' => [
                 'staff' => [
                     'score' => 350,
-                    'criteria' => ['most friendly', 'excellent', 'helpful']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('friendly'),
+                        'emphasizer' => $this->getEmphasizer('most'),
+                        'negated' => FALSE
+                    ],[
+                        'entity' => $this->getCriteria('helpful'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ],[
+                        'entity' => $this->getCriteria('excellent'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ]]
                 ],
                 'hotel' => [
                     'score' => 300,
-                    'criteria' => ['great', 'exceptional', 'clean']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('great'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ],[
+                        'entity' => $this->getCriteria('exceptional'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ],[
+                        'entity' => $this->getCriteria('clean'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ]]
                 ],
                 'food' => [
                     'score' => 200,
-                    'criteria' => ['good', 'great']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('good'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ],[
+                        'entity' => $this->getCriteria('great'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ]]
                 ],
                 'room' => [
                     'score' => 200,
-                    'criteria' => ['well equipped', 'comfortable']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('well equipped'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ],[
+                        'entity' => $this->getCriteria('comfortable'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ]]
                 ]
             ]
         ],[
@@ -102,15 +160,51 @@ class DefaultAnalyzerTest extends WebTestCase {
             'expectedResult' => [
                 'room' => [
                     'score' => -650,
-                    'criteria' => ['so awful', 'dirty', 'stinking', 'rotting', 'tiny', 'stank']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('awful'),
+                        'emphasizer' => $this->getEmphasizer('so'),
+                        'negated' => FALSE
+                    ],[
+                        'entity' => $this->getCriteria('dirty'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ],[
+                        'entity' => $this->getCriteria('stinking'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ],[
+                        'entity' => $this->getCriteria('rotting'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ],[
+                        'entity' => $this->getCriteria('tiny'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ],[
+                        'entity' => $this->getCriteria('stank'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ]]
                 ],
                 'hotel' => [
                     'score' => -200,
-                    'criteria' => ['mould', 'rot']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('mould'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ],[
+                        'entity' => $this->getCriteria('rot'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ]]
                 ],
                 'breakfast' => [
                     'score' => -100,
-                    'criteria' => ['junk']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('junk'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ]]
                 ]
             ]
         ],[
@@ -124,11 +218,27 @@ class DefaultAnalyzerTest extends WebTestCase {
             'expectedResult' => [
                 'hotel' => [
                     'score' => -150,
-                    'criteria' => ['most disgusting']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('disgusting'),
+                        'emphasizer' => $this->getEmphasizer('most'),
+                        'negated' => FALSE
+                    ]]
                 ],
                 'bed' => [
                     'score' => -300,
-                    'criteria' => ['dirty', 'blood', 'worse']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('dirty'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ],[
+                        'entity' => $this->getCriteria('blood'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ],[
+                        'entity' => $this->getCriteria('worse'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ]]
                 ],
             ]
         ],[
@@ -140,15 +250,43 @@ class DefaultAnalyzerTest extends WebTestCase {
             'expectedResult' => [
                 'hotel' => [
                     'score' => -190,
-                    'criteria' => ['not good', 'not bad', 'not good']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('good'),
+                        'emphasizer' => NULL,
+                        'negated' => TRUE
+                    ],[
+                        'entity' => $this->getCriteria('bad'),
+                        'emphasizer' => NULL,
+                        'negated' => TRUE
+                    ],[
+                        'entity' => $this->getCriteria('good'),
+                        'emphasizer' => NULL,
+                        'negated' => TRUE
+                    ]]
                 ],
                 'food' => [
                     'score' => -100,
-                    'criteria' => ['not great']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('great'),
+                        'emphasizer' => NULL,
+                        'negated' => TRUE
+                    ]]
                 ],
                 'bed' => [
                     'score' => -190,
-                    'criteria' => ['not clean', 'not nightmare', 'not good']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('clean'),
+                        'emphasizer' => NULL,
+                        'negated' => TRUE
+                    ],[
+                        'entity' => $this->getCriteria('nightmare'),
+                        'emphasizer' => NULL,
+                        'negated' => TRUE
+                    ],[
+                        'entity' => $this->getCriteria('good'),
+                        'emphasizer' => NULL,
+                        'negated' => TRUE
+                    ]]
                 ]
             ]
         ],[
@@ -160,15 +298,27 @@ class DefaultAnalyzerTest extends WebTestCase {
             'expectedResult' => [
                 'hotel' => [
                     'score' => 150,
-                    'criteria' => ['very enjoyable'],
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('enjoyable'),
+                        'emphasizer' => $this->getEmphasizer('very'),
+                        'negated' => FALSE
+                    ]]
                 ],
                 'food' => [
                     'score' => 100,
-                    'criteria' => ['best']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('best'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ]]
                 ],
                 'pool' => [
                     'score' => -100,
-                    'criteria' => ['not good']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('good'),
+                        'emphasizer' => NULL,
+                        'negated' => TRUE
+                    ]]
                 ]
             ]
         ],[
@@ -180,15 +330,31 @@ class DefaultAnalyzerTest extends WebTestCase {
             'expectedResult' => [
                 'bed' => [
                     'score' => 250,
-                    'criteria' => ['very clean', 'good']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('good'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ],[
+                        'entity' => $this->getCriteria('clean'),
+                        'emphasizer' => $this->getEmphasizer('very'),
+                        'negated' => FALSE
+                    ]]
                 ],
                 'staff' => [
                     'score' => -100,
-                    'criteria' => ['not helpful']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('helpful'),
+                        'emphasizer' => NULL,
+                        'negated' => TRUE
+                    ]]
                 ],
                 'pool' => [
                     'score' => 10,
-                    'criteria' => ['not dirty']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('dirty'),
+                        'emphasizer' => NULL,
+                        'negated' => TRUE
+                    ]]
                 ]
             ]
         ],[
@@ -205,27 +371,59 @@ class DefaultAnalyzerTest extends WebTestCase {
             'expectedResult' => [
                 'location' => [
                     'score' => 100,
-                    'criteria' => ['perfect']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('perfect'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ]]
                 ],
                 'hotel' => [
                     'score' => 100,
-                    'criteria' => ['clean']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('clean'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ]]
                 ],
                 'staff' => [
                     'score' => 400,
-                    'criteria' => ['very helpful', 'very helpful', 'great']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('great'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ],[
+                        'entity' => $this->getCriteria('helpful'),
+                        'emphasizer' => $this->getEmphasizer('very'),
+                        'negated' => FALSE
+                    ],[
+                        'entity' => $this->getCriteria('helpful'),
+                        'emphasizer' => $this->getEmphasizer('very'),
+                        'negated' => FALSE
+                    ]]
                 ],
                 'room' => [
                     'score' => 100,
-                    'criteria' => ['good']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('good'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ]]
                 ],
                 'bar' => [
                     'score' => 100,
-                    'criteria' => ['great']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('great'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ]]
                 ],
                 'food' => [
                     'score' => 100,
-                    'criteria' => ['great']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('great'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ]]
                 ]
             ]
         ],[
@@ -239,11 +437,19 @@ class DefaultAnalyzerTest extends WebTestCase {
             'expectedResult' => [
                 'bar' => [
                     'score' => -100,
-                    'criteria' => ['annoying']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('annoying'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ]]
                 ],
                 'room' => [
                     'score' => -100,
-                    'criteria' => ['disappointed']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('disappointed'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ]]
                 ]
             ]
         ],[
@@ -256,11 +462,23 @@ class DefaultAnalyzerTest extends WebTestCase {
             'expectedResult' => [
                 'hotel' => [
                     'score' => 150,
-                    'criteria' => ['really good']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('good'),
+                        'emphasizer' => $this->getEmphasizer('really'),
+                        'negated' => FALSE
+                    ]]
                 ],
                 'staff' => [
                     'score' => 200,
-                    'criteria' => ['made our stay', 'going to come back']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('made our stay'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ],[
+                        'entity' => $this->getCriteria('going to come back'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ]]
                 ]
             ]
         ],[
@@ -273,23 +491,43 @@ class DefaultAnalyzerTest extends WebTestCase {
             'expectedResult' => [
                 'bed' => [
                     'score' => 100,
-                    'criteria' => ['comfortable']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('comfortable'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ]]
                 ],
                 'hotel' => [
                     'score' => 150,
-                    'criteria' => ['very new']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('new'),
+                        'emphasizer' => $this->getEmphasizer('very'),
+                        'negated' => FALSE
+                    ]]
                 ],
                 'room' => [
                     'score' => 100,
-                    'criteria' => ['great']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('great'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ]]
                 ],
                 'bathroom' => [
                     'score' => 100,
-                    'criteria' => ['best']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('best'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ]]
                 ],
                 'restaurant' => [
                     'score' => 100,
-                    'criteria' => ['not far from']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('not far from'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ]]
                 ]
             ]
         ],[
@@ -308,15 +546,47 @@ class DefaultAnalyzerTest extends WebTestCase {
             'expectedResult' => [
                 'hotel' => [
                     'score' => 550,
-                    'criteria' => ['best', 'absolute favourite', 'exemplary', 'so nice', 'perfect']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('best'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ],[
+                        'entity' => $this->getCriteria('absolute favourite'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ],[
+                        'entity' => $this->getCriteria('nice'),
+                        'emphasizer' => $this->getEmphasizer('so'),
+                        'negated' => FALSE
+                    ],[
+                        'entity' => $this->getCriteria('perfect'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ],[
+                        'entity' => $this->getCriteria('exemplary'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ]]
                 ],
                 'location' => [
                     'score' => 200,
-                    'criteria' => ['perfect', 'love']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('perfect'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ],[
+                        'entity' => $this->getCriteria('love'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ]]
                 ],
                 'staff' => [
                     'score' => 100,
-                    'criteria' => ['superb']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('superb'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ]]
                 ]
             ]
         ],[
@@ -329,11 +599,31 @@ class DefaultAnalyzerTest extends WebTestCase {
             'expectedResult' => [
                 'room' => [
                     'score' => -300,
-                    'criteria' => ['terrible', 'not clean', 'old']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('terrible'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ],[
+                        'entity' => $this->getCriteria('old'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ],[
+                        'entity' => $this->getCriteria('clean'),
+                        'emphasizer' => NULL,
+                        'negated' => TRUE
+                    ]]
                 ],
                 'bathroom' => [
                     'score' => -200,
-                    'criteria' => ['minuscule', 'thin']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('minuscule'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ],[
+                        'entity' => $this->getCriteria('thin'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ]]
                 ]
             ]
         ],[
@@ -347,15 +637,27 @@ class DefaultAnalyzerTest extends WebTestCase {
             'expectedResult' => [
                 'hotel' => [
                     'score' => -100,
-                    'criteria' => ['terrible']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('terrible'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ]]
                 ],
                 'bathroom' => [
                     'score' => -100,
-                    'criteria' => ['clogged']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('clogged'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ]]
                 ],
                 'room' => [
                     'score' => -100,
-                    'criteria' => ['small']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('small'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ]]
                 ]
             ]
         ],[
@@ -368,31 +670,64 @@ class DefaultAnalyzerTest extends WebTestCase {
             'expectedResult' => [
                 'location' => [
                     'score' => 100,
-                    'criteria' => ['excellent']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('excellent'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ]]
                 ],
                 'food' => [
                     'score' => 200,
-                    'criteria' => ['good', 'good']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('good'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ],[
+                        'entity' => $this->getCriteria('good'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ]]
                 ],
                 'staff' => [
                     'score' => 200,
-                    'criteria' => ['good', 'great']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('good'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ],[
+                        'entity' => $this->getCriteria('great'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ]]
                 ],
                 'hotel' => [
                     'score' => 200,
-                    'criteria' => ['good', 'great']
+                    'criteria' => [[
+                        'entity' => $this->getCriteria('great'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ],[
+                        'entity' => $this->getCriteria('good'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ]]
                 ]
             ]
         ]];
 
         return $cases;
-        
     }
 
 
-    private function recursiveSort(&$array) : void {
-        ksort($array);
-        foreach ($array as &$value)
-            sort($value['criteria']);
+    private function getCriteria(string $name) : Criteria {
+        self::bootKernel();
+        return static::$kernel->getContainer()->get('doctrine')->getManager()
+               ->getRepository('AppBundle:Criteria')->findBy(['keyword' => $name])[0];
+    }
+
+    private function getEmphasizer(string $name) : Emphasizer {
+        self::bootKernel();
+        return static::$kernel->getContainer()->get('doctrine')->getManager()
+               ->getRepository('AppBundle:Emphasizer')->findBy(['name' => $name])[0];
     }
 }

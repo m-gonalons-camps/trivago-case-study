@@ -28,7 +28,7 @@ class AnalyzeCommand extends ContainerAwareCommand {
             $analyzer = $this->getContainer()->get('AppBundle.' . $analyzerLibrary . 'Analyzer');
             $response = $analyzer->analyze($input->getArgument('review'));
             $output->writeln('TOTAL SCORE: ' . $response->getScore());
-            $output->writeln(print_r($response->getFullResults(), TRUE));
+            $output->writeln($response->getFullResults(TRUE));
         } else {
             $output->writeln('Invalid library: ' . $analyzerLibrary);
         }

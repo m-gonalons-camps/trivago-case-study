@@ -25,6 +25,7 @@
         "doctrine/doctrine-bundle": "^1.6",
         "doctrine/orm": "^2.5",
         "incenteev/composer-parameter-handler": "^2.0",
+        "jms/serializer-bundle": "^2.0",
         "php-di/php-di": "^5.4",
         "php-di/phpdoc-reader": "^2.0",
         "phpunit/phpunit": "^6.2",
