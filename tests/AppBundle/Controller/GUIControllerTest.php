@@ -4,12 +4,11 @@ namespace Tests\AppBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
-class GUIControllerTest extends WebTestCase {
+class GUIControllerTest extends BaseHelperClass {
 
     public function testIndex() {
-        $client = static::createClient();
-        $crawler = $client->request('GET', '/');
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
+        $response = $this->getResponse('GET', '/');
+        $this->assertEquals(200, $response['code']);
     }
-    
+
 }

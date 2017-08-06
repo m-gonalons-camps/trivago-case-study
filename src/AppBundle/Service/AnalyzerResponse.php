@@ -5,7 +5,7 @@ namespace AppBundle\Service;
 use AppBundle\Entity\Criteria;
 use AppBundle\Entity\Emphasizer;
 
-use JMS\Serializer\Serializer;
+use JMS\Serializer\SerializerInterface;
 
 final class AnalyzerResponse {
 
@@ -13,7 +13,7 @@ final class AnalyzerResponse {
 
     private $finalScore;
 
-    public function __construct(Serializer $s) {
+    public function __construct(SerializerInterface $s) {
         $this->Serializer = $s;
         $this->finalScore = [];
     }

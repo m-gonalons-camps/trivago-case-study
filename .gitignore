@@ -16,3 +16,4 @@
 /vendor/
 /web/bundles/
 /web/node_modules/*
+/web/js/dist/*
