@@ -187,10 +187,6 @@ class DefaultAnalyzer implements IAnalyzer {
         ));
     }
 
-    private function adaptEmphasizedCriteriaScore(int $score) : int {
-        return $score > 0 ? $score + self::EMPHASIZERS_SCORE : $score - self::EMPHASIZERS_SCORE;
-    }
-
     private function pluralize(string $singularWord) : string {
         return Pluralizator::get()->pluralize($singularWord);
     }
