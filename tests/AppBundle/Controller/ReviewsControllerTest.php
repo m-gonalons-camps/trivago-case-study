@@ -50,6 +50,14 @@ class ReviewsControllerTest extends BaseHelperClass {
         $this->assertNotNull($decodedBody->pool);
     }
 
+    public function testAnalyzeALL() {
+        $response = $this->getResponse(
+            'POST',
+            '/api/reviews/analyze/all/'
+        );
+        $this->assertEquals(200, $response['code']);
+    }
+
     public function testGetSingleReview() {
         $response = $this->getResponse(
             'GET',

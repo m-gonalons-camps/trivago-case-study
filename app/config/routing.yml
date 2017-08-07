@@ -8,9 +8,14 @@ gui:
 
 
 
-API.reviews.test:
+API.reviews.testAnalyzer:
     path: /api/reviews/testAnalyzer/
     defaults: {_controller: AppBundle\Controller\ReviewsController::testAnalyzer}
+    methods: [POST]
+
+API.reviews.analyzeAll:
+    path: /api/reviews/analyze/all/
+    defaults: {_controller: AppBundle\Controller\ReviewsController::analyzeAllReviews}
     methods: [POST]
 
 API.reviews.analyze:

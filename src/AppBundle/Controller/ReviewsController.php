@@ -8,11 +8,19 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class ReviewsController extends Controller {
 
     public function testAnalyzer(Request $request) : JsonResponse {
-        return new JsonResponse(['hotel' => 'bad']);
+        $analyzer = $this->get('AppBundle.DefaultAnalyzer');
+        $response = $analyzer->analyze($request->getContent());
+        return new JsonResponse(json_decode($response->getFullResults(TRUE)));
+    }
+
+    public function analyzeAllReviews(Request $request) : JsonResponse {
+        // Get all reviews from BD
+        // Analyze them and save score in DB
+        return new JsonResponse();
     }
 
     public function analyzeReview(Request $request, int $reviewId) : JsonResponse {
-        // Get review ID
+        // Get review ID 
         // Analyze
         // Save results in DB
         // Return results

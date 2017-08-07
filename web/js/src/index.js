@@ -1,59 +1,29 @@
 window.AnalyzerGUI = (() => {
 
-    let EventsManager,
-        baseUrl,
-
     init = (backendParameters) => {
         loadDependencies();
 
-        baseUrl = 'http://' + backendParameters.httpHost;
+        AnalyzerGUI.baseUrl = "http://" + backendParameters.httpHost;
 
-        EventsManager = new (require("./EventsManager"))();
-        EventsManager.addEventListeners();
+        AnalyzerGUI.EventsManager = new (require("./EventsManager"))();
+        AnalyzerGUI.Reviews = new (require("./Reviews"))();
 
-        loadReviews();
+        AnalyzerGUI.EventsManager.addEventListeners();
+        AnalyzerGUI.Reviews.load();
     },
 
     loadDependencies = () => {
-        window.jQuery = window.$ = require('jquery');
+        window.jQuery = window.$ = require("jquery");
         require("../../node_modules/jsgrid/dist/jsgrid.min.css");
         require("../../node_modules/jsgrid/dist/jsgrid-theme.min.css");
-        require('jsgrid');
-    },
-    
-    loadReviews = () => {
-        $("#jsGrid").jsGrid({
-            height: "auto",
-            width: "100%",
-    
-            sorting: true,
-            paging: false,
-            autoload: true,
-    
-            controller: {
-                loadData: function() {
-                    return new Promise((resolve, reject) => {
-                        $.ajax({
-                            url: baseUrl + "/api/reviews",
-                            dataType: "json"
-                        }).done(function(response) {
-                            console.log(response);
-                            resolve(response.value);
-                        });
-                    });
-                }
-            },
-    
-            fields: [
-                { name: "Review", type: "text" },
-                { name: "Total score", type: "text" },
-                // TODO
-            ]
-        });
+        require("../../node_modules/jquery.json-viewer/json-viewer/jquery.json-viewer.css");
+        require("bootstrap");
+        require("jsgrid");
+        require("../../node_modules/jquery.json-viewer/json-viewer/jquery.json-viewer.js");
+
+        require("../../css/index.css");
     };
 
-    return {
-        init: init
-    };
+    return {init: init};
 
 })();
