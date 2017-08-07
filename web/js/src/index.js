@@ -15,7 +15,7 @@ window.AnalyzerGUI = (() => {
     },
 
     loadDependencies = () => {
-        window.jQuery = window.$ = require('jQuery');
+        window.jQuery = window.$ = require('jquery');
         require('jsgrid');
     },
     

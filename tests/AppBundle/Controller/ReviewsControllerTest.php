@@ -12,24 +12,28 @@ class ReviewsControllerTest extends BaseHelperClass {
         $response = $this->getResponse(
             'POST',
             '/api/reviews/testAnalyzer/',
-            $this->getReviewForTestingAnalyzer()
+            'Hotel is very bad. Restaurant is not good.'
         );
         $this->assertEquals(200, $response['code']);
 
         $decodedBody = json_decode($response['body']);
+
+        // since the analyzer is fully tested in tests/AppBundle/Service/DefaultAnalyzerTest.php,
+        // there is no need to test any more than this here.
         $this->assertNotNull($decodedBody->hotel);
+        $this->assertNotNull($decodedBody->restaurant);
     }
 
     public function testNewReview() {
         $response = $this->getResponse(
             'POST',
             '/api/reviews/new/',
-            $this->getReviewForTestingNewReview()
+            $this->getNewReview()
         );
         $this->assertEquals(200, $response['code']);
  
         $decodedBody = json_decode($response['body']);
-        $this->assertNotNull($decodedBody->reviewId);
+        $this->assertGreaterThan(0, $decodedBody->reviewId);
 
         $this->reviewId = $reviewId;
     }
@@ -52,6 +56,11 @@ class ReviewsControllerTest extends BaseHelperClass {
             '/api/reviews/' . $this->reviewId
         );
         $this->assertEquals(200, $response['code']);
+        $decodedBody = json_decode($response['body']);
+
+        $this->assertNotNull($decodedBody->review);
+        $this->assertEquals($this->getNewReview(), $decodedBody->review);
+        $this->assertGreaterThan(0, $decodedBody->totalScore);
     }
 
     public function testGetAllReviews() {
@@ -83,17 +92,13 @@ class ReviewsControllerTest extends BaseHelperClass {
         $this->assertEquals(200, $response['code']);
     }
 
-    private function getReviewForTestingAnalyzer() : string {
-        return 'Hotel is very bad. Restaurant is not good.';
-    }
-
-    private function getReviewForTestingNewReview() : string {
-        return 'Staff is so helpful and very friendly. Pool is so dirty though.';
-    }
-    
     private function getCSVFile() : array {
         $filepath = __DIR__ . '/test_reviews.csv';
         $csv = new UploadedFile($filepath, $filepath, 'text/csv', filesize($filepath));
         return ['csv' => $csv];
+    }
+
+    private function getNewReview() : string {
+        return 'Staff is so helpful and very friendly. Pool is so dirty though.';
     }
 }
