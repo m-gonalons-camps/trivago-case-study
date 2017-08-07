@@ -5,11 +5,14 @@ window.AnalyzerGUI = (() => {
 
         AnalyzerGUI.baseUrl = "http://" + backendParameters.httpHost;
 
+        AnalyzerGUI.Selectors = require("./Selectors");
         AnalyzerGUI.EventsManager = new (require("./EventsManager"))();
+        AnalyzerGUI.Navigation = new (require("./Navigation"))();
         AnalyzerGUI.Reviews = new (require("./Reviews"))();
+        AnalyzerGUI.Criteria = new (require("./Criteria"))();
 
         AnalyzerGUI.EventsManager.addEventListeners();
-        AnalyzerGUI.Reviews.load();
+        AnalyzerGUI.Reviews.loadGrid();
     },
 
     loadDependencies = () => {

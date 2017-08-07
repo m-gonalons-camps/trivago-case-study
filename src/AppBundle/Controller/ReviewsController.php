@@ -51,7 +51,7 @@ class ReviewsController extends Controller {
         return new JsonResponse();
     }
 
-    public function newReview() : JsonResponse {
+    public function newReview(Request $request) : JsonResponse {
         return new JsonResponse();
     }
 

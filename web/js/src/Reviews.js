@@ -2,8 +2,8 @@
 
 module.exports = class {
 
-    load() {
-        $("#jsGrid").jsGrid({
+    loadGrid() {
+        AnalyzerGUI.Selectors.jsGrid.jsGrid({
             height: "auto",
             width: "100%",
     
@@ -31,21 +31,30 @@ module.exports = class {
     };
 
     showTestAnalyzerModal() {
-        $('#testAnalyzerModal').modal();
+        AnalyzerGUI.Selectors.testAnalyzerModal.modal();
     };
 
     testAnalyzeAndRenderResults() {
+        AnalyzerGUI.Selectors.jsonRenderer.empty();
+
+        $('<span>Analyzing...</span>')
+            .appendTo(AnalyzerGUI.Selectors.jsonRenderer)
+            .css('visibility', 'visible');
+
         $.ajax({
             url: AnalyzerGUI.baseUrl + "/api/reviews/testAnalyzer/",
             method: "POST",
-            data: $('#textareaReviewTestAnalyze').val(),
+            data: AnalyzerGUI.Selectors.textareaReviewTestAnalyze.val(),
         }).done((response) => {
-            $('#json-renderer').jsonViewer(
-                response,
-                {
-                    collapsed: true
-                }
-            );
+            let totalScore = 0;
+            
+            for (var el in response)
+                totalScore += response[el].score;
+
+            AnalyzerGUI.Selectors.jsonRenderer.jsonViewer({
+                totalScore: totalScore,
+                detailedResults: response
+            });
         });
     };
 

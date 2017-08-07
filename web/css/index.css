@@ -1,3 +1,13 @@
-body {
-    
+div#testAnalyzerModal .modal-body .col-xs-12 {
+    margin: 10px 0 10px 0;
+    text-align: center;
+}
+
+#modalTestAnalyzeButton {
+    margin-bottom: 20px;
+}
+
+pre#json-renderer {
+    text-align: left;
+    padding: 20px;
 }

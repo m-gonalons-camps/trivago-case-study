@@ -16,6 +16,8 @@ class DefaultAnalyzerConstants {
         "wouldn't",
         "shouldn't",
         "don't",
+        "hasn't",
+        "haven't",
         "isnt",
         "arent",
         "wasnt",
@@ -26,6 +28,8 @@ class DefaultAnalyzerConstants {
         "wouldnt",
         "shouldnt",
         "dont",
+        "hasnt",
+        "havent",
         "no"
     ];
 
