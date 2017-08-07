@@ -90,7 +90,7 @@ API.criteria.get:
     methods: [GET]
 
 API.criteria.new:
-    path: /api/criteria/new
+    path: /api/criteria/new/
     defaults: {_controller: AppBundle\Controller\CriteriaController::newCriteria}
     methods: [POST]
 
@@ -112,7 +112,7 @@ API.emphasizers.get:
     methods: [GET]
 
 API.emphasizers.new:
-    path: /api/emphasizers/new
+    path: /api/emphasizers/new/
     defaults: {_controller: AppBundle\Controller\EmphasizersController::newEmphasizer}
     methods: [POST]
 
