@@ -18,9 +18,10 @@ class DefaultAnalyzer implements IAnalyzer {
     private $emphasizers;
     private $lastKnownTopic;
 
-    public function __construct(EntityManagerInterface $em, ContainerInterface $container, ?ITypoFixer $tf = NULL) {
+    public function __construct(EntityManagerInterface $em, ContainerInterface $container, AnalyzerResponse $ar, ?ITypoFixer $tf = NULL) {
         $this->DoctrineManager = $em;
         $this->ServiceContainer = $container;
+        $this->AnalyzerResponse = $ar;
         $this->TypoFixer = $tf;
 
         $this->setCriteria()->setTopics()->setEmphasizers();
@@ -31,7 +32,7 @@ class DefaultAnalyzer implements IAnalyzer {
 
         $divisions = $this->getSentencesDivisions(strtolower($review));
         $this->lastKnownTopic = "unknown";
-        $this->AnalyzerResponse = $this->ServiceContainer->get('AppBundle.AnalyzerResponse');
+        $this->AnalyzerResponse->clear();
 
         foreach ($divisions as $division) {
             $topic = $this->getDivisionTopic($division);

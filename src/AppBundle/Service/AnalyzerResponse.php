@@ -96,6 +96,9 @@ final class AnalyzerResponse {
             return $this->finalScore;
     }
    
+    public function clear() : void {
+        $this->finalScore = [];
+    } 
 
     private function topicExists(string $topic) : bool {
         return array_key_exists($topic, $this->finalScore);

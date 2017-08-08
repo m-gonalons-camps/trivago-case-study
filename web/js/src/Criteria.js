@@ -3,6 +3,7 @@
 module.exports = class {
 
     loadGrid() {
+        AnalyzerGUI.Selectors.jsGrid.jsGrid('reset');
         AnalyzerGUI.Selectors.jsGrid.jsGrid({
             height: "auto",
             width: "100%",
@@ -19,12 +20,66 @@ module.exports = class {
             },
     
             controller: {
-                loadData: () => {
+                loadData: (filters) => {
                     return new Promise((resolve) => {
                         $.ajax({
-                            url: AnalyzerGUI.baseUrl + "/api/criteria",
-                            dataType: "json"
+                            url: AnalyzerGUI.baseUrl + "/api/criteria?" + $.param(filters)
                         }).done(resolve);
+                    });
+                },
+
+                insertItem: (item) => {
+                    return new Promise((resolve, reject) => {
+                        $.ajax({
+                            url: AnalyzerGUI.baseUrl + "/api/criteria/new/",
+                            dataType: "json",
+                            method: "POST",
+                            data: JSON.stringify(item)
+                        })
+                        .done(() => {
+                            alert('Success');
+                            resolve();
+                        })
+                        .fail((obj) => {
+                            this.errorHandler(obj.responseText);
+                            reject();
+                        });
+                    });
+                },
+
+                updateItem: (item) => {
+                    return new Promise((resolve, reject) => {
+                        $.ajax({
+                            url: AnalyzerGUI.baseUrl + "/api/criteria/modify/",
+                            dataType: "json",
+                            method: "POST",
+                            data: JSON.stringify(item)
+                        })
+                        .done(() => {
+                            alert('Success');
+                            resolve();
+                        })
+                        .fail((obj) => {
+                            this.errorHandler(obj.responseText);
+                            reject();
+                        });
+                    });
+                },
+                
+                deleteItem: (item) => {
+                    return new Promise((resolve, reject) => {
+                        $.ajax({
+                            url: AnalyzerGUI.baseUrl + "/api/criteria/delete/" + item.id,
+                            method: "DELETE",
+                        })
+                        .done(() => {
+                            alert('Success');
+                            resolve();
+                        })
+                        .fail((obj) => {
+                            this.errorHandler(obj.responseText);
+                            reject();
+                        });
                     });
                 }
             },
@@ -36,5 +91,16 @@ module.exports = class {
                 { type: "control", width: 20}
             ]
         });
+    };
+
+    errorHandler(errorObj) {
+        let parsedError;
+
+        try {
+            parsedError = JSON.parse(errorObj).error;
+        } catch (Exception) {
+            parsedError = errorObj;
+        }
+        alert('An error ocurred: ' + parsedError);
     }
 }

@@ -48,4 +48,4 @@ services:
     AppBundle.DefaultAnalyzer:
         public: true
         class: AppBundle\Service\DefaultAnalyzer
-        arguments: ['@doctrine.orm.entity_manager', '@service_container', '@AppBundle.TypoFixer']
+        arguments: ['@doctrine.orm.entity_manager', '@service_container', '@AppBundle.AnalyzerResponse', '@AppBundle.TypoFixer']

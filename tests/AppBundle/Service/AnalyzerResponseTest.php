@@ -30,6 +30,7 @@ class AnalyzerResponseTest extends WebTestCase {
         $this->_testInvalidTopicForGetCriteria();
         $this->_testRemoveTopic();
         $this->_testGetFullResults();
+        $this->_testClear();
     }
 
     private function _testAddTopic() {
@@ -169,6 +170,12 @@ class AnalyzerResponseTest extends WebTestCase {
 
         $serializedResult = $this->AnalyzerResponse->getFullResults(TRUE);
         $this->assertEquals('{"hotel":{"score":3,"criteria":[{"entity":{"keyword":"good"},"negated":true}]},"bathroom":{"score":0,"criteria":[]},"bar":{"score":-2,"criteria":[{"entity":{"keyword":"bad"},"emphasizer":{"name":"astonishingly","score_modifier":0},"negated":false}]}}', $serializedResult);
+    }
+
+    private function _testClear() {
+        $this->AnalyzerResponse->clear();
+        $result = $this->AnalyzerResponse->getFullResults();
+        $this->assertEquals(0, count($result));
     }
 
 }

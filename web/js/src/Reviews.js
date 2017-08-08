@@ -3,6 +3,7 @@
 module.exports = class {
 
     loadGrid() {
+        AnalyzerGUI.Selectors.jsGrid.jsGrid('reset');
         AnalyzerGUI.Selectors.jsGrid.jsGrid({
             height: "auto",
             width: "100%",
@@ -10,6 +11,13 @@ module.exports = class {
             sorting: true,
             paging: false,
             autoload: true,
+    
+            filtering: true,
+            sorting: true,
+            autoload: true,
+            editing: false,
+            paging: true,
+            inserting: false,
     
             controller: {
                 loadData: () => {

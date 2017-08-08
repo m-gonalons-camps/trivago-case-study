@@ -6,38 +6,52 @@ class CriteriaControllerTest extends BaseHelperClass {
 
     private $criteriaId;
 
-    public function testNewCriteria() {
+    public function testAll() {
+        $this->_testNewCriteria();
+        $this->_testGetSingleCriteria();
+        $this->_testGetAllCriteria();
+        $this->_testModifyCriteria();
+        $this->_testDeleteCriteria();
+    }
+
+    private function _testNewCriteria() {
         $response = $this->getResponse(
             'POST',
             '/api/criteria/new/',
             json_encode([
                 "keyword" => 'new criteria',
-                "score" => 100
+                "score" => 999
             ])
         );
         $this->assertEquals(200, $response['code']);
  
         $decodedBody = json_decode($response['body']);
-        $this->assertNotNull($decodedBody->criteriaId);
+        $this->assertNotNull($decodedBody->id);
 
-        $this->criteriaId = $criteriaId;
+        $this->criteriaId = $decodedBody->id;
     }
 
-    public function testGetSingleCriteria() {
+    private function _testGetSingleCriteria() {
         $response = $this->getResponse(
             'GET',
-            '/api/criteria/' . $this->criteriaId
+            '/api/criteria?id=' . $this->criteriaId
         );
-        $this->assertEquals(200, $response['code']);
+        $this->assertCorrectlyRecoveredCriteria($response);
 
-        $decodedBody = json_decode($response['body']);
-        $this->assertNotNull($decodedBody->keyword);
-        $this->assertNotNull($decodedBody->score);
-        $this->assertEquals('new criteria', $decodedBody->keyword);
-        $this->assertEquals(100, $decodedBody->score);
+        $response = $this->getResponse(
+            'GET',
+            '/api/criteria?keyword=new%20criteria'
+        );
+        $this->assertCorrectlyRecoveredCriteria($response);
+
+        $response = $this->getResponse(
+            'GET',
+            '/api/criteria?score=999'
+        );
+        $this->assertCorrectlyRecoveredCriteria($response);
     }
 
-    public function testGetAllCriteria() {
+    private function _testGetAllCriteria() {
         $response = $this->getResponse(
             'GET',
             '/api/criteria'
@@ -49,11 +63,12 @@ class CriteriaControllerTest extends BaseHelperClass {
         $this->assertNotNull($decodedBody[0]->score);
     }
 
-    public function testModifyCriteria() {
+    private function _testModifyCriteria() {
         $response = $this->getResponse(
             'POST',
-            '/api/criteria/modify/' . $this->criteriaId,
+            '/api/criteria/modify/',
             json_encode([
+                "id" => $this->criteriaId,
                 "keyword" => 'modified criteria',
                 "score" => -100
             ])
@@ -61,11 +76,21 @@ class CriteriaControllerTest extends BaseHelperClass {
         $this->assertEquals(200, $response['code']);
     }
 
-    public function testDeleteCriteria() {
+    private function _testDeleteCriteria() {
         $response = $this->getResponse(
             'DELETE',
             '/api/criteria/delete/' . $this->criteriaId
         );
         $this->assertEquals(200, $response['code']);
+    }
+
+    private function assertCorrectlyRecoveredCriteria($response) {
+        $this->assertEquals(200, $response['code']);
+        $decodedBody = json_decode($response['body']);
+
+        $this->assertNotNull($decodedBody[0]->keyword);
+        $this->assertNotNull($decodedBody[0]->score);
+        $this->assertEquals('new criteria', $decodedBody[0]->keyword);
+        $this->assertEquals(999, $decodedBody[0]->score);
     }
 }

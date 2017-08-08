@@ -90,8 +90,8 @@ API.topics.deleteAlias:
 
 
 API.criteria.get:
-    path: /api/criteria/{criteriaId}
-    defaults: {_controller: AppBundle\Controller\CriteriaController::getCriteria, criteriaId: null}
+    path: /api/criteria
+    defaults: {_controller: AppBundle\Controller\CriteriaController::getCriteria}
     methods: [GET]
 
 API.criteria.new:
@@ -100,7 +100,7 @@ API.criteria.new:
     methods: [POST]
 
 API.criteria.modify:
-    path: /api/criteria/modify/{criteriaId}
+    path: /api/criteria/modify/
     defaults: {_controller: AppBundle\Controller\CriteriaController::modifyCriteria}
     methods: [POST]
 
