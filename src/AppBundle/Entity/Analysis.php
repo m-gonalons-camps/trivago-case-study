@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Analysis
  *
- * @ORM\Table(name="analysis", uniqueConstraints={@ORM\UniqueConstraint(name="unique_analysis", columns={"id_review", "id_topic", "id_library"})})
+ * @ORM\Table(name="analysis", uniqueConstraints={@ORM\UniqueConstraint(name="unique_analysis", columns={"id_review", "id_topic"})})
  * @ORM\Entity(repositoryClass="AppBundle\Repository\AnalysisRepository")
  */
 class Analysis
@@ -36,14 +36,6 @@ class Analysis
      * @ORM\JoinColumn(name="id_topic", referencedColumnName="id", nullable=false)
      */
     private $topic;
-
-    /**
-     * @var Entity\AnalysisLibrary
-     *
-     * @ORM\ManyToOne(targetEntity="AnalysisLibrary")
-     * @ORM\JoinColumn(name="id_library", referencedColumnName="id", nullable=false)
-     */
-    private $library;
 
     /**
      * @var int
@@ -80,15 +72,6 @@ class Analysis
 
     public function getTopic() : Topic {
         return $this->topic;
-    }
-
-    public function setLibrary(AnalysisLibrary $library) : Analysis {
-        $this->library = $library;
-        return $this;
-    }
-
-    public function getLibrary() : AnalysisLibrary {
-        return $this->library;
     }
 
     public function setScore(int $score) : Analysis {
