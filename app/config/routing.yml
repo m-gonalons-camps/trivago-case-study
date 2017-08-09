@@ -57,7 +57,7 @@ API.topics.new:
     methods: [POST]
 
 API.topics.modify:
-    path: /api/topics/modify/{topicId}
+    path: /api/topics/modify/
     defaults: {_controller: AppBundle\Controller\TopicsController::modifyTopic}
     methods: [POST]
 

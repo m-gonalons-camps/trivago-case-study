@@ -7,33 +7,70 @@ class TopicsControllerTest extends BaseHelperClass {
     private $topicId;
     private $topicAliasId;
 
-    public function testNewTopic() {
+    public function testAll() {
+        $this->_testNewTopic();
+        $this->_testBadRequestsNewTopic();
+        $this->_testGetSingleTopic();
+        $this->_testGetAllTopics();
+        $this->_testModifyTopic();
+        $this->_testBadRequestsModifyTopic();
+        $this->_testDeleteTopic();
+        $this->_testBadRequestsDeleteTopic();
+
+        // missing aliases tests
+    }
+
+    private function _testNewTopic() {
         $response = $this->getResponse(
             'POST',
             '/api/topics/new/',
-            '{"name": "new_topic"}'
+            json_encode([
+                "name" => 'new topic',
+                "priority" => 999
+            ])
         );
         $this->assertEquals(200, $response['code']);
  
         $decodedBody = json_decode($response['body']);
-        $this->assertNotNull($decodedBody->topicId);
+        $this->assertNotNull($decodedBody->id);
 
-        $this->topicId = $topicId;
+        $this->topicId = $decodedBody->id;
     }
 
-    public function testGetSingleTopic() {
+    private function _testBadRequestsNewTopic() {
+        $badRequests = [
+            '{"bad: json": ¨',
+            json_encode(["name" => 'new topic']),
+            json_encode(["priority" => 123]),
+            json_encode(["name" => "abctesting123", "priority" => 'priority must be int']),
+            // new topic already exists
+            json_encode(["name" => "new topic", "priority" => 123]),
+        ];
+
+        $this->assertBadRequests('/api/topics/new/', 'POST', $badRequests);
+    }
+
+    private function _testGetSingleTopic() {
         $response = $this->getResponse(
             'GET',
-            '/api/topics/' . $this->topicId
+            '/api/topics?id=' . $this->topicId
         );
-        $this->assertEquals(200, $response['code']);
+        $this->assertCorrectlyRecoveredTopic($response);
 
-        $decodedBody = json_decode($response['body']);
-        $this->assertNotNull($decodedBody->name);
-        $this->assertEquals('new_topic', $decodedBody->name);
+        $response = $this->getResponse(
+            'GET',
+            '/api/topics?name=new%20topic'
+        );
+        $this->assertCorrectlyRecoveredTopic($response);
+
+        $response = $this->getResponse(
+            'GET',
+            '/api/topics?priority=999'
+        );
+        $this->assertCorrectlyRecoveredTopic($response);
     }
 
-    public function testGetAllTopics() {
+    private function _testGetAllTopics() {
         $response = $this->getResponse(
             'GET',
             '/api/topics'
@@ -42,18 +79,23 @@ class TopicsControllerTest extends BaseHelperClass {
         $decodedBody = json_decode($response['body']);
         $this->assertEquals(TRUE, is_array($decodedBody));
         $this->assertNotNull($decodedBody[0]->name);
+        $this->assertNotNull($decodedBody[0]->priority);
     }
 
-    public function testModifyTopic() {
+    private function _testModifyTopic() {
         $response = $this->getResponse(
             'POST',
-            '/api/topics/modify/' . $this->topicId,
-            '{"new_name": "modified_topic"}'
+            '/api/topics/modify/',
+            json_encode([
+                "id" => $this->topicId,
+                "name" => 'modified topic',
+                "priority" => -42
+            ])
         );
         $this->assertEquals(200, $response['code']);
     }
 
-    public function testNewTopicAlias() {
+    private function _testNewTopicAlias() {
         $response = $this->getResponse(
             'POST',
             '/api/topics/aliases/' . $this->topicId . '/new',
@@ -67,7 +109,7 @@ class TopicsControllerTest extends BaseHelperClass {
         $this->topicAliasId = $topicAliasId;
     }
 
-    public function testGetSingleTopicAlias() {
+    private function _testGetSingleTopicAlias() {
         $response = $this->getResponse(
             'GET',
             '/api/topics/aliases/' . $this->topicId . '/' . $this->topicAliasId
@@ -79,7 +121,7 @@ class TopicsControllerTest extends BaseHelperClass {
         $this->assertEquals('new_alias', $decodedBody->name);
     }
 
-    public function testGetAllTopicAliases() {
+    private function _testGetAllTopicAliases() {
         $response = $this->getResponse(
             'GET',
             '/api/topics/aliases/' . $this->topicId
@@ -90,7 +132,7 @@ class TopicsControllerTest extends BaseHelperClass {
         $this->assertNotNull($decodedBody[0]->name);
     }
 
-    public function testModifyTopicAlias() {
+    private function _testModifyTopicAlias() {
         $response = $this->getResponse(
             'POST',
             '/api/topics/aliases/' . $this->topicId . '/modify/' . $this->topicAliasId,
@@ -99,7 +141,7 @@ class TopicsControllerTest extends BaseHelperClass {
         $this->assertEquals(200, $response['code']);
     }
 
-    public function testDeleteTopicAlias() {
+    private function _testDeleteTopicAlias() {
         $response = $this->getResponse(
             'DELETE',
             '/api/topics/aliases/' . $this->topicId . '/delete/' . $this->topicAliasId
@@ -107,11 +149,38 @@ class TopicsControllerTest extends BaseHelperClass {
         $this->assertEquals(200, $response['code']);
     }
 
-    public function testDeleteTopic() {
+    private function _testDeleteTopic() {
         $response = $this->getResponse(
             'DELETE',
             '/api/topics/delete/' . $this->topicId
         );
         $this->assertEquals(200, $response['code']);
+    }
+
+    
+    private function assertCorrectlyRecoveredTopic($response) {
+        $this->assertEquals(200, $response['code']);
+        $decodedBody = json_decode($response['body']);
+
+        $this->assertNotNull($decodedBody[0]->name);
+        $this->assertNotNull($decodedBody[0]->priority);
+        $this->assertEquals('new topic', $decodedBody[0]->name);
+        $this->assertEquals(999, $decodedBody[0]->priority);
+    }
+
+    private function _testBadRequestsModifyTopic() {
+        $badRequests = [
+            '{"bad: json": ¨',
+            json_encode(["name" => 'new topic']),
+            json_encode(["id" => "id must be an integer"]),
+            json_encode(["id" => 1, "priority" => 'priority must be a number']),
+            json_encode(["id" => -123, "priority" => 1]),
+        ];
+
+        $this->assertBadRequests('/api/topics/modify/', 'POST', $badRequests);
+    }
+
+    private function _testBadRequestsDeleteTopic() {
+        $this->assertBadRequests('/api/topics/delete/-123', 'DELETE', ['123']);
     }
 }

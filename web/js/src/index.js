@@ -9,6 +9,7 @@ window.AnalyzerGUI = (() => {
         AnalyzerGUI.EventsManager = new (require("./EventsManager"))();
         AnalyzerGUI.Navigation = new (require("./Navigation"))();
         AnalyzerGUI.Reviews = new (require("./Reviews"))();
+        AnalyzerGUI.Topics = new (require("./Topics"))();
         AnalyzerGUI.Criteria = new (require("./Criteria"))();
         AnalyzerGUI.Emphasizers = new (require("./Emphasizers"))();
 
