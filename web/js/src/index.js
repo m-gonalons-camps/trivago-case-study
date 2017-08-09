@@ -10,6 +10,7 @@ window.AnalyzerGUI = (() => {
         AnalyzerGUI.Navigation = new (require("./Navigation"))();
         AnalyzerGUI.Reviews = new (require("./Reviews"))();
         AnalyzerGUI.Criteria = new (require("./Criteria"))();
+        AnalyzerGUI.Emphasizers = new (require("./Emphasizers"))();
 
         AnalyzerGUI.EventsManager.addEventListeners();
         AnalyzerGUI.Reviews.loadGrid();

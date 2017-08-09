@@ -22,4 +22,13 @@ class BaseHelperClass extends WebTestCase {
         ];
     }
 
+    protected function assertBadRequests(string $route, string $method, array $badRequests) {
+        foreach ($badRequests as $badRequest) {
+            $response = $this->getResponse($method, $route, $badRequest);
+            $this->assertEquals(400, $response['code']);
+            $decodedBody = json_decode($response['body']);
+            $this->assertNotNull($decodedBody->error);
+        }
+    }
+
 }

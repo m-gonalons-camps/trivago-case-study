@@ -122,7 +122,7 @@ API.emphasizers.new:
     methods: [POST]
 
 API.emphasizers.modify:
-    path: /api/emphasizers/modify/{emphasizerId}
+    path: /api/emphasizers/modify/
     defaults: {_controller: AppBundle\Controller\EmphasizersController::modifyEmphasizer}
     methods: [POST]
 

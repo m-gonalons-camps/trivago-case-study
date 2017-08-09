@@ -8,10 +8,13 @@ class CriteriaControllerTest extends BaseHelperClass {
 
     public function testAll() {
         $this->_testNewCriteria();
+        $this->_testBadRequestsNewCriteria();
         $this->_testGetSingleCriteria();
         $this->_testGetAllCriteria();
         $this->_testModifyCriteria();
+        $this->_testBadRequestsModifyCriteria();
         $this->_testDeleteCriteria();
+        $this->_testBadRequestsDeleteCriteria();
     }
 
     private function _testNewCriteria() {
@@ -29,6 +32,19 @@ class CriteriaControllerTest extends BaseHelperClass {
         $this->assertNotNull($decodedBody->id);
 
         $this->criteriaId = $decodedBody->id;
+    }
+
+    private function _testBadRequestsNewCriteria() {
+        $badRequests = [
+            '{"bad: json": ¨',
+            json_encode(["keyword" => 'new criteria']),
+            json_encode(["score" => 123]),
+            json_encode(["keyword" => "abctesting123", "score" => 'score must be int']),
+            // new criteria already exists
+            json_encode(["keyword" => "new criteria", "score" => 123]),
+        ];
+
+        $this->assertBadRequests('/api/criteria/new/', 'POST', $badRequests);
     }
 
     private function _testGetSingleCriteria() {
@@ -76,12 +92,28 @@ class CriteriaControllerTest extends BaseHelperClass {
         $this->assertEquals(200, $response['code']);
     }
 
+    private function _testBadRequestsModifyCriteria() {
+        $badRequests = [
+            '{"bad: json": ¨',
+            json_encode(["keyword" => 'new criteria']),
+            json_encode(["id" => "id must be an integer"]),
+            json_encode(["id" => 1, "score" => 'score must be int']),
+            json_encode(["id" => -123, "score" => 1]),
+        ];
+
+        $this->assertBadRequests('/api/criteria/modify/', 'POST', $badRequests);
+    }
+
     private function _testDeleteCriteria() {
         $response = $this->getResponse(
             'DELETE',
             '/api/criteria/delete/' . $this->criteriaId
         );
         $this->assertEquals(200, $response['code']);
+    }
+
+    private function _testBadRequestsDeleteCriteria() {
+        $this->assertBadRequests('/api/criteria/delete/-123', 'DELETE', ['123']);
     }
 
     private function assertCorrectlyRecoveredCriteria($response) {
@@ -93,4 +125,5 @@ class CriteriaControllerTest extends BaseHelperClass {
         $this->assertEquals('new criteria', $decodedBody[0]->keyword);
         $this->assertEquals(999, $decodedBody[0]->score);
     }
+
 }

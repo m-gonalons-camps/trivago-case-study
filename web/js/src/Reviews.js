@@ -45,9 +45,7 @@ module.exports = class {
     testAnalyzeAndRenderResults() {
         AnalyzerGUI.Selectors.jsonRenderer.empty();
 
-        $('<span>Analyzing...</span>')
-            .appendTo(AnalyzerGUI.Selectors.jsonRenderer)
-            .css('visibility', 'visible');
+        $('<span>Analyzing...</span>').appendTo(AnalyzerGUI.Selectors.jsonRenderer);
 
         $.ajax({
             url: AnalyzerGUI.baseUrl + "/api/reviews/testAnalyzer/",
