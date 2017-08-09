@@ -1,0 +1,188 @@
+{
+    "topics": {
+        "room": {
+            "aliases": ["apartment", "chamber", "tv", "television", "bedroom"],
+            "priority": 50
+        },
+        "hotel": {
+            "aliases": ["property", "lodge", "resort", "building", "ambience"],
+            "priority": 0
+        },
+        "staff": {
+            "aliases": ["service", "personnel", "crew", "he", "she", "manager", "receptionist", "owner", "hospitality"],
+            "priority": 90
+        },
+        "location": {
+            "aliases": ["spot"],
+            "priority": 100
+        },
+        "breakfast": {
+            "aliases": [],
+            "priority": 95
+        },
+        "bed": {
+            "aliases": ["sleep quality", "mattress", "linen", "sheet"],
+            "priority": 20
+        },
+        "food": {
+            "aliases": ["dinner", "lunch", "chef"],
+            "priority": 80
+        },
+        "bathroom": {
+            "aliases": ["lavatory", "shower", "toilet", "bath", "wc"],
+            "priority": 70
+        },
+        "restaurant": {
+            "aliases": ["waiter", "waitress"],
+            "priority": 40
+        },
+        "pool": {
+            "aliases": ["spa", "wellness", "whirlpool", "swimming-pool", "swimmingpool"],
+            "priority": 40
+        },
+        "bar": {
+            "aliases": ["cafeteria"],
+            "priority": 30
+        }
+    },
+
+    "criteria": {
+        "great": 100,
+        "spacious": 100,
+        "good": 100,
+        "nice": 100,
+        "amazing": 100,
+        "careful": 100,
+        "well done": 100,
+        "well equipped": 100,
+        "helpful": 100,
+        "friendly": 100,
+        "clean": 100,
+        "cleanliness": 100,
+        "easy": 100,
+        "excellent": 100,
+        "top": 100,
+        "superb": 100,
+        "fantastic": 100,
+        "best": 100,
+        "comfortable": 100,
+        "perfect": 100,
+        "love": 100,
+        "going to come back": 100,
+        "made our stay": 100,
+        "was fun": 100,
+        "not far from": 100,
+        "exceptional": 100,
+        "enjoyable": 100,
+        "new": 100,
+        "exemplary": 100,
+        "absolute favourite": 100,
+
+        "problem": -100,
+        "minuscule": -100,
+        "unfriendly": -100,
+        "horrible": -100,
+        "stue": -100,
+        "unsupported": -100,
+        "average": -100,
+        "dirty": -100,
+        "negative": -100,
+        "hell": -100,
+        "bad": -100,
+        "didn't work": -100,
+        "did not work": -100,
+        "cold": -100,
+        "tiny": -100,
+        "small": -100,
+        "hard": -100,
+        "uncomfortable": -100,
+        "torn": -100,
+        "stay away": -100,
+        "old": -100,
+        "decrepit": -100,
+        "terrible": -100,
+        "broken": -100,
+        "junk": -100,
+        "awful": -100,
+        "worst": -100,
+        "worse": -100,
+        "disgusting": -100,
+        "falling out": -100,
+        "minty": -100,
+        "thin": -100,
+        "nightmare": -100,
+        "did not sleep": -100,
+        "didn't sleep": -100,
+        "rude": -100,
+        "clogged": -100,
+        "undisciplined": -100,
+        "fell off": -100,
+        "rotten": -100,
+        "mess": -100,
+        "surly": -100,
+        "shit": -100,
+        "stinking": -100,
+        "rotting": -100,
+        "stank": -100,
+        "mould": -100,
+        "rot": -100,
+        "blood": -100,
+        "disappointed": -100,
+        "annoying": -100,
+        "incompetent": -100
+    },
+
+    "analysisLibraries": ["Default"],
+
+    "emphasizers": {
+        "extremely": 0.5,
+        "exceedingly": 0.5,
+        "exceptionally": 0.5,
+        "especially": 0.5,
+        "tremendously": 0.5,
+        "immensely": 0.5,
+        "vastly": 0.5,
+        "hugely": 0.5,
+        "extraordinarily": 0.5,
+        "extra": 0.5,
+        "excessively": 0.5,
+        "overly": 0.5,
+        "very": 0.5,
+        "absolutely": 0.5,
+        "abundantly": 0.5,
+        "inordinately": 0.5,
+        "singularly": 0.5,
+        "significantly": 0.5,
+        "distinctly": 0.5,
+        "outstandingly": 0.5,
+        "uncommonly": 0.5,
+        "unusually": 0.5,
+        "decidedly": 0.5,
+        "particularly": 0.5,
+        "eminently": 0.5,
+        "supremely": 0.5,
+        "highly": 0.5,
+        "remarkably": 0.5,
+        "really": 0.5,
+        "truly": 0.5,
+        "mightily": 0.5,
+        "thoroughly": 0.5,
+        "most": 0.5,
+        "so": 0.5,
+        "too": 0.5,
+        "terrifically": 0.5,
+        "awfully": 0.5,
+        "terribly": 0.5,
+        "devilishly": 0.5,
+        "madly": 0.5,
+        "majorly": 0.5,
+        "seriously": 0.5,
+        "desperately": 0.5,
+        "mega": 0.5,
+        "ultra": 0.5,
+        "stinking": 0.5,
+        "damn": 0.5,
+        "frightfully": 0.5
+    }
+
+}
