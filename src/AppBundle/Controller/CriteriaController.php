@@ -47,8 +47,11 @@ class CriteriaController extends Controller {
             return new JsonResponse(['error' => $e->getMessage()], JsonResponse::HTTP_BAD_REQUEST);
         }
 
-        $validationResult['recoveredCriteria']->setKeyword($validationResult['decodedBody']->keyword);
-        $validationResult['recoveredCriteria']->setScore($validationResult['decodedBody']->score);
+        if (isset($validationResult['decodedBody']->keyword))
+            $validationResult['recoveredCriteria']->setKeyword($validationResult['decodedBody']->keyword);
+
+        if ($validationResult['decodedBody']->score)
+            $validationResult['recoveredCriteria']->setScore($validationResult['decodedBody']->score);
 
         $doctrineManager->persist($validationResult['recoveredCriteria']);
         $doctrineManager->flush();

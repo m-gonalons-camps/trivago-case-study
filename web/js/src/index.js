@@ -10,6 +10,7 @@ window.AnalyzerGUI = (() => {
         AnalyzerGUI.Navigation = new (require("./Navigation"))();
         AnalyzerGUI.Reviews = new (require("./Reviews"))();
         AnalyzerGUI.Topics = new (require("./Topics"))();
+        AnalyzerGUI.TopicAliases = new (require("./TopicAliases"))();
         AnalyzerGUI.Criteria = new (require("./Criteria"))();
         AnalyzerGUI.Emphasizers = new (require("./Emphasizers"))();
 
@@ -25,8 +26,6 @@ window.AnalyzerGUI = (() => {
         require("bootstrap");
         require("jsgrid");
         require("../../node_modules/jquery.json-viewer/json-viewer/jquery.json-viewer.js");
-
-        require("../../css/index.css");
     };
 
     return {init: init};

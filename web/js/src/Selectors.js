@@ -7,6 +7,8 @@ module.exports = {
     navEmphasizersButton: $('#navEmphasizersButton'),
 
     reviewsButtonsDiv: $("#reviewsButtons"),
+    topicsButtonsDiv: $("#topicsButtons"),
+    switchToAliasesButton: $("#topicAliasesGridButton"),
     testAnalyzerModal: $('#testAnalyzerModal'),
     testAnalyzerButton: $("#testAnalyzerButton"),
     modalTestAnalyzeButton: $("#modalTestAnalyzeButton"),

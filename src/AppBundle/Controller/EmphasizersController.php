@@ -47,8 +47,11 @@ class EmphasizersController extends Controller {
             return new JsonResponse(['error' => $e->getMessage()], JsonResponse::HTTP_BAD_REQUEST);
         }
 
-        $validationResult['recoveredEmphasizer']->setName($validationResult['decodedBody']->name);
-        $validationResult['recoveredEmphasizer']->setScoreModifier($validationResult['decodedBody']->score_modifier);
+        if (isset($validationResult['decodedBody']->name))
+            $validationResult['recoveredEmphasizer']->setName($validationResult['decodedBody']->name);
+
+        if (isset($validationResult['decodedBody']->score_modifier))
+            $validationResult['recoveredEmphasizer']->setScoreModifier($validationResult['decodedBody']->score_modifier);
 
         $doctrineManager->persist($validationResult['recoveredEmphasizer']);
         $doctrineManager->flush();

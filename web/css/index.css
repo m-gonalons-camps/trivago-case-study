@@ -11,3 +11,7 @@ pre#json-renderer {
     text-align: left;
     padding: 20px;
 }
+
+div#topicsButtons {
+    display: none;
+}

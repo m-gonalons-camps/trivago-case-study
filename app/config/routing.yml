@@ -25,7 +25,7 @@ API.reviews.analyze:
 
 API.reviews.get:
     path: /api/reviews/{reviewId}
-    defaults: {_controller: AppBundle\Controller\ReviewsController::getReviews, reviewId: null}
+    defaults: {_controller: AppBundle\Controller\ReviewsController::getReviews}
     methods: [GET]
 
 API.reviews.upload:
@@ -47,8 +47,8 @@ API.reviews.delete:
 
 
 API.topics.get:
-    path: /api/topics/{topicId}
-    defaults: {_controller: AppBundle\Controller\TopicsController::getTopics, topicId: null}
+    path: /api/topics/
+    defaults: {_controller: AppBundle\Controller\TopicsController::getTopics}
     methods: [GET]
 
 API.topics.new:
@@ -66,25 +66,26 @@ API.topics.delete:
     defaults: {_controller: AppBundle\Controller\TopicsController::deleteTopic}
     methods: [DELETE]
 
-API.topics.getAliases:
-    path: /api/topics/aliases/{topicId}/{aliasId}
-    defaults: {_controller: AppBundle\Controller\TopicsController::getTopicAliases, aliasId: null}
+
+API.topics.getTopicAliases:
+    path: /api/topics/aliases/
+    defaults: {_controller: AppBundle\Controller\TopicsController::getTopicAliases}
     methods: [GET]
 
 API.topics.newAlias:
-    path: /api/topics/aliases/{topicId}/new
+    path: /api/topics/aliases/new/
     defaults: {_controller: AppBundle\Controller\TopicsController::newTopicAlias}
     methods: [POST]
 
 API.topics.modifyAlias:
-    path: /api/topics/aliases/{topicId}/modify/{aliasId}
+    path: /api/topics/aliases/modify/
     defaults: {_controller: AppBundle\Controller\TopicsController::modifyTopicAlias}
     methods: [POST]
 
 API.topics.deleteAlias:
-    path: /api/topics/aliases/{topicId}/delete/{aliasId}
-    defaults: {_controller: AppBundle\Controller\TopicsController::modifyTopicAlias}
-    methods: [POST]
+    path: /api/topics/aliases/delete/{aliasId}
+    defaults: {_controller: AppBundle\Controller\TopicsController::deleteTopicAlias}
+    methods: [DELETE]
 
 
 
@@ -112,8 +113,8 @@ API.criteria.delete:
 
 
 API.emphasizers.get:
-    path: /api/emphasizers/{emphasizerId}
-    defaults: {_controller: AppBundle\Controller\EmphasizersController::getEmphasizer, emphasizerId: null}
+    path: /api/emphasizers/
+    defaults: {_controller: AppBundle\Controller\EmphasizersController::getEmphasizer}
     methods: [GET]
 
 API.emphasizers.new:

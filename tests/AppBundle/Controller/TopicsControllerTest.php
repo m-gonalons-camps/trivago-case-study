@@ -17,7 +17,14 @@ class TopicsControllerTest extends BaseHelperClass {
         $this->_testDeleteTopic();
         $this->_testBadRequestsDeleteTopic();
 
-        // missing aliases tests
+        $this->_testNewTopicAlias();
+        $this->_testBadRequestsNewTopicAlias();
+        $this->_testGetSingleTopicAlias();
+        $this->_testGetAllTopicAliases();
+        $this->_testModifyTopicAlias();
+        $this->_testBadRequestsModifyTopicAlias();
+        $this->_testDeleteTopicAlias();
+        $this->_testBadRequestsDeleteTopicAlias();
     }
 
     private function _testNewTopic() {
@@ -29,6 +36,7 @@ class TopicsControllerTest extends BaseHelperClass {
                 "priority" => 999
             ])
         );
+
         $this->assertEquals(200, $response['code']);
  
         $decodedBody = json_decode($response['body']);
@@ -50,22 +58,35 @@ class TopicsControllerTest extends BaseHelperClass {
         $this->assertBadRequests('/api/topics/new/', 'POST', $badRequests);
     }
 
+    private function _testBadRequestsNewTopicAlias() {
+        $badRequests = [
+            '{"bad: json": ¨',
+            json_encode(["alias" => 'new alias']),
+            json_encode(["topic_name" => 123]),
+            json_encode(["alias" => "new alias", "topic_name" => "non existant topic"]),
+            // new alias already exists
+            json_encode(["alias" => "new alias", "topic_name" => "room"]),
+        ];
+
+        $this->assertBadRequests('/api/topics/aliases/new/', 'POST', $badRequests);
+    }
+
     private function _testGetSingleTopic() {
         $response = $this->getResponse(
             'GET',
-            '/api/topics?id=' . $this->topicId
+            '/api/topics/?id=' . $this->topicId
         );
         $this->assertCorrectlyRecoveredTopic($response);
 
         $response = $this->getResponse(
             'GET',
-            '/api/topics?name=new%20topic'
+            '/api/topics/?name=new%20topic'
         );
         $this->assertCorrectlyRecoveredTopic($response);
 
         $response = $this->getResponse(
             'GET',
-            '/api/topics?priority=999'
+            '/api/topics/?priority=999'
         );
         $this->assertCorrectlyRecoveredTopic($response);
     }
@@ -73,7 +94,7 @@ class TopicsControllerTest extends BaseHelperClass {
     private function _testGetAllTopics() {
         $response = $this->getResponse(
             'GET',
-            '/api/topics'
+            '/api/topics/'
         );
         $this->assertEquals(200, $response['code']);
         $decodedBody = json_decode($response['body']);
@@ -98,45 +119,53 @@ class TopicsControllerTest extends BaseHelperClass {
     private function _testNewTopicAlias() {
         $response = $this->getResponse(
             'POST',
-            '/api/topics/aliases/' . $this->topicId . '/new',
-            '{"name": "new_alias"}'
+            '/api/topics/aliases/new/',
+            json_encode([
+                "alias" => 'new alias',
+                "topic_name" => 'room'
+            ])
         );
         $this->assertEquals(200, $response['code']);
  
         $decodedBody = json_decode($response['body']);
-        $this->assertNotNull($decodedBody->topicAliasId);
+        $this->assertNotNull($decodedBody->id);
 
-        $this->topicAliasId = $topicAliasId;
+        $this->topicAliasId = $decodedBody->id;
     }
 
     private function _testGetSingleTopicAlias() {
         $response = $this->getResponse(
             'GET',
-            '/api/topics/aliases/' . $this->topicId . '/' . $this->topicAliasId
+            '/api/topics/aliases/?id=' . $this->topicAliasId
         );
-        $this->assertEquals(200, $response['code']);
+        $this->assertCorrectlyRecoveredAlias($response);
 
-        $decodedBody = json_decode($response['body']);
-        $this->assertNotNull($decodedBody->name);
-        $this->assertEquals('new_alias', $decodedBody->name);
+        $response = $this->getResponse(
+            'GET',
+            '/api/topics/aliases/?alias=new%20alias'
+        );
+        $this->assertCorrectlyRecoveredAlias($response);
     }
 
     private function _testGetAllTopicAliases() {
         $response = $this->getResponse(
             'GET',
-            '/api/topics/aliases/' . $this->topicId
+            '/api/topics/aliases/'
         );
         $this->assertEquals(200, $response['code']);
         $decodedBody = json_decode($response['body']);
         $this->assertEquals(TRUE, is_array($decodedBody));
-        $this->assertNotNull($decodedBody[0]->name);
+        $this->assertNotNull($decodedBody[0]->alias);
     }
 
     private function _testModifyTopicAlias() {
         $response = $this->getResponse(
             'POST',
-            '/api/topics/aliases/' . $this->topicId . '/modify/' . $this->topicAliasId,
-            '{"new_name": "modified_alias"}'
+            '/api/topics/aliases/modify/',
+            json_encode([
+                "id" => $this->topicAliasId,
+                "alias" => 'modified alias',
+            ])
         );
         $this->assertEquals(200, $response['code']);
     }
@@ -144,7 +173,7 @@ class TopicsControllerTest extends BaseHelperClass {
     private function _testDeleteTopicAlias() {
         $response = $this->getResponse(
             'DELETE',
-            '/api/topics/aliases/' . $this->topicId . '/delete/' . $this->topicAliasId
+            '/api/topics/aliases/delete/' . $this->topicAliasId
         );
         $this->assertEquals(200, $response['code']);
     }
@@ -168,6 +197,14 @@ class TopicsControllerTest extends BaseHelperClass {
         $this->assertEquals(999, $decodedBody[0]->priority);
     }
 
+    private function assertCorrectlyRecoveredAlias($response) {
+        $this->assertEquals(200, $response['code']);
+        $decodedBody = json_decode($response['body']);
+
+        $this->assertNotNull($decodedBody[0]->alias);
+        $this->assertEquals('new alias', $decodedBody[0]->alias);
+    }
+
     private function _testBadRequestsModifyTopic() {
         $badRequests = [
             '{"bad: json": ¨',
@@ -180,7 +217,22 @@ class TopicsControllerTest extends BaseHelperClass {
         $this->assertBadRequests('/api/topics/modify/', 'POST', $badRequests);
     }
 
+    private function _testBadRequestsModifyTopicAlias() {
+        $badRequests = [
+            '{"bad: json": ¨',
+            json_encode(["alias" => 'new alias']),
+            json_encode(["id" => "id must be an integer"]),
+            json_encode(["id" => -123]),
+        ];
+
+        $this->assertBadRequests('/api/topics/aliases/modify/', 'POST', $badRequests);
+    }
+
     private function _testBadRequestsDeleteTopic() {
         $this->assertBadRequests('/api/topics/delete/-123', 'DELETE', ['123']);
+    }
+
+    private function _testBadRequestsDeleteTopicAlias() {
+        $this->assertBadRequests('/api/topics/aliases/delete/-123', 'DELETE', ['123']);
     }
 }

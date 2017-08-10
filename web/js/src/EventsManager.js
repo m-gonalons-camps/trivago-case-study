@@ -7,6 +7,7 @@ module.exports = class {
         AnalyzerGUI.Selectors.navTopicsButton.click(this.navTopicsButtonHasBeenClicked);
         AnalyzerGUI.Selectors.navCriteriaButton.click(this.navCriteriaButtonHasBeenClicked);
         AnalyzerGUI.Selectors.navEmphasizersButton.click(this.navEmphasizersButtonHasBeenClicked);
+        AnalyzerGUI.Selectors.switchToAliasesButton.click(this.switchToTopicAliasesButtonHasBeenClicked);
 
         AnalyzerGUI.Selectors.testAnalyzerButton.click(this.testAnalyzerButtonHasBeenClicked);
         AnalyzerGUI.Selectors.modalTestAnalyzeButton.click(this.testAnalyzeModalButtonHasBeenClicked);
@@ -38,6 +39,10 @@ module.exports = class {
             $(clickEvent.currentTarget),
             AnalyzerGUI.Emphasizers
         );
+    }
+
+    switchToTopicAliasesButtonHasBeenClicked(clickEvent) {
+        AnalyzerGUI.TopicAliases.loadGrid();
     }
 
     testAnalyzerButtonHasBeenClicked(clickEvent) {

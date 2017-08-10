@@ -23,11 +23,14 @@
                 </div>
             </div>
         </nav>
-        <div id="reviewsButtons" class="row">
-            <div class="col-xs-6">
+        <div id="customSectionButtons" class="row">
+            <div id="reviewsButtons" class="col-xs-6">
                 <button id="testAnalyzerButton" class="btn btn-primary">Test analyzer</button>
                 <button id="uploadReviewsButton" class="btn btn-primary">Upload reviews (CSV file)</button>
                 <button id="analyzeAllButton" class="btn btn-primary">Analyze ALL reviews</button>
+            </div>
+            <div id="topicsButtons" class="col-xs-6">
+                <button id="topicAliasesGridButton" class="btn btn-primary">Switch to aliases</button>
             </div>
         </div>
         <div id="jsGrid"></div>
@@ -60,6 +63,7 @@
 {% endblock %}
 
 {% block stylesheets %}
+    <link rel="stylesheet" href="css/index.css" />
 {% endblock %}
 
 {% block javascripts %}

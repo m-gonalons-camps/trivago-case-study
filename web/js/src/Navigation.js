@@ -6,17 +6,19 @@ module.exports = class {
         $("ul.navbar-nav li.active").removeClass("active");
         navButtonClicked.addClass("active");
 
-        this.reviewButtonsUpdate(navButtonClicked);
+        this.navButtonClicked = navButtonClicked;
+
+        this.sectionButtonsUpdate(AnalyzerGUI.Selectors.navReviewsButton, AnalyzerGUI.Selectors.reviewsButtonsDiv);
+        this.sectionButtonsUpdate(AnalyzerGUI.Selectors.navTopicsButton, AnalyzerGUI.Selectors.topicsButtonsDiv);
 
         sectionClass.loadGrid();
     }
 
-    reviewButtonsUpdate(navButtonClicked) {
-        if (navButtonClicked.attr('id') === AnalyzerGUI.Selectors.navReviewsButton.attr("id")) {
-            AnalyzerGUI.Selectors.reviewsButtonsDiv.css('display', 'block');
-        } else {
-            AnalyzerGUI.Selectors.reviewsButtonsDiv.css('display', 'none');
-        }
+    sectionButtonsUpdate(navButton, buttonsDiv) {
+        if (this.navButtonClicked.attr('id') === navButton.attr("id")) 
+            buttonsDiv.css('display', 'block');
+        else
+            buttonsDiv.css('display', 'none');
     }
 
 }
