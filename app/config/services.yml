@@ -49,3 +49,8 @@ services:
         public: true
         class: AppBundle\Service\DefaultAnalyzer
         arguments: ['@doctrine.orm.entity_manager', '@service_container', '@AppBundle.AnalyzerResponse', '@AppBundle.TypoFixer']
+
+    AppBundle.DoctrineEventListener:
+        class: AppBundle\EventListener\SQLiteSetup
+        tags:
+            - {name: doctrine.event_listener, event: postLoad, lazy: true}
