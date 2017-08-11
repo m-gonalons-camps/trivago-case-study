@@ -6,16 +6,14 @@ window.AnalyzerGUI = (() => {
         AnalyzerGUI.baseUrl = "http://" + backendParameters.httpHost;
 
         AnalyzerGUI.Selectors = require("./Selectors");
+        AnalyzerGUI.GridConfig = require("./GridConfig");
         AnalyzerGUI.EventsManager = new (require("./EventsManager"))();
         AnalyzerGUI.Navigation = new (require("./Navigation"))();
-        AnalyzerGUI.Reviews = new (require("./Reviews"))();
-        AnalyzerGUI.Topics = new (require("./Topics"))();
-        AnalyzerGUI.TopicAliases = new (require("./TopicAliases"))();
-        AnalyzerGUI.Criteria = new (require("./Criteria"))();
-        AnalyzerGUI.Emphasizers = new (require("./Emphasizers"))();
+        AnalyzerGUI.AnalyzerTester = new (require("./AnalyzerTester"))();
 
         AnalyzerGUI.EventsManager.addEventListeners();
-        AnalyzerGUI.Reviews.loadGrid();
+        AnalyzerGUI.GridConfig.allowDecimalFieldTypes();
+        AnalyzerGUI.Navigation.loadGrid(AnalyzerGUI.GridConfig.Reviews);
     },
 
     loadDependencies = () => {

@@ -2,7 +2,7 @@
 
 module.exports = class {
 
-    changeSection(navButtonClicked, sectionClass) {
+    changeSection(navButtonClicked, gridConfig) {
         $("ul.navbar-nav li.active").removeClass("active");
         navButtonClicked.addClass("active");
 
@@ -11,7 +11,7 @@ module.exports = class {
         this.sectionButtonsUpdate(AnalyzerGUI.Selectors.navReviewsButton, AnalyzerGUI.Selectors.reviewsButtonsDiv);
         this.sectionButtonsUpdate(AnalyzerGUI.Selectors.navTopicsButton, AnalyzerGUI.Selectors.topicsButtonsDiv);
 
-        sectionClass.loadGrid();
+        this.loadGrid(gridConfig);
     }
 
     sectionButtonsUpdate(navButton, buttonsDiv) {
@@ -19,6 +19,106 @@ module.exports = class {
             buttonsDiv.css('display', 'block');
         else
             buttonsDiv.css('display', 'none');
+    }
+
+    loadGrid(gridConfig) {
+        AnalyzerGUI.Selectors.jsGrid.jsGrid('reset');
+        AnalyzerGUI.Selectors.jsGrid.jsGrid({
+            height: "auto",
+            width: "100%",
+    
+            filtering: true,
+            sorting: true,
+            autoload: true,
+            editing: true,
+            paging: true,
+            inserting: true,
+
+            deleteConfirm: gridConfig.deleteConfirm,
+    
+            controller: {
+                loadData: (filters) => {
+                    return new Promise((resolve) => {
+                        $.ajax({
+                            url: AnalyzerGUI.baseUrl + "/api/" + gridConfig.api + "?" + $.param(filters)
+                        }).done((response) => {
+                            gridConfig.afterLoadHandler(response);
+                            resolve(response);
+                        });
+                    });
+                },
+
+                insertItem: (item) => {
+                    return new Promise((resolve, reject) => {
+                        $.ajax({
+                            url: AnalyzerGUI.baseUrl + "/api/" + gridConfig.api + "/new/",
+                            dataType: "json",
+                            method: "POST",
+                            data: JSON.stringify(item)
+                        })
+                        .done(() => {
+                            alert('Success');
+                            resolve();
+                        })
+                        .fail((obj) => {
+                            this.errorHandler(obj.responseText);
+                            reject();
+                        });
+                    });
+                },
+
+                updateItem: (item) => {
+                    return new Promise((resolve, reject) => {
+                        $.ajax({
+                            url: AnalyzerGUI.baseUrl + "/api/" + gridConfig.api + "/modify/",
+                            dataType: "json",
+                            method: "POST",
+                            data: JSON.stringify(item)
+                        })
+                        .done(() => {
+                            alert('Success');
+                            resolve();
+                        })
+                        .fail((obj) => {
+                            this.errorHandler(obj.responseText);
+                            reject();
+                        });
+                    });
+                },
+                
+                deleteItem: (item) => {
+                    return new Promise((resolve, reject) => {
+                        $.ajax({
+                            url: AnalyzerGUI.baseUrl + "/api/" + gridConfig.api + "/delete/" + item.id,
+                            method: "DELETE",
+                        })
+                        .done(() => {
+                            alert('Success');
+                            resolve();
+                        })
+                        .fail((obj) => {
+                            this.errorHandler(obj.responseText);
+                            reject();
+                        });
+                    });
+                }
+            },
+    
+            fields: gridConfig.fields
+        });
+    }
+
+
+    errorHandler(errorObj) {
+        let parsedError;
+
+        try {
+            parsedError = JSON.parse(errorObj).error;
+        } catch (Exception) {
+            parsedError = errorObj;
+        }
+
+        alert('An error ocurred: ' + parsedError);
     }
 
 }

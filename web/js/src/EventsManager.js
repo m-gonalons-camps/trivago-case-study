@@ -16,41 +16,41 @@ module.exports = class {
     navReviewsButtonHasBeenClicked(clickEvent) {
         AnalyzerGUI.Navigation.changeSection(
             $(clickEvent.currentTarget),
-            AnalyzerGUI.Reviews
+            AnalyzerGUI.GridConfig.Reviews
         );
     }
 
     navTopicsButtonHasBeenClicked(clickEvent) {
         AnalyzerGUI.Navigation.changeSection(
             $(clickEvent.currentTarget),
-            AnalyzerGUI.Topics
+            AnalyzerGUI.GridConfig.Topics
         );
     }
 
     navCriteriaButtonHasBeenClicked(clickEvent) {
         AnalyzerGUI.Navigation.changeSection(
             $(clickEvent.currentTarget),
-            AnalyzerGUI.Criteria
+            AnalyzerGUI.GridConfig.Criteria
         );
     }
 
     navEmphasizersButtonHasBeenClicked(clickEvent) {
         AnalyzerGUI.Navigation.changeSection(
             $(clickEvent.currentTarget),
-            AnalyzerGUI.Emphasizers
+            AnalyzerGUI.GridConfig.Emphasizers
         );
     }
 
     switchToTopicAliasesButtonHasBeenClicked(clickEvent) {
-        AnalyzerGUI.TopicAliases.loadGrid();
+        AnalyzerGUI.Navigation.loadGrid(AnalyzerGUI.GridConfig.TopicsAliases);
     }
 
     testAnalyzerButtonHasBeenClicked(clickEvent) {
-        AnalyzerGUI.Reviews.showTestAnalyzerModal(clickEvent);
+        AnalyzerGUI.AnalyzerTester.showTestAnalyzerModal(clickEvent);
     }
 
     testAnalyzeModalButtonHasBeenClicked(clickEvent) {
-        AnalyzerGUI.Reviews.testAnalyzeAndRenderResults(clickEvent);
+        AnalyzerGUI.AnalyzerTester.testAnalyzeAndRenderResults(clickEvent);
     }
 
 };
