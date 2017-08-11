@@ -8,22 +8,18 @@ module.exports = class {
             height: "auto",
             width: "100%",
     
-            sorting: true,
-            paging: false,
-            autoload: true,
-    
             filtering: true,
             sorting: true,
             autoload: true,
-            editing: false,
+            editing: true,
             paging: true,
-            inserting: false,
+            inserting: true,
     
             controller: {
                 loadData: () => {
                     return new Promise((resolve) => {
                         $.ajax({
-                            url: AnalyzerGUI.baseUrl + "/api/reviews",
+                            url: AnalyzerGUI.baseUrl + "/api/reviews/",
                             dataType: "json"
                         }).done(resolve);
                     });
@@ -31,9 +27,12 @@ module.exports = class {
             },
     
             fields: [
-                { name: "Review", type: "text" },
-                { name: "Total score", type: "text" },
-                // TODO
+                { name: "id", type: "number", title: "ID", width: 10, editing: false },
+                { name: "text", type: "textarea", title: "Review", width: 150 },
+                { name: "total_score", title: "Score", type: "text", width: 20, inserting: false, editing: false },
+                { name: "detailed_results", title: "Detailed results", width: 50, type: "text", inserting: false, editing: false},
+                { title: "Analyze", type: "text", width: 20, inserting: false, editing: false},
+                { type: "control", width: 20}
             ]
         });
     };

@@ -87,7 +87,7 @@ module.exports = class {
             },
     
             fields: [
-                { name: "id", type: "number",title: "ID", width: 20 },
+                { name: "id", type: "number",title: "ID", width: 20, editing: false, inserting: false },
                 { name: "name", type: "text", title: "Name", width: 50},
                 { name: "score_modifier", type: "decimal", title: "Score modifier", width: 30},
                 { type: "control", width: 20}

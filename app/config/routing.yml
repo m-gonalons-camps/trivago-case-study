@@ -21,10 +21,10 @@ API.reviews.analyzeAll:
 API.reviews.analyze:
     path: /api/reviews/analyze/{reviewId}
     defaults: {_controller: AppBundle\Controller\ReviewsController::analyzeReview}
-    methods: [POST]
+    methods: [GET, POST]
 
 API.reviews.get:
-    path: /api/reviews/{reviewId}
+    path: /api/reviews/
     defaults: {_controller: AppBundle\Controller\ReviewsController::getReviews}
     methods: [GET]
 

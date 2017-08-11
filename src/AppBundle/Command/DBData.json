@@ -5,7 +5,7 @@
             "priority": 50
         },
         "hotel": {
-            "aliases": ["property", "lodge", "resort", "building", "ambience"],
+            "aliases": ["property", "lodge", "resort", "building", "ambience", "stay", "experience"],
             "priority": 0
         },
         "staff": {
@@ -129,10 +129,11 @@
         "blood": -100,
         "disappointed": -100,
         "annoying": -100,
-        "incompetent": -100
+        "incompetent": -100,
+        "noisy": -100,
+        "noise": -100,
+        "frightening": -100
     },
-
-    "analysisLibraries": ["Default"],
 
     "emphasizers": {
         "extremely": 0.5,

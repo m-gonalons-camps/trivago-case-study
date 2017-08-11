@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\PersistentCollection;
 
 /**
  * Review
@@ -42,6 +43,13 @@ class Review
      */
     private $createdAt;
 
+    /**
+    * @var PersistentCollection
+    *
+    * @ORM\OneToMany(targetEntity="Analysis", mappedBy="review")
+    */
+    private $analysis;
+
     public function __construct() {
         $this->createdAt = new \DateTime();
     }
@@ -75,6 +83,10 @@ class Review
 
     public function getCreatedAt() : \Datetime {
         return $this->createdAt;
+    }
+
+    public function getAnalysis() : PersistentCollection {
+        return $this->analysis;
     }
 }
 

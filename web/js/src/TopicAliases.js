@@ -90,7 +90,7 @@ module.exports = class {
             },
     
             fields: [
-                { name: "id", type: "number", title: "ID", width: 20 },
+                { name: "id", type: "number", title: "ID", width: 20, editing: false, inserting: false },
                 { name: "topic_name", type: "text", title: "Topic", width: 40, editing: false},
                 { name: "alias", type: "text", title: "Alias", width: 40},
                 { type: "control", width: 20}
