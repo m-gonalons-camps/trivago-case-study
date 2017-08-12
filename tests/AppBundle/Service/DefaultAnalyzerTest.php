@@ -540,7 +540,7 @@ class DefaultAnalyzerTest extends WebTestCase {
                 The ambience is so nice, retro perfect.
                 As for the staff, I have had consistently superb service, 
                 with much more personal service and attention to detail than is usual in bigger hotels.
-                Aaron and Katy were just two who have been exemplary this time but really everyone is terrific.
+                Service have been exemplary this time but really everyone is terrific.
                 Can\'t recommend it highly enough.
             ',
             'expectedResult' => [

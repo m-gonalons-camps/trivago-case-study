@@ -15,3 +15,10 @@ pre#json-renderer {
 div#topicsButtons {
     display: none;
 }
+
+td.positiveReview {
+    background-color: #00ff4c !important;
+}
+td.negativeReview {
+    background-color: #d11d1d !important;
+}

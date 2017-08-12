@@ -2,11 +2,19 @@
 
 module.exports = {
 
+    /**
+     * TODO: If the score is 0, do not apply any class. Leave the cell with the default color.
+     * For both main grid and modal for detailed results.
+     */
+
+    postAnalyzeFlag: false,
 
     Reviews: {
         api: 'reviews',
 
-        afterLoadHandler: (serverResponse) => {},
+        afterUpdateHandler: (serverResponse, jsgridRow) => {
+            AnalyzerGUI.Selectors.jsGrid.jsGrid("loadData");
+        },
 
         deleteConfirm: (item) => {
             return "Are you sure that you want to remove the review with the ID " + item.id + "?";
@@ -17,19 +25,29 @@ module.exports = {
             type: "number",
             title: "ID",
             width: 10,
+            inserting: false,
             editing: false 
         },{
             name: "text",
             type: "textarea",
             title: "Review",
-            width: 150 
+            width: 120 
         },{
             name: "total_score",
             title: "Score",
             type: "text",
             width: 20,
             inserting: false,
-            editing: false
+            editing: false,
+            align: "center",
+            cellRenderer: (value, item) => {
+                const td = $('<td width="20px">' + (value !== undefined ? value : '') + '</td>');
+
+                if (value !== undefined)
+                    td.addClass(value > 0 ? 'positiveReview' : 'negativeReview');
+
+                return td;
+            }
         },{
             name: "detailed_results",
             title: "Detailed results",
@@ -37,21 +55,51 @@ module.exports = {
             type: "text",
             inserting: false,
             editing: false,
+            filtering: false,
+            align: "center",
             cellRenderer: (value, item) => {
-                // Create TD with jQuery
-                // Add click event
-                // Popup a modal and show the followig info in a table maybe
-                // Room: very clean, not comfortable, bad | score: -50
-                // Hotel: great, going to come back, | score : 200
-                // Staff: friendly | score: 100
-                return '<td width="50px">' + JSON.stringify(item.analysis) + '</td>'
+                const td = $('<td width="50px"></td>');
+                const button = $('<button class="btn btn-default">Click to show!</button>');
+
+                if (item.analysis && item.analysis.length === 0)
+                    button.attr('disabled', true);
+
+                button.appendTo(td);
+
+                button.click((clickEvent) => {
+                    clickEvent.preventDefault();
+                    clickEvent.stopPropagation();
+                    AnalyzerGUI.GridConfig.modalAnalysisResults(item.analysis);
+                });
+
+                return td;
             }
         },{
             title: "Analyze",
             type: "text",
-            width: 20,
+            width: 30,
             inserting: false,
-            editing: false
+            editing: false,
+            filtering: false,
+            align: "center",
+            cellRenderer: (value, item) => {
+                const td = $('<td width="30px" style="text-align: center"></td>');
+                const button = $('<button class="btn btn-default">Analyze!</button>');
+
+                if (item.analysis && item.analysis.length > 0)
+                    button.attr('disabled', true);
+
+                button.appendTo(td);
+
+                button.click((clickEvent) => {
+                    clickEvent.preventDefault();
+                    clickEvent.stopPropagation();
+
+                    AnalyzerGUI.GridConfig.analyzeSingleReview(item, button);
+                });
+
+                return td;
+            }
         },{
             type: "control",
             width: 20
@@ -151,8 +199,6 @@ module.exports = {
     Criteria: {
         api: 'criteria',
 
-        afterLoadHandler: (serverResponse) => {},
-
         deleteConfirm: (item) => {
             return "Are you sure that you want to remove this criteria? (" + item.keyword + ")";
         },
@@ -184,8 +230,6 @@ module.exports = {
 
     Emphasizers: {
         api: 'emphasizers',
-
-        afterLoadHandler: (serverResponse) => {},
 
         deleteConfirm: (item) => {
             return "Are you sure that you want to remove this emphasizer? ("+item.name+")";
@@ -237,6 +281,46 @@ module.exports = {
             }
         });
         jsGrid.fields.decimal = jsGrid.DecimalField = DecimalField;
+    },
+    
+
+    modalAnalysisResults: (analysis) => {
+        const tableBody = AnalyzerGUI.Selectors.modalReviewDetailedResultsTableBody;
+
+        AnalyzerGUI.Selectors.modalReviewDetailedResults.modal();
+        tableBody.empty();
+        analysis.forEach((row) => {
+            const tableRow = $('<tr></tr>');
+            let criteriaString = '';
+
+            $('<td></td>').html(row.topic.name).appendTo(tableRow);
+            row.analysis_criteria.forEach((element) => {
+                criteriaString += (element.negated ? 'not ' : ' ') + (element.emphasizer ? element.emphasizer.name : '') + ' ' + element.criteria.keyword + ', ';
+            });
+            $('<td></td>').html(criteriaString.substring(0, criteriaString.length - 2)).appendTo(tableRow);
+            $('<td></td>').html(row.score).addClass(row.score > 0 ? 'positiveReview' : 'negativeReview').appendTo(tableRow);
+            tableRow.appendTo(tableBody);
+        });
+    },
+
+    analyzeSingleReview: (jsGridRow, analyzeButton) => {
+        analyzeButton.attr('disabled', true);
+        analyzeButton.html('Analyzing ...');
+        $.ajax({
+            url: AnalyzerGUI.baseUrl + "/api/reviews/analyze/" + jsGridRow.id,
+            method: "POST"
+        })
+        .done((response) => {
+            AnalyzerGUI.GridConfig.postAnalyzeFlag = true;
+            AnalyzerGUI.Selectors.jsGrid.jsGrid("updateItem", jsGridRow, response);
+        })
+        .fail((obj) => {
+            alert('An error happened.');
+        })
+        .always(() => {
+            analyzeButton.removeAttr('disabled');
+            analyzeButton.html('Analyze!');
+        });
     }
 
 

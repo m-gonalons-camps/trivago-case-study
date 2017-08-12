@@ -67,7 +67,7 @@ class Review
         return $this->text;
     }
 
-    public function setTotalScore(int $totalScore) : Review {
+    public function setTotalScore(?int $totalScore) : Review {
         $this->totalScore = $totalScore;
         return $this;
     }

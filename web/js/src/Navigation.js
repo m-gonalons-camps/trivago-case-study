@@ -42,7 +42,7 @@ module.exports = class {
                         $.ajax({
                             url: AnalyzerGUI.baseUrl + "/api/" + gridConfig.api + "?" + $.param(filters)
                         }).done((response) => {
-                            gridConfig.afterLoadHandler(response);
+                            gridConfig.afterLoadHandler && gridConfig.afterLoadHandler(response);
                             resolve(response);
                         });
                     });
@@ -59,6 +59,7 @@ module.exports = class {
                         .done(() => {
                             alert('Success');
                             resolve();
+                            AnalyzerGUI.Selectors.jsGrid.jsGrid("loadData");
                         })
                         .fail((obj) => {
                             this.errorHandler(obj.responseText);
@@ -68,6 +69,10 @@ module.exports = class {
                 },
 
                 updateItem: (item) => {
+                    if (AnalyzerGUI.GridConfig.postAnalyzeFlag) {
+                        AnalyzerGUI.GridConfig.postAnalyzeFlag = false;
+                        return null;
+                    }
                     return new Promise((resolve, reject) => {
                         $.ajax({
                             url: AnalyzerGUI.baseUrl + "/api/" + gridConfig.api + "/modify/",
@@ -75,9 +80,10 @@ module.exports = class {
                             method: "POST",
                             data: JSON.stringify(item)
                         })
-                        .done(() => {
+                        .done((response) => {
                             alert('Success');
                             resolve();
+                            gridConfig.afterUpdateHandler && gridConfig.afterUpdateHandler(response, item);
                         })
                         .fail((obj) => {
                             this.errorHandler(obj.responseText);

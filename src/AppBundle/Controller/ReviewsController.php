@@ -47,7 +47,7 @@ class ReviewsController extends Controller {
     }
 
     public function analyzeAllReviews(Request $request) : JsonResponse {
-        // Get all reviews from BD
+        // Get all reviews from BD without a score
         // Analyze them and save score in DB
         return new JsonResponse();
     }
@@ -59,14 +59,55 @@ class ReviewsController extends Controller {
     }
 
     public function newReview(Request $request) : JsonResponse {
-        return new JsonResponse();
+        $doctrineManager = $this->get('doctrine')->getManager();
+
+        try {
+            $decodedBody = $this->newReviewValidations($request, $doctrineManager);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => $e->getMessage()], JsonResponse::HTTP_BAD_REQUEST);
+        }
+
+        $newReview = new Entity\Review();
+        $newReview->setText($decodedBody->text);
+        $doctrineManager->persist($newReview);
+        $doctrineManager->flush();
+
+        return new JsonResponse(["success" => TRUE, "id" => $newReview->getId()]);
     }
 
-    public function modifyReview() : JsonResponse {
-        return new JsonResponse();
+    public function modifyReview(Request $request) : JsonResponse {
+        $doctrineManager = $this->get('doctrine')->getManager();
+
+        try {
+            $validationResult = $this->modifyReviewValidations($request, $doctrineManager);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => $e->getMessage()], JsonResponse::HTTP_BAD_REQUEST);
+        }
+
+        if (isset($validationResult['decodedBody']->text))
+            $validationResult['recoveredReview']->setText($validationResult['decodedBody']->text);
+
+        $this->deletePreviousAnalysis($validationResult['recoveredReview'], $doctrineManager);
+        $validationResult['recoveredReview']->setTotalScore(NULL);
+
+        $doctrineManager->persist($validationResult['recoveredReview']);
+        $doctrineManager->flush();
+
+        $serializer = $this->get('jms_serializer');
+        return new JsonResponse(json_decode($serializer->serialize($validationResult['recoveredReview'], 'json')));
     }
 
-    public function deleteReview() : JsonResponse { 
+    public function deleteReview(int $reviewId) : JsonResponse { 
+        $doctrineManager = $this->get('doctrine')->getManager();
+        try {
+            $recoveredReview = $this->deleteReviewValidations($reviewId, $doctrineManager);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => $e->getMessage()], JsonResponse::HTTP_BAD_REQUEST);
+        }
+
+        $doctrineManager->remove($recoveredReview);
+        $doctrineManager->flush();
+
         return new JsonResponse();
     }
 
@@ -120,6 +161,46 @@ class ReviewsController extends Controller {
         $doctrineManager->persist($review);
 
         $doctrineManager->flush();
+    }
+
+    private function newReviewValidations(Request $request, EntityManagerInterface $doctrineManager) : ?\stdClass {
+        $decodedBody = json_decode($request->getContent());
+
+        if (!isset($decodedBody->text))
+            throw new \Exception('Missing text in request');
+        
+        return $decodedBody;
+    }
+
+    private function modifyReviewValidations(Request $request, EntityManagerInterface $doctrineManager) : array {
+        $decodedBody = json_decode($request->getContent());
+
+        if (!isset($decodedBody->id))
+            throw new \Exception('Missing review ID in request');
+
+        if (!is_int($decodedBody->id))
+            throw new \Exception('Review ID must be an integer');
+        
+        $recoveredReview = $doctrineManager->getRepository('AppBundle:Review')
+            ->findBy(['id' => $decodedBody->id]);
+        
+        if (count($recoveredReview) === 0)
+            throw new \Exception('Unable to recover the review with the ID: ' . $decodedBody->id);
+        
+        return [
+            'decodedBody' => $decodedBody,
+            'recoveredReview' => $recoveredReview[0]
+        ];
+    }
+
+    private function deleteReviewValidations(int $reviewId, EntityManagerInterface $doctrineManager) : ?Entity\Review {
+        $recoveredReview = $doctrineManager->getRepository('AppBundle:Review')
+            ->findBy(['id' => $reviewId]);
+        
+        if (count($recoveredReview) === 0)
+            throw new \Exception('Unable to recover the review with the ID: ' . $decodedBody->id);
+
+        return $recoveredReview[0];
     }
 
 }

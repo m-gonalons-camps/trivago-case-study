@@ -13,6 +13,8 @@ module.exports = {
     testAnalyzerButton: $("#testAnalyzerButton"),
     modalTestAnalyzeButton: $("#modalTestAnalyzeButton"),
     textareaReviewTestAnalyze: $('#textareaReviewTestAnalyze'),
+    modalReviewDetailedResults: $('#modalReviewDetailedResults'),
+    modalReviewDetailedResultsTableBody: $('#modalReviewDetailedResults .modal-body .table tbody'),
 
     jsGrid: $("#jsGrid"),
     jsonRenderer: $('#json-renderer')
