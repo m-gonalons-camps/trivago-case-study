@@ -25,7 +25,7 @@ class Analysis
     /**
      * @var Entity\Review
      *
-     * @ORM\ManyToOne(targetEntity="Review")
+     * @ORM\ManyToOne(targetEntity="Review", cascade={"persist"})
      * @ORM\JoinColumn(name="id_review", referencedColumnName="id", nullable=false, onDelete="CASCADE")
      */
     private $review;
@@ -101,6 +101,11 @@ class Analysis
 
     public function getCreatedAt() : \Datetime {
         return $this->createdAt;
+    }
+
+    public function setAnalysisCriteria(PersistentCollection $analysisCriteria) : Analysis {
+        $this->analysisCriteria = $analysisCriteria;
+        return $this;
     }
 
     public function getAnalysisCriteria() : PersistentCollection {

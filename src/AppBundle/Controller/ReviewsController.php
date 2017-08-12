@@ -42,7 +42,8 @@ class ReviewsController extends Controller {
 
         $this->saveAnalysisResults($recoveredReview[0], $response, $doctrineManager);
 
-        return new JsonResponse(json_decode($response->getFullResults(TRUE)));
+        $serializer = $this->get('jms_serializer');
+        return new JsonResponse(json_decode($serializer->serialize($recoveredReview[0], 'json')));
     }
 
     public function analyzeAllReviews(Request $request) : JsonResponse {
@@ -61,6 +62,10 @@ class ReviewsController extends Controller {
         return new JsonResponse();
     }
 
+    public function modifyReview() : JsonResponse {
+        return new JsonResponse();
+    }
+
     public function deleteReview() : JsonResponse { 
         return new JsonResponse();
     }
@@ -76,6 +81,7 @@ class ReviewsController extends Controller {
 
     private function saveAnalysisResults(Entity\Review $review, Service\AnalyzerResponse $analysisResults, EntityManagerInterface $doctrineManager) : void {
         $fullResults = $analysisResults->getFullResults();
+        $analysisCollection = new \Doctrine\Common\Collections\ArrayCollection();
         foreach ($fullResults as $topicName => $topicResult) {
             $analysis = new Entity\Analysis;
             $analysis->setReview($review);
@@ -84,6 +90,7 @@ class ReviewsController extends Controller {
             $analysis->setScore($topicResult['score']);
             $doctrineManager->persist($analysis);
 
+            $analysisCriteriaCollection = new \Doctrine\Common\Collections\ArrayCollection();
             foreach ($topicResult['criteria'] as $criteria) {
                 $analysisCriteria = new Entity\AnalysisCriteria;
                 $analysisCriteria->setAnalysis($analysis);
@@ -91,9 +98,24 @@ class ReviewsController extends Controller {
                 $analysisCriteria->setEmphasizer($criteria['emphasizer']);
                 $analysisCriteria->setNegated($criteria['negated']);
                 $doctrineManager->persist($analysisCriteria);
+
+                $analysisCriteriaCollection->add($analysisCriteria);
             }
+            $analysisCriteriaPersistentCollection = new \Doctrine\ORM\PersistentCollection(
+                $doctrineManager,
+                $doctrineManager->getClassMetadata('AppBundle\\Entity\\AnalysisCriteria'),
+                $analysisCriteriaCollection
+            );
+            $analysis->setAnalysisCriteria($analysisCriteriaPersistentCollection);
+            $analysisCollection->add($analysis);
         }
 
+        $analysisPersistentCollection = new \Doctrine\ORM\PersistentCollection(
+            $doctrineManager,
+            $doctrineManager->getClassMetadata('AppBundle\\Entity\\Analysis'),
+            $analysisCollection
+        );
+        $review->setAnalysis($analysisPersistentCollection);
         $review->setTotalScore($analysisResults->getScore());
         $doctrineManager->persist($review);
 

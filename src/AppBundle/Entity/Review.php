@@ -85,6 +85,11 @@ class Review
         return $this->createdAt;
     }
 
+    public function setAnalysis(PersistentCollection $analysis) : Review {
+        $this->analysis = $analysis;
+        return $this;
+    }
+
     public function getAnalysis() : PersistentCollection {
         return $this->analysis;
     }

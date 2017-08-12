@@ -38,6 +38,11 @@ API.reviews.new:
     defaults: {_controller: AppBundle\Controller\ReviewsController::newReview}
     methods: [POST]
 
+API.reviews.modify:
+    path: /api/reviews/modify/
+    defaults: {_controller: AppBundle\Controller\ReviewsController::modifyReview}
+    methods: [POST]
+
 API.reviews.delete:
     path: /api/reviews/delete/{reviewId}
     defaults: {_controller: AppBundle\Controller\ReviewsController::deleteReview}
