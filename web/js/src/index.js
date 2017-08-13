@@ -9,7 +9,8 @@ window.AnalyzerGUI = (() => {
         AnalyzerGUI.GridConfig = require("./GridConfig");
         AnalyzerGUI.EventsManager = new (require("./EventsManager"))();
         AnalyzerGUI.Navigation = new (require("./Navigation"))();
-        AnalyzerGUI.AnalyzerTester = new (require("./AnalyzerTester"))();
+        AnalyzerGUI.ReviewsAnalyzer = new (require("./ReviewsAnalyzer"))();
+        AnalyzerGUI.CSVUploader = new (require("./CSVUploader"))();
 
         AnalyzerGUI.EventsManager.addEventListeners();
         AnalyzerGUI.GridConfig.allowDecimalFieldTypes();

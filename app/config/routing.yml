@@ -16,7 +16,7 @@ API.reviews.testAnalyzer:
 API.reviews.analyzeAll:
     path: /api/reviews/analyze/all/
     defaults: {_controller: AppBundle\Controller\ReviewsController::analyzeAllReviews}
-    methods: [POST]
+    methods: [GET, POST]
 
 API.reviews.analyze:
     path: /api/reviews/analyze/{reviewId}
@@ -31,7 +31,7 @@ API.reviews.get:
 API.reviews.upload:
     path: /api/reviews/upload/
     defaults: {_controller: AppBundle\Controller\ReviewsController::uploadReviews}
-    methods: [PUT]
+    methods: [POST, PUT]
 
 API.reviews.new:
     path: /api/reviews/new/

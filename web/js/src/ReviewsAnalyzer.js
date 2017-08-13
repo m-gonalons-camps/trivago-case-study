@@ -28,4 +28,24 @@ module.exports = class {
         });
     };
 
+    analyzeALL(clickEvent) {
+        AnalyzerGUI.Selectors.analyzeAllReviewsButton
+            .attr('disabled', true)
+            .html('Analyzing all... please wait');
+
+        $.ajax({
+            url: AnalyzerGUI.baseUrl + "/api/reviews/analyze/all/",
+            method: "POST"
+        }).done((response) => {
+            alert('Success!');
+            AnalyzerGUI.Selectors.jsGrid.jsGrid("loadData");
+        }).always(() => {
+            AnalyzerGUI.Selectors.analyzeAllReviewsButton
+                .removeAttr('disabled')
+                .html('Analyze ALL reviews');
+        }).fail(() => {
+            alert('An error ocurred');
+        });
+    };
+
 };

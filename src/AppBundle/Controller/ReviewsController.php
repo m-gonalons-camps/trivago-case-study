@@ -11,6 +11,15 @@ use AppBundle\Entity;
 use AppBundle\Service;
 
 class ReviewsController extends Controller {
+    
+    /*
+
+
+        TODO: FILTERS IN REVIEWS!
+
+
+
+    */
 
     public function testAnalyzer(Request $request) : JsonResponse {
         $analyzer = $this->get('AppBundle.DefaultAnalyzer');
@@ -21,13 +30,11 @@ class ReviewsController extends Controller {
     public function getReviews(Request $request) : JsonResponse {
         $doctrineManager = $this->get('doctrine')->getManager();
         $reviews = $doctrineManager->getRepository('AppBundle:Review')->findAll();
-
         $serializer = $this->get('jms_serializer');
-
         return new JsonResponse(json_decode($serializer->serialize($reviews, 'json')));
     }
 
-    public function analyzeReview(Request $request, int $reviewId) : JsonResponse {
+    public function analyzeReview(int $reviewId) : JsonResponse {
         $doctrineManager = $this->get('doctrine')->getManager();
         $recoveredReview = $doctrineManager->getRepository('AppBundle:Review')
             ->findBy(['id' => $reviewId]);
@@ -46,16 +53,34 @@ class ReviewsController extends Controller {
         return new JsonResponse(json_decode($serializer->serialize($recoveredReview[0], 'json')));
     }
 
-    public function analyzeAllReviews(Request $request) : JsonResponse {
-        // Get all reviews from BD without a score
-        // Analyze them and save score in DB
-        return new JsonResponse();
+    public function analyzeAllReviews() : JsonResponse {
+        $doctrineManager = $this->get('doctrine')->getManager();
+        $unanalyzedReviews = $doctrineManager->getRepository('AppBundle:Review')->getUnanalyzedReviews();
+        
+        $analyzer = $this->get('AppBundle.DefaultAnalyzer');
+        foreach ($unanalyzedReviews as $review) {
+            $this->deletePreviousAnalysis($review, $doctrineManager);
+            $response = $analyzer->analyze($review->getText());
+            $this->saveAnalysisResults($review, $response, $doctrineManager);
+        }
+
+        return new JsonResponse(['sucess' => TRUE]);
     }
 
     public function uploadReviews(Request $request) : JsonResponse {
-        // Get reviews from CSV file
-        // Save them in DB
-        return new JsonResponse();
+        // Must have CSV extension
+        // MAX SIZE 20 MB
+        $separator = $request->get('csvSeparator') === 'pipes' ? '|' : "\n";
+        $reviews = explode($separator, file_get_contents($request->files->get('csvFile')->getPathName()));
+        
+        $doctrineManager = $this->get('doctrine')->getManager();
+        foreach ($reviews as $text) {
+            $review = new Entity\Review();
+            $review->setText(str_replace("\n", " ", $text));
+            $doctrineManager->persist($review);
+        }
+        $doctrineManager->flush();
+        return new JsonResponse(['success' => TRUE]);
     }
 
     public function newReview(Request $request) : JsonResponse {

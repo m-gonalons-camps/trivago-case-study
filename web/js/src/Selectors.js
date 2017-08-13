@@ -15,6 +15,15 @@ module.exports = {
     textareaReviewTestAnalyze: $('#textareaReviewTestAnalyze'),
     modalReviewDetailedResults: $('#modalReviewDetailedResults'),
     modalReviewDetailedResultsTableBody: $('#modalReviewDetailedResults .modal-body .table tbody'),
+    analyzeAllReviewsButton: $('#analyzeAllButton'),
+
+    uploadCSVFileButton: $('#uploadReviewsButton'),
+    modalUploadCSVFile: $('#modalUploadFile'),
+    uploadCSVForm: $('#uploadCSVForm'),
+    csvFileInput: $('#csvFileInput'),
+    csvSeparatorSelect: $('#csvSeparatorSelect'),
+    modalUploadCSVButton: $('#formButtonUploadCSV'),
+    csvUploadProgressBar: $('#csvUploadProgress'),
 
     jsGrid: $("#jsGrid"),
     jsonRenderer: $('#json-renderer')

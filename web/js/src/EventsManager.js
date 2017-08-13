@@ -11,6 +11,10 @@ module.exports = class {
 
         AnalyzerGUI.Selectors.testAnalyzerButton.click(this.testAnalyzerButtonHasBeenClicked);
         AnalyzerGUI.Selectors.modalTestAnalyzeButton.click(this.testAnalyzeModalButtonHasBeenClicked);
+
+        AnalyzerGUI.Selectors.uploadCSVFileButton.click(this.uploadCSVReviewsButtoHasBeenClicked);
+        AnalyzerGUI.Selectors.analyzeAllReviewsButton.click(this.analyzeAllReviewsButtonHasBeenClicked);
+        AnalyzerGUI.Selectors.modalUploadCSVButton.click(this.formUploadCSVButtonHasBeenClicked);
     }
 
     navReviewsButtonHasBeenClicked(clickEvent) {
@@ -46,11 +50,23 @@ module.exports = class {
     }
 
     testAnalyzerButtonHasBeenClicked(clickEvent) {
-        AnalyzerGUI.AnalyzerTester.showTestAnalyzerModal(clickEvent);
+        AnalyzerGUI.ReviewsAnalyzer.showTestAnalyzerModal(clickEvent);
     }
 
     testAnalyzeModalButtonHasBeenClicked(clickEvent) {
-        AnalyzerGUI.AnalyzerTester.testAnalyzeAndRenderResults(clickEvent);
+        AnalyzerGUI.ReviewsAnalyzer.testAnalyzeAndRenderResults(clickEvent);
+    }
+
+    uploadCSVReviewsButtoHasBeenClicked(clickEvent) {
+        AnalyzerGUI.Selectors.modalUploadCSVFile.modal();
+    }
+
+    analyzeAllReviewsButtonHasBeenClicked(clickEvent) {
+        AnalyzerGUI.ReviewsAnalyzer.analyzeALL(clickEvent);
+    }
+
+    formUploadCSVButtonHasBeenClicked(clickEvent) {
+        AnalyzerGUI.CSVUploader.uploadFile(clickEvent);
     }
 
 };

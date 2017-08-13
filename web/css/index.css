@@ -22,3 +22,7 @@ td.positiveReview {
 td.negativeReview {
     background-color: #d11d1d !important;
 }
+
+progress#csvUploadProgress {
+    visibility: hidden;
+}
