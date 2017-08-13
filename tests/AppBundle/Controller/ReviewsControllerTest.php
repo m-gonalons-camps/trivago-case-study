@@ -8,7 +8,22 @@ class ReviewsControllerTest extends BaseHelperClass {
 
     private $reviewId;
 
-    public function testTestAnalyzer() {
+    public function testAll() {
+        $this->_testTestAnalyzer();
+        $this->_testNewReview();
+        $this->_testBadRequestNewReview();
+        $this->_testAnalyzeReview();
+        $this->_testBadRequestAnalyzeReview();
+        $this->_testAnalyzeALL();
+        $this->_testGetAllReviews();
+        $this->_testUploadReviews();
+        $this->_testModifyReview();
+        $this->_testBadRequestModifyReview();
+        $this->_testDeleteReview();
+        $this->_testBadRequestDeleteReview();
+    }
+
+    private function _testTestAnalyzer() {
         $response = $this->getResponse(
             'POST',
             '/api/reviews/testAnalyzer/',
@@ -24,33 +39,91 @@ class ReviewsControllerTest extends BaseHelperClass {
         $this->assertNotNull($decodedBody->restaurant);
     }
 
-    public function testNewReview() {
+    private function _testNewReview() {
         $response = $this->getResponse(
             'POST',
             '/api/reviews/new/',
-            $this->getNewReview()
+            json_encode([
+                'text' => $this->getNewReview()
+            ])
         );
         $this->assertEquals(200, $response['code']);
  
         $decodedBody = json_decode($response['body']);
-        $this->assertGreaterThan(0, $decodedBody->reviewId);
+        $this->assertGreaterThan(0, $decodedBody->id);
 
-        $this->reviewId = $reviewId;
+        $this->reviewId = $decodedBody->id;
     }
 
-    public function testAnalyzeReview() {
+    private function _testBadRequestNewReview() {
+        $response = $this->getResponse(
+            'POST',
+            '/api/reviews/new/',
+            json_encode([
+                'missingtext' => '123'
+            ])
+        );
+        $this->assertEquals(400, $response['code']);
+    }
+
+    private function _testModifyReview() {
+        $response = $this->getResponse(
+            'POST',
+            '/api/reviews/modify/',
+            json_encode([
+                'id' => $this->reviewId,
+                'text' => 'modified review'
+            ])
+        );
+        $this->assertEquals(200, $response['code']);
+    }
+
+    private function _testBadRequestModifyReview() {
+        $badRequests = [
+            json_encode([
+                'id' => -999,
+                'text' => 'modified review'
+            ]),
+            json_encode([
+                'aaaaid' => '-999',
+                'text' => 'modified review'
+            ]),
+            json_encode([
+                'id' => 'must be integer',
+                'text' => 'modified review'
+            ])
+        ];
+
+        foreach ($badRequests as $badRequest) {
+            $response = $this->getResponse(
+                'POST',
+                '/api/reviews/modify/',
+                $badRequest
+            );
+            $this->assertEquals(400, $response['code']);
+        }
+    }
+
+    private function _testAnalyzeReview() {
         $response = $this->getResponse(
             'POST',
             '/api/reviews/analyze/' . $this->reviewId
         );
         $this->assertEquals(200, $response['code']);
-
         $decodedBody = json_decode($response['body']);
-        $this->assertNotNull($decodedBody->staff);
-        $this->assertNotNull($decodedBody->pool);
+        $this->assertNotNull($decodedBody->analysis);
+        $this->assertEquals(2, count($decodedBody->analysis));
     }
 
-    public function testAnalyzeALL() {
+    private function _testBadRequestAnalyzeReview() {
+        $response = $this->getResponse(
+            'POST',
+            '/api/reviews/analyze/-999'
+        );
+        $this->assertEquals(400, $response['code']);
+    }
+
+    private function _testAnalyzeALL() {
         $response = $this->getResponse(
             'POST',
             '/api/reviews/analyze/all/'
@@ -58,41 +131,28 @@ class ReviewsControllerTest extends BaseHelperClass {
         $this->assertEquals(200, $response['code']);
     }
 
-    public function testGetSingleReview() {
+    private function _testGetAllReviews() {
         $response = $this->getResponse(
             'GET',
-            '/api/reviews/' . $this->reviewId
-        );
-        $this->assertEquals(200, $response['code']);
-        $decodedBody = json_decode($response['body']);
-
-        $this->assertNotNull($decodedBody->review);
-        $this->assertEquals($this->getNewReview(), $decodedBody->review);
-        $this->assertGreaterThan(0, $decodedBody->totalScore);
-    }
-
-    public function testGetAllReviews() {
-        $response = $this->getResponse(
-            'GET',
-            '/api/reviews'
+            '/api/reviews/'
         );
         $this->assertEquals(200, $response['code']);
         $decodedBody = json_decode($response['body']);
         $this->assertEquals(TRUE, is_array($decodedBody));
     }
 
-    public function testUploadReviews() {
+    private function _testUploadReviews() {
         $response = $this->getResponse(
             'PUT',
-            '/api/reviews/upload',
+            '/api/reviews/upload/',
             '',
             [],
-            $this->getCSVFile()
+            $this->getCSVFile('test_reviews')
         );
         $this->assertEquals(200, $response['code']);
     }
 
-    public function testDeleteReview() {
+    private function _testDeleteReview() {
         $response = $this->getResponse(
             'DELETE',
             '/api/reviews/delete/' . $this->reviewId
@@ -100,10 +160,18 @@ class ReviewsControllerTest extends BaseHelperClass {
         $this->assertEquals(200, $response['code']);
     }
 
-    private function getCSVFile() : array {
-        $filepath = __DIR__ . '/test_reviews.csv';
+    private function _testBadRequestDeleteReview() {
+        $response = $this->getResponse(
+            'DELETE',
+            '/api/reviews/delete/-9999'
+        );
+        $this->assertEquals(400, $response['code']);
+    }
+
+    private function getCSVFile(string $filename) : array {
+        $filepath = __DIR__ . '/'.$filename.'.csv';
         $csv = new UploadedFile($filepath, $filepath, 'text/csv', filesize($filepath));
-        return ['csv' => $csv];
+        return ['csvFile' => $csv];
     }
 
     private function getNewReview() : string {

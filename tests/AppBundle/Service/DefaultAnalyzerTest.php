@@ -217,25 +217,29 @@ class DefaultAnalyzerTest extends WebTestCase {
             ',
             'expectedResult' => [
                 'hotel' => [
-                    'score' => -150,
+                    'score' => -400,
                     'criteria' => [[
                         'entity' => $this->getCriteria('disgusting'),
                         'emphasizer' => $this->getEmphasizer('most'),
                         'negated' => FALSE
+                    ],[
+                        'entity' => $this->getCriteria('frightening'),
+                        'emphasizer' => $this->getEmphasizer('most'),
+                        'negated' => FALSE
+                    ],[
+                        'entity' => $this->getCriteria('worse'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
                     ]]
                 ],
                 'bed' => [
-                    'score' => -300,
+                    'score' => -200,
                     'criteria' => [[
                         'entity' => $this->getCriteria('dirty'),
                         'emphasizer' => NULL,
                         'negated' => FALSE
                     ],[
                         'entity' => $this->getCriteria('blood'),
-                        'emphasizer' => NULL,
-                        'negated' => FALSE
-                    ],[
-                        'entity' => $this->getCriteria('worse'),
                         'emphasizer' => NULL,
                         'negated' => FALSE
                     ]]
@@ -249,13 +253,21 @@ class DefaultAnalyzerTest extends WebTestCase {
             ',
             'expectedResult' => [
                 'hotel' => [
-                    'score' => -190,
+                    'score' => -280,
                     'criteria' => [[
                         'entity' => $this->getCriteria('good'),
                         'emphasizer' => NULL,
                         'negated' => TRUE
                     ],[
                         'entity' => $this->getCriteria('bad'),
+                        'emphasizer' => NULL,
+                        'negated' => TRUE
+                    ],[
+                        'entity' => $this->getCriteria('good'),
+                        'emphasizer' => NULL,
+                        'negated' => TRUE
+                    ],[
+                        'entity' => $this->getCriteria('nightmare'),
                         'emphasizer' => NULL,
                         'negated' => TRUE
                     ],[
@@ -273,17 +285,9 @@ class DefaultAnalyzerTest extends WebTestCase {
                     ]]
                 ],
                 'bed' => [
-                    'score' => -190,
+                    'score' => -100,
                     'criteria' => [[
                         'entity' => $this->getCriteria('clean'),
-                        'emphasizer' => NULL,
-                        'negated' => TRUE
-                    ],[
-                        'entity' => $this->getCriteria('nightmare'),
-                        'emphasizer' => NULL,
-                        'negated' => TRUE
-                    ],[
-                        'entity' => $this->getCriteria('good'),
                         'emphasizer' => NULL,
                         'negated' => TRUE
                     ]]
@@ -361,7 +365,7 @@ class DefaultAnalyzerTest extends WebTestCase {
             'review' => '
                 Located just near the fort in city(perfect location),the hotel is clean and provides u great hospitality.
                 The owner Mr.Mukesh is very helpful and will guide u throughout your stay.
-                The staffs were very helpful. Provides u almost every facilities from good rooms to desert safari,
+                The staff were very helpful. Provides u almost every facilities from good rooms to desert safari,
                 jeep safari,camel safari and tent stay.
                 The rooftop cafeteria was great.wen i say food was great(i mean it :)).
                 Overall experience was awesome.
@@ -545,7 +549,7 @@ class DefaultAnalyzerTest extends WebTestCase {
             ',
             'expectedResult' => [
                 'hotel' => [
-                    'score' => 550,
+                    'score' => 450,
                     'criteria' => [[
                         'entity' => $this->getCriteria('best'),
                         'emphasizer' => NULL,
@@ -560,10 +564,6 @@ class DefaultAnalyzerTest extends WebTestCase {
                         'negated' => FALSE
                     ],[
                         'entity' => $this->getCriteria('perfect'),
-                        'emphasizer' => NULL,
-                        'negated' => FALSE
-                    ],[
-                        'entity' => $this->getCriteria('exemplary'),
                         'emphasizer' => NULL,
                         'negated' => FALSE
                     ]]
@@ -581,9 +581,17 @@ class DefaultAnalyzerTest extends WebTestCase {
                     ]]
                 ],
                 'staff' => [
-                    'score' => 100,
+                    'score' => 300,
                     'criteria' => [[
                         'entity' => $this->getCriteria('superb'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ],[
+                        'entity' => $this->getCriteria('exemplary'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ],[
+                        'entity' => $this->getCriteria('terrific'),
                         'emphasizer' => NULL,
                         'negated' => FALSE
                     ]]
@@ -598,7 +606,7 @@ class DefaultAnalyzerTest extends WebTestCase {
             ',
             'expectedResult' => [
                 'room' => [
-                    'score' => -300,
+                    'score' => -400,
                     'criteria' => [[
                         'entity' => $this->getCriteria('terrible'),
                         'emphasizer' => NULL,
@@ -611,6 +619,10 @@ class DefaultAnalyzerTest extends WebTestCase {
                         'entity' => $this->getCriteria('clean'),
                         'emphasizer' => NULL,
                         'negated' => TRUE
+                    ],[
+                        'entity' => $this->getCriteria('noisy'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
                     ]]
                 ],
                 'bathroom' => [
@@ -636,9 +648,13 @@ class DefaultAnalyzerTest extends WebTestCase {
             ',
             'expectedResult' => [
                 'hotel' => [
-                    'score' => -100,
+                    'score' => -200,
                     'criteria' => [[
                         'entity' => $this->getCriteria('terrible'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ],[
+                        'entity' => $this->getCriteria('noisy'),
                         'emphasizer' => NULL,
                         'negated' => FALSE
                     ]]
