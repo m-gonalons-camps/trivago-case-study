@@ -2,18 +2,13 @@
 
 module.exports = {
 
-    /**
-     * TODO: If the score is 0, do not apply any class. Leave the cell with the default color.
-     * For both main grid and modal for detailed results.
-     */
-
     postAnalyzeFlag: false,
 
     Reviews: {
         api: 'reviews',
 
         afterUpdateHandler: (serverResponse, jsgridRow) => {
-            AnalyzerGUI.Selectors.jsGrid.jsGrid("loadData");
+            $("#jsGrid").jsGrid("loadData");
         },
 
         deleteConfirm: (item) => {
@@ -69,7 +64,7 @@ module.exports = {
                 button.click((clickEvent) => {
                     clickEvent.preventDefault();
                     clickEvent.stopPropagation();
-                    AnalyzerGUI.GridConfig.modalAnalysisResults(item.analysis);
+                    AnalyzerGUI.ReviewsAnalyzer.modalAnalysisResults(item.analysis);
                 });
 
                 return td;
@@ -95,7 +90,7 @@ module.exports = {
                     clickEvent.preventDefault();
                     clickEvent.stopPropagation();
 
-                    AnalyzerGUI.GridConfig.analyzeSingleReview(item, button);
+                    AnalyzerGUI.ReviewsAnalyzer.analyzeSingleReview(item, button);
                 });
 
                 return td;
@@ -281,47 +276,6 @@ module.exports = {
             }
         });
         jsGrid.fields.decimal = jsGrid.DecimalField = DecimalField;
-    },
-    
-
-    modalAnalysisResults: (analysis) => {
-        const tableBody = AnalyzerGUI.Selectors.modalReviewDetailedResultsTableBody;
-
-        AnalyzerGUI.Selectors.modalReviewDetailedResults.modal();
-        tableBody.empty();
-        analysis.forEach((row) => {
-            const tableRow = $('<tr></tr>');
-            let criteriaString = '';
-
-            $('<td></td>').html(row.topic.name).appendTo(tableRow);
-            row.analysis_criteria.forEach((element) => {
-                criteriaString += (element.negated ? 'not ' : ' ') + (element.emphasizer ? element.emphasizer.name : '') + ' ' + element.criteria.keyword + ', ';
-            });
-            $('<td></td>').html(criteriaString.substring(0, criteriaString.length - 2)).appendTo(tableRow);
-            $('<td></td>').html(row.score).addClass(row.score > 0 ? 'positiveReview' : 'negativeReview').appendTo(tableRow);
-            tableRow.appendTo(tableBody);
-        });
-    },
-
-    analyzeSingleReview: (jsGridRow, analyzeButton) => {
-        analyzeButton.attr('disabled', true);
-        analyzeButton.html('Analyzing ...');
-        $.ajax({
-            url: AnalyzerGUI.baseUrl + "/api/reviews/analyze/" + jsGridRow.id,
-            method: "POST"
-        })
-        .done((response) => {
-            AnalyzerGUI.GridConfig.postAnalyzeFlag = true;
-            AnalyzerGUI.Selectors.jsGrid.jsGrid("updateItem", jsGridRow, response);
-        })
-        .fail((obj) => {
-            alert('An error happened.');
-        })
-        .always(() => {
-            analyzeButton.removeAttr('disabled');
-            analyzeButton.html('Analyze!');
-        });
     }
-
-
+    
 }

@@ -8,8 +8,8 @@ module.exports = class {
 
         this.navButtonClicked = navButtonClicked;
 
-        this.sectionButtonsUpdate(AnalyzerGUI.Selectors.navReviewsButton, AnalyzerGUI.Selectors.reviewsButtonsDiv);
-        this.sectionButtonsUpdate(AnalyzerGUI.Selectors.navTopicsButton, AnalyzerGUI.Selectors.topicsButtonsDiv);
+        this.sectionButtonsUpdate($('#navReviewsButton'), $("#reviewsButtons"));
+        this.sectionButtonsUpdate($('#navTopicsButton'), $("#topicsButtons"));
 
         this.loadGrid(gridConfig);
     }
@@ -22,8 +22,8 @@ module.exports = class {
     }
 
     loadGrid(gridConfig) {
-        AnalyzerGUI.Selectors.jsGrid.jsGrid('reset');
-        AnalyzerGUI.Selectors.jsGrid.jsGrid({
+        $("#jsGrid").jsGrid('reset');
+        $("#jsGrid").jsGrid({
             height: "auto",
             width: "100%",
     
@@ -59,7 +59,7 @@ module.exports = class {
                         .done(() => {
                             alert('Success');
                             resolve();
-                            AnalyzerGUI.Selectors.jsGrid.jsGrid("loadData");
+                            $("#jsGrid").jsGrid("loadData");
                         })
                         .fail((obj) => {
                             this.errorHandler(obj.responseText);

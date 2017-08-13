@@ -3,18 +3,18 @@
 module.exports = class {
 
     addEventListeners() {
-        AnalyzerGUI.Selectors.navReviewsButton.click(this.navReviewsButtonHasBeenClicked);
-        AnalyzerGUI.Selectors.navTopicsButton.click(this.navTopicsButtonHasBeenClicked);
-        AnalyzerGUI.Selectors.navCriteriaButton.click(this.navCriteriaButtonHasBeenClicked);
-        AnalyzerGUI.Selectors.navEmphasizersButton.click(this.navEmphasizersButtonHasBeenClicked);
-        AnalyzerGUI.Selectors.switchToAliasesButton.click(this.switchToTopicAliasesButtonHasBeenClicked);
+        $('#navReviewsButton').click(this.navReviewsButtonHasBeenClicked);
+        $('#navTopicsButton').click(this.navTopicsButtonHasBeenClicked);
+        $('#navCriteriaButton').click(this.navCriteriaButtonHasBeenClicked);
+        $('#navEmphasizersButton').click(this.navEmphasizersButtonHasBeenClicked);
+        $("#topicAliasesGridButton").click(this.switchToTopicAliasesButtonHasBeenClicked);
 
-        AnalyzerGUI.Selectors.testAnalyzerButton.click(this.testAnalyzerButtonHasBeenClicked);
-        AnalyzerGUI.Selectors.modalTestAnalyzeButton.click(this.testAnalyzeModalButtonHasBeenClicked);
+        $("#testAnalyzerButton").click(this.testAnalyzerButtonHasBeenClicked);
+        $("#modalTestAnalyzeButton").click(this.testAnalyzeModalButtonHasBeenClicked);
 
-        AnalyzerGUI.Selectors.uploadCSVFileButton.click(this.uploadCSVReviewsButtoHasBeenClicked);
-        AnalyzerGUI.Selectors.analyzeAllReviewsButton.click(this.analyzeAllReviewsButtonHasBeenClicked);
-        AnalyzerGUI.Selectors.modalUploadCSVButton.click(this.formUploadCSVButtonHasBeenClicked);
+        $('#uploadReviewsButton').click(this.uploadCSVReviewsButtoHasBeenClicked);
+        $('#analyzeAllButton').click(this.analyzeAllReviewsButtonHasBeenClicked);
+        $('#formButtonUploadCSV').click(this.formUploadCSVButtonHasBeenClicked);
     }
 
     navReviewsButtonHasBeenClicked(clickEvent) {
@@ -58,7 +58,7 @@ module.exports = class {
     }
 
     uploadCSVReviewsButtoHasBeenClicked(clickEvent) {
-        AnalyzerGUI.Selectors.modalUploadCSVFile.modal();
+        $('#modalUploadFile').modal();
     }
 
     analyzeAllReviewsButtonHasBeenClicked(clickEvent) {

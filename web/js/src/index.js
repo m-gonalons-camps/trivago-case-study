@@ -5,7 +5,6 @@ window.AnalyzerGUI = (() => {
 
         AnalyzerGUI.baseUrl = "http://" + backendParameters.httpHost;
 
-        AnalyzerGUI.Selectors = require("./Selectors");
         AnalyzerGUI.GridConfig = require("./GridConfig");
         AnalyzerGUI.EventsManager = new (require("./EventsManager"))();
         AnalyzerGUI.Navigation = new (require("./Navigation"))();

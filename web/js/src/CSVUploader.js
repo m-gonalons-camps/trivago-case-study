@@ -3,12 +3,14 @@
 module.exports = class {
 
     uploadFile(clickEvent) {
+        const csvUploadProgressBar = $('#csvUploadProgress');
+
         clickEvent.preventDefault();
         clickEvent.stopPropagation();
         if (! this.validations()) return;
 
-        AnalyzerGUI.Selectors.csvUploadProgressBar.css('visibility', 'visible');
-        AnalyzerGUI.Selectors.csvUploadProgressBar.attr({
+        csvUploadProgressBar.css('visibility', 'visible');
+        csvUploadProgressBar.attr({
             value: 0,
             max: 0,
         });
@@ -27,7 +29,7 @@ module.exports = class {
 
                 myXhr.upload.addEventListener('progress', (event) => {
                     if (! event.lengthComputable) return null;
-                    AnalyzerGUI.Selectors.csvUploadProgressBar.attr({
+                    csvUploadProgressBar.attr({
                         value: event.loaded,
                         max: event.total,
                     });
@@ -38,12 +40,12 @@ module.exports = class {
         })
         .done((response) => {
             alert('Success');
-            AnalyzerGUI.Selectors.modalUploadCSVFile.modal('hide');
-            AnalyzerGUI.Selectors.jsGrid.jsGrid("loadData");
+            $('#modalUploadFile').modal('hide');
+            $("#jsGrid").jsGrid("loadData");
         })
         .always((response) => {
             console.log(response);
-            AnalyzerGUI.Selectors.csvUploadProgressBar.css('visibility', 'hidden');
+            csvUploadProgressBar.css('visibility', 'hidden');
         });
     }
 
