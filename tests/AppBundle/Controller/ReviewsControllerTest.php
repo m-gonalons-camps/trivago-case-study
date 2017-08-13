@@ -15,7 +15,7 @@ class ReviewsControllerTest extends BaseHelperClass {
         $this->_testAnalyzeReview();
         $this->_testBadRequestAnalyzeReview();
         $this->_testAnalyzeALL();
-        $this->_testGetAllReviews();
+        $this->_testGetReviews();
         $this->_testUploadReviews();
         $this->_testModifyReview();
         $this->_testBadRequestModifyReview();
@@ -131,14 +131,30 @@ class ReviewsControllerTest extends BaseHelperClass {
         $this->assertEquals(200, $response['code']);
     }
 
-    private function _testGetAllReviews() {
+    private function _testGetReviews() {
         $response = $this->getResponse(
             'GET',
             '/api/reviews/'
         );
-        $this->assertEquals(200, $response['code']);
-        $decodedBody = json_decode($response['body']);
-        $this->assertEquals(TRUE, is_array($decodedBody));
+        $this->assertCorrectlyRecoveredReviews($response);
+        
+        $response = $this->getResponse(
+            'GET',
+            '/api/reviews/?text=hotel'
+        );
+        $this->assertCorrectlyRecoveredReviews($response);
+        
+        $response = $this->getResponse(
+            'GET',
+            '/api/reviews/?total_score=<0'
+        );
+        $this->assertCorrectlyRecoveredReviews($response);
+
+        $response = $this->getResponse(
+            'GET',
+            '/api/reviews/?total_score=100'
+        );
+        $this->assertCorrectlyRecoveredReviews($response);
     }
 
     private function _testUploadReviews() {
@@ -176,5 +192,11 @@ class ReviewsControllerTest extends BaseHelperClass {
 
     private function getNewReview() : string {
         return 'Staff is so helpful and very friendly. Pool is so dirty though.';
+    }
+
+    private function assertCorrectlyRecoveredReviews($response) {
+        $this->assertEquals(200, $response['code']);
+        $decodedBody = json_decode($response['body']);
+        $this->assertEquals(TRUE, is_array($decodedBody));
     }
 }

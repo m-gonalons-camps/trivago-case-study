@@ -11,15 +11,6 @@ use AppBundle\Entity;
 use AppBundle\Service;
 
 class ReviewsController extends Controller {
-    
-    /*
-
-
-        TODO: FILTERS IN REVIEWS!
-
-
-
-    */
 
     public function testAnalyzer(Request $request) : JsonResponse {
         $analyzer = $this->get('AppBundle.DefaultAnalyzer');
@@ -28,10 +19,15 @@ class ReviewsController extends Controller {
     }
 
     public function getReviews(Request $request) : JsonResponse {
-        $doctrineManager = $this->get('doctrine')->getManager();
-        $reviews = $doctrineManager->getRepository('AppBundle:Review')->findAll();
+        $reviewsRepository = $this->get('doctrine')->getManager()->getRepository('AppBundle:Review');
         $serializer = $this->get('jms_serializer');
-        return new JsonResponse(json_decode($serializer->serialize($reviews, 'json')));
+
+        if (count($request->query))
+            $result = $reviewsRepository->getFiltered($this->getFiltersForRetrievingReviews($request));
+        else
+            $result = $reviewsRepository->findAll();
+
+        return new JsonResponse(json_decode($serializer->serialize($result, 'json')));
     }
 
     public function analyzeReview(int $reviewId) : JsonResponse {
@@ -226,6 +222,16 @@ class ReviewsController extends Controller {
             throw new \Exception('Unable to recover the review with the ID: ' . $decodedBody->id);
 
         return $recoveredReview[0];
+    }
+
+    private function getFiltersForRetrievingReviews(Request $request) : ?array {
+        $parameters = ['id', 'text', 'total_score'];
+        $filters = [];
+
+        foreach ($parameters as $parameter)
+            if ($request->get($parameter)) $filters[$parameter] = $request->get($parameter);
+
+        return $filters;
     }
 
 }
