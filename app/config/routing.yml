@@ -74,22 +74,22 @@ API.topics.delete:
 
 API.topics.getTopicAliases:
     path: /api/topics/aliases/
-    defaults: {_controller: AppBundle\Controller\TopicsController::getTopicAliases}
+    defaults: {_controller: AppBundle\Controller\TopicsAliasesController::getTopicAliases}
     methods: [GET]
 
 API.topics.newAlias:
     path: /api/topics/aliases/new/
-    defaults: {_controller: AppBundle\Controller\TopicsController::newTopicAlias}
+    defaults: {_controller: AppBundle\Controller\TopicsAliasesController::newTopicAlias}
     methods: [POST]
 
 API.topics.modifyAlias:
     path: /api/topics/aliases/modify/
-    defaults: {_controller: AppBundle\Controller\TopicsController::modifyTopicAlias}
+    defaults: {_controller: AppBundle\Controller\TopicsAliasesController::modifyTopicAlias}
     methods: [POST]
 
 API.topics.deleteAlias:
     path: /api/topics/aliases/delete/{aliasId}
-    defaults: {_controller: AppBundle\Controller\TopicsController::deleteTopicAlias}
+    defaults: {_controller: AppBundle\Controller\TopicsAliasesController::deleteTopicAlias}
     methods: [DELETE]
 
 
