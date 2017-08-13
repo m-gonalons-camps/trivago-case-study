@@ -47,6 +47,19 @@ class EmphasizerSControllerTest extends BaseHelperClass {
         $this->assertNotNull($decodedBody->score_modifier);
         $this->assertEquals('new emphasizer', $decodedBody->name);
         $this->assertEquals(0.4, $decodedBody->score_modifier);
+
+        
+        $response = $this->getResponse(
+            'GET',
+            '/api/emphasizers/?name=new%20emphasizer'
+        );
+        $this->assertEquals(200, $response['code']);
+
+        $decodedBody = json_decode($response['body'])[0];
+        $this->assertNotNull($decodedBody->name);
+        $this->assertNotNull($decodedBody->score_modifier);
+        $this->assertEquals('new emphasizer', $decodedBody->name);
+        $this->assertEquals(0.4, $decodedBody->score_modifier);
     }
 
     private function _testGetAllEmphasizers() {

@@ -89,6 +89,12 @@ class TopicsControllerTest extends BaseHelperClass {
             '/api/topics/?priority=999'
         );
         $this->assertCorrectlyRecoveredTopic($response);
+
+        $response = $this->getResponse(
+            'GET',
+            '/api/topics/?alias=123'
+        );
+        $this->assertEquals(200, $response['code']);
     }
 
     private function _testGetAllTopics() {
@@ -143,6 +149,12 @@ class TopicsControllerTest extends BaseHelperClass {
         $response = $this->getResponse(
             'GET',
             '/api/topics/aliases/?alias=new%20alias'
+        );
+        $this->assertCorrectlyRecoveredAlias($response);
+
+        $response = $this->getResponse(
+            'GET',
+            '/api/topics/aliases/?id='.$this->topicAliasId.'&topic_name=room'
         );
         $this->assertCorrectlyRecoveredAlias($response);
     }
