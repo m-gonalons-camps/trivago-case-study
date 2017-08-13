@@ -14,7 +14,7 @@ use Doctrine\ORM\PersistentCollection;
 class Topic
 {
 
-    const UKNOWN_TOPIC_NAME = "unknown";
+    const UNKNOWN_TOPIC_NAME = "unknown";
 
     /**
      * @var int

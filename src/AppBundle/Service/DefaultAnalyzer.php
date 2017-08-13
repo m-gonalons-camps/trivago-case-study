@@ -33,7 +33,7 @@ class DefaultAnalyzer implements IAnalyzer {
         $this->TypoFixer && $this->TypoFixer->fix($review);
 
         $divisions = $this->getSentencesDivisions(strtolower($review));
-        $this->lastKnownTopic = "unknown";
+        $this->lastKnownTopic = Topic::UNKNOWN_TOPIC_NAME;
         $this->AnalyzerResponse->clear();
 
         foreach ($divisions as $division) {
@@ -87,19 +87,19 @@ class DefaultAnalyzer implements IAnalyzer {
 
     private function canReassignUnkownTopicCriteria(string $newTopic) : bool {
         return (
-            $newTopic !== Topic::UKNOWN_TOPIC_NAME &&
-            $this->lastKnownTopic === Topic::UKNOWN_TOPIC_NAME &&
-            in_array(Topic::UKNOWN_TOPIC_NAME, $this->AnalyzerResponse->getTopics())
+            $newTopic !== Topic::UNKNOWN_TOPIC_NAME &&
+            $this->lastKnownTopic === Topic::UNKNOWN_TOPIC_NAME &&
+            in_array(Topic::UNKNOWN_TOPIC_NAME, $this->AnalyzerResponse->getTopics())
         );
     }
 
     private function reassignUnknownTopicCriteria(string $correctTopic) : void {
-        $unknownTopicCriteria = $this->AnalyzerResponse->getCriteria(Topic::UKNOWN_TOPIC_NAME);
+        $unknownTopicCriteria = $this->AnalyzerResponse->getCriteria(Topic::UNKNOWN_TOPIC_NAME);
         foreach ($unknownTopicCriteria as $criteria) {
             $this->AnalyzerResponse->addCriteria($correctTopic, $criteria['entity'], $criteria['emphasizer'], $criteria['negated']);
         }
-        $this->AnalyzerResponse->sumScore($correctTopic, $this->AnalyzerResponse->getScore(Topic::UKNOWN_TOPIC_NAME));
-        $this->AnalyzerResponse->removeTopic(Topic::UKNOWN_TOPIC_NAME);
+        $this->AnalyzerResponse->sumScore($correctTopic, $this->AnalyzerResponse->getScore(Topic::UNKNOWN_TOPIC_NAME));
+        $this->AnalyzerResponse->removeTopic(Topic::UNKNOWN_TOPIC_NAME);
     }
 
     private function setTopicCriteriaAndScore(string $topic, string $division) : void {
