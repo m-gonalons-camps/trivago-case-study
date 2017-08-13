@@ -473,9 +473,17 @@ class DefaultAnalyzerTest extends WebTestCase {
                     ]]
                 ],
                 'staff' => [
-                    'score' => 200,
+                    'score' => 450,
                     'criteria' => [[
+                        'entity' => $this->getCriteria('fun'),
+                        'emphasizer' => $this->getEmphasizer('really'),
+                        'negated' => FALSE
+                    ],[
                         'entity' => $this->getCriteria('made our stay'),
+                        'emphasizer' => NULL,
+                        'negated' => FALSE
+                    ],[
+                        'entity' => $this->getCriteria('fun'),
                         'emphasizer' => NULL,
                         'negated' => FALSE
                     ],[
