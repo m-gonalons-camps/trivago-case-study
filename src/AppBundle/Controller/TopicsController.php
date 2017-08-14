@@ -9,18 +9,14 @@ use Doctrine\ORM\EntityManagerInterface;
 use AppBundle\Entity\Topic;
 use AppBundle\Entity\TopicAlias;
 
-class TopicsController extends Controller {
+class TopicsController extends ApiBaseController {
 
     public function getTopics(Request $request) : JsonResponse {
-        $topicsRepository = $this->get('doctrine')->getManager()->getRepository('AppBundle:Topic');
-        $serializer = $this->get('jms_serializer');
-
-        if (count($request->query))
-            $result = $topicsRepository->getFiltered($this->getFiltersForRetrievingTopics($request));
-        else
-            $result = $topicsRepository->findAll();
-
-        return new JsonResponse(json_decode($serializer->serialize($result, 'json')));
+        return $this->getEntities(
+            $request,
+            $this->get('doctrine')->getManager()->getRepository('AppBundle:Topic'),
+            ['id', 'name', 'alias', 'priority']
+        );
     }
 
     public function newTopic(Request $request) : JsonResponse {
@@ -28,7 +24,7 @@ class TopicsController extends Controller {
         try {
             $decodedBody = $this->newTopicValidations($request, $doctrineManager);
         } catch (\Exception $e) {
-            return new JsonResponse(['error' => $e->getMessage()], JsonResponse::HTTP_BAD_REQUEST);
+            return $this->errorResponse($e->getMessage());
         }
 
         $newTopic = new Topic();
@@ -45,7 +41,7 @@ class TopicsController extends Controller {
         try {
             $validationResult = $this->modifyTopicValidations($request, $doctrineManager);
         } catch (\Exception $e) {
-            return new JsonResponse(['error' => $e->getMessage()], JsonResponse::HTTP_BAD_REQUEST);
+            return $this->errorResponse($e->getMessage());
         }
 
         if (isset($validationResult['decodedBody']->name))
@@ -63,9 +59,12 @@ class TopicsController extends Controller {
     public function deleteTopic(int $topicId) : JsonResponse {
         $doctrineManager = $this->get('doctrine')->getManager();
         try {
-            $recoveredTopic = $this->deleteTopicValidations($topicId, $doctrineManager);
+            $recoveredTopic = $this->deleteEntityValidations(
+                $doctrineManager->getRepository('AppBundle:Topic'),
+                $topicId
+            );
         } catch (\Exception $e) {
-            return new JsonResponse(['error' => $e->getMessage()], JsonResponse::HTTP_BAD_REQUEST);
+            return $this->errorResponse($e->getMessage());
         }
 
         $doctrineManager->remove($recoveredTopic);
@@ -74,16 +73,6 @@ class TopicsController extends Controller {
         return new JsonResponse();
     }
     
-
-    private function getFiltersForRetrievingTopics(Request $request) : ?array {
-        $parameters = ['id', 'name', 'alias', 'priority'];
-        $filters = [];
-
-        foreach ($parameters as $parameter)
-            if ($request->get($parameter)) $filters[$parameter] = $request->get($parameter);
-
-        return $filters;
-    }
 
     private function newTopicValidations(Request $request, EntityManagerInterface $doctrineManager) : ?\stdClass {
         $decodedBody = json_decode($request->getContent());
@@ -126,16 +115,5 @@ class TopicsController extends Controller {
             'recoveredTopic' => $recoveredTopic[0]
         ];
     }
-
-    private function deleteTopicValidations(int $topicId, EntityManagerInterface $doctrineManager) : ?Topic {
-        $recoveredTopic = $doctrineManager->getRepository('AppBundle:Topic')
-            ->findBy(['id' => $topicId]);
-        
-        if (count($recoveredTopic) === 0)
-            throw new \Exception('Unable to recover the topic with the ID: ' . $topicId);
-
-        return $recoveredTopic[0];
-    }
-
 
 }

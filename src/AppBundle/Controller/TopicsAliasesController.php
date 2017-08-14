@@ -8,18 +8,14 @@ use Doctrine\ORM\EntityManagerInterface;
 
 use AppBundle\Entity\TopicAlias;
 
-class TopicsAliasesController extends Controller {
+class TopicsAliasesController extends ApiBaseController {
 
     public function getTopicAliases(Request $request) : JsonResponse {
-        $topicAliasRepository = $this->get('doctrine')->getManager()->getRepository('AppBundle:TopicAlias');
-        $serializer = $this->get('jms_serializer');
-
-        if (count($request->query))
-            $result = $topicAliasRepository->getFiltered($this->getFiltersForRetrievingAliases($request));
-        else
-            $result = $topicAliasRepository->findAll();
-
-        return new JsonResponse(json_decode($serializer->serialize($result, 'json')));
+        return $this->getEntities(
+            $request,
+            $this->get('doctrine')->getManager()->getRepository('AppBundle:TopicAlias'),
+            ['id', 'topic_name', 'alias']
+        );
     }
 
     public function newTopicAlias(Request $request) : JsonResponse {
@@ -27,7 +23,7 @@ class TopicsAliasesController extends Controller {
         try {
             [$decodedBody, $recoveredTopic] = $this->newTopicAliasValidations($request, $doctrineManager);
         } catch (\Exception $e) {
-            return new JsonResponse(['error' => $e->getMessage()], JsonResponse::HTTP_BAD_REQUEST);
+            return $this->errorResponse($e->getMessage());
         }
 
         $newAlias = new TopicAlias();
@@ -45,7 +41,7 @@ class TopicsAliasesController extends Controller {
         try {
             $validationResult = $this->modifyTopicAliasValidations($request, $doctrineManager);
         } catch (\Exception $e) {
-            return new JsonResponse(['error' => $e->getMessage()], JsonResponse::HTTP_BAD_REQUEST);
+            return $this->errorResponse($e->getMessage());
         }
 
         if (isset($validationResult['decodedBody']->alias))
@@ -59,10 +55,14 @@ class TopicsAliasesController extends Controller {
 
     public function deleteTopicAlias(int $aliasId) : JsonResponse {
         $doctrineManager = $this->get('doctrine')->getManager();
+
         try {
-            $recoveredAlias = $this->deleteTopicAliasValidations($aliasId, $doctrineManager);
+            $recoveredAlias = $this->deleteEntityValidations(
+                $doctrineManager->getRepository('AppBundle:TopicAlias'),
+                $aliasId
+            );
         } catch (\Exception $e) {
-            return new JsonResponse(['error' => $e->getMessage()], JsonResponse::HTTP_BAD_REQUEST);
+            return $this->errorResponse($e->getMessage());
         }
 
         $doctrineManager->remove($recoveredAlias);
@@ -71,15 +71,6 @@ class TopicsAliasesController extends Controller {
         return new JsonResponse();
     }
 
-    private function getFiltersForRetrievingAliases(Request $request) : ?array {
-        $parameters = ['id', 'topic_name', 'alias'];
-        $filters = [];
-
-        foreach ($parameters as $parameter)
-            if ($request->get($parameter)) $filters[$parameter] = $request->get($parameter);
-
-        return $filters;
-    }
 
     private function newTopicAliasValidations(Request $request, EntityManagerInterface $doctrineManager) : ?array {
         $decodedBody = json_decode($request->getContent());
@@ -121,16 +112,6 @@ class TopicsAliasesController extends Controller {
             'decodedBody' => $decodedBody,
             'recoveredAlias' => $recoveredTopicAlias[0]
         ];
-    }
-
-    private function deleteTopicAliasValidations(int $aliasId, EntityManagerInterface $doctrineManager) : ?TopicAlias {
-        $recoveredTopic = $doctrineManager->getRepository('AppBundle:TopicAlias')
-            ->findBy(['id' => $aliasId]);
-        
-        if (count($recoveredTopic) === 0)
-            throw new \Exception('Unable to recover the alias with the ID: ' . $decodedBody->id);
-
-        return $recoveredTopic[0];
     }
 
 }

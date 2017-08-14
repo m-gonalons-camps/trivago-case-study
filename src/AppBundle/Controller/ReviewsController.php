@@ -10,7 +10,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use AppBundle\Entity;
 use AppBundle\Service;
 
-class ReviewsController extends Controller {
+class ReviewsController extends ApiBaseController {
 
     public function testAnalyzer(Request $request) : JsonResponse {
         $analyzer = $this->get('AppBundle.DefaultAnalyzer');
@@ -19,15 +19,11 @@ class ReviewsController extends Controller {
     }
 
     public function getReviews(Request $request) : JsonResponse {
-        $reviewsRepository = $this->get('doctrine')->getManager()->getRepository('AppBundle:Review');
-        $serializer = $this->get('jms_serializer');
-
-        if (count($request->query))
-            $result = $reviewsRepository->getFiltered($this->getFiltersForRetrievingReviews($request));
-        else
-            $result = $reviewsRepository->findAll();
-
-        return new JsonResponse(json_decode($serializer->serialize($result, 'json')));
+        return $this->getEntities(
+            $request,
+            $this->get('doctrine')->getManager()->getRepository('AppBundle:Review'),
+            ['id', 'text', 'total_score']
+        );
     }
 
     public function analyzeReview(int $reviewId) : JsonResponse {
@@ -36,7 +32,7 @@ class ReviewsController extends Controller {
             ->findBy(['id' => $reviewId]);
 
         if (count($recoveredReview) === 0)
-            return new JsonResponse(["error" => "The review with the ID " . $reviewId . " does not exist."], 400);
+            return $this->errorResponse("The review with the ID " . $reviewId . " does not exist.");
 
         $this->deletePreviousAnalysis($recoveredReview[0], $doctrineManager);
 
@@ -85,7 +81,7 @@ class ReviewsController extends Controller {
         try {
             $decodedBody = $this->newReviewValidations($request, $doctrineManager);
         } catch (\Exception $e) {
-            return new JsonResponse(['error' => $e->getMessage()], JsonResponse::HTTP_BAD_REQUEST);
+            return $this->errorResponse($e->getMessage());
         }
 
         $newReview = new Entity\Review();
@@ -102,7 +98,7 @@ class ReviewsController extends Controller {
         try {
             $validationResult = $this->modifyReviewValidations($request, $doctrineManager);
         } catch (\Exception $e) {
-            return new JsonResponse(['error' => $e->getMessage()], JsonResponse::HTTP_BAD_REQUEST);
+            return $this->errorResponse($e->getMessage());
         }
 
         if (isset($validationResult['decodedBody']->text))
@@ -120,10 +116,14 @@ class ReviewsController extends Controller {
 
     public function deleteReview(int $reviewId) : JsonResponse { 
         $doctrineManager = $this->get('doctrine')->getManager();
+
         try {
-            $recoveredReview = $this->deleteReviewValidations($reviewId, $doctrineManager);
+            $recoveredReview = $this->deleteEntityValidations(
+                $doctrineManager->getRepository('AppBundle:Review'),
+                $reviewId
+            );
         } catch (\Exception $e) {
-            return new JsonResponse(['error' => $e->getMessage()], JsonResponse::HTTP_BAD_REQUEST);
+            return $this->errorResponse($e->getMessage());
         }
 
         $doctrineManager->remove($recoveredReview);
@@ -132,7 +132,7 @@ class ReviewsController extends Controller {
         return new JsonResponse();
     }
 
-    public function deletePreviousAnalysis(Entity\Review $review, EntityManagerInterface $doctrineManager) : void {
+    private function deletePreviousAnalysis(Entity\Review $review, EntityManagerInterface $doctrineManager) : void {
         $reviewAnalysis = $doctrineManager->getRepository('AppBundle:Analysis')->findBy(['review' => $review]);
 
         foreach ($reviewAnalysis as $analysis)
@@ -212,26 +212,6 @@ class ReviewsController extends Controller {
             'decodedBody' => $decodedBody,
             'recoveredReview' => $recoveredReview[0]
         ];
-    }
-
-    private function deleteReviewValidations(int $reviewId, EntityManagerInterface $doctrineManager) : ?Entity\Review {
-        $recoveredReview = $doctrineManager->getRepository('AppBundle:Review')
-            ->findBy(['id' => $reviewId]);
-        
-        if (count($recoveredReview) === 0)
-            throw new \Exception('Unable to recover the review with the ID: ' . $decodedBody->id);
-
-        return $recoveredReview[0];
-    }
-
-    private function getFiltersForRetrievingReviews(Request $request) : ?array {
-        $parameters = ['id', 'text', 'total_score'];
-        $filters = [];
-
-        foreach ($parameters as $parameter)
-            if ($request->get($parameter)) $filters[$parameter] = $request->get($parameter);
-
-        return $filters;
     }
 
 }
