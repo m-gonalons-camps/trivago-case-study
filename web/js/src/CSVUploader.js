@@ -44,8 +44,10 @@ module.exports = class {
             $("#jsGrid").jsGrid("loadData");
         })
         .always((response) => {
-            console.log(response);
             csvUploadProgressBar.css('visibility', 'hidden');
+        })
+        .fail((response) => {
+            alert('An error ocurred: ' + response.responseText);
         });
     }
 

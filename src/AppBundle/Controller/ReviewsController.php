@@ -39,7 +39,7 @@ class ReviewsController extends ApiBaseController {
         $analyzer = $this->get('AppBundle.DefaultAnalyzer');
         $response = $analyzer->analyze($recoveredReview[0]->getText());
 
-        $this->saveAnalysisResults($recoveredReview[0], $response, $doctrineManager);
+        $this->persistAnalysisResults($recoveredReview[0], $response, $doctrineManager);
 
         $serializer = $this->get('jms_serializer');
         return new JsonResponse(json_decode($serializer->serialize($recoveredReview[0], 'json')));
@@ -53,17 +53,26 @@ class ReviewsController extends ApiBaseController {
         foreach ($unanalyzedReviews as $review) {
             $this->deletePreviousAnalysis($review, $doctrineManager);
             $response = $analyzer->analyze($review->getText());
-            $this->saveAnalysisResults($review, $response, $doctrineManager);
+            $this->persistAnalysisResults($review, $response, $doctrineManager);
         }
 
         return new JsonResponse(['sucess' => TRUE]);
     }
 
     public function uploadReviews(Request $request) : JsonResponse {
-        // Must have CSV extension
-        // MAX SIZE 20 MB
+        if (! $request->files->get('csvFile'))
+            return $this->errorResponse("Missing file.");
+
+        $uploadedFile = $request->files->get('csvFile');
+
+        if (strtolower($uploadedFile->getClientOriginalExtension()) != 'csv')
+            return $this->errorResponse("File must be a CSV file.");/**/
+
+        if ($uploadedFile->getClientSize() > $uploadedFile->getMaxFilesize())
+            return $this->errorResponse("Maximum size exceeded. Max size:" + $uploadedFile->getMaxFilesize());
+
         $separator = $request->get('csvSeparator') === 'pipes' ? '|' : "\n";
-        $reviews = explode($separator, file_get_contents($request->files->get('csvFile')->getPathName()));
+        $reviews = explode($separator, file_get_contents($uploadedFile->getPathName()));
         
         $doctrineManager = $this->get('doctrine')->getManager();
         foreach ($reviews as $text) {
@@ -141,7 +150,43 @@ class ReviewsController extends ApiBaseController {
         $doctrineManager->flush();
     }
 
-    private function saveAnalysisResults(Entity\Review $review, Service\AnalyzerResponse $analysisResults, EntityManagerInterface $doctrineManager) : void {
+
+    private function newReviewValidations(Request $request, EntityManagerInterface $doctrineManager) : ?\stdClass {
+        $decodedBody = json_decode($request->getContent());
+
+        if (!isset($decodedBody->text))
+            throw new \Exception('Missing text in request');
+        
+        if (empty($decodedBody->text))
+            throw new \Exception('Text cannot be empty');
+
+        
+        return $decodedBody;
+    }
+
+    private function modifyReviewValidations(Request $request, EntityManagerInterface $doctrineManager) : array {
+        $decodedBody = json_decode($request->getContent());
+
+        if (!isset($decodedBody->id))
+            throw new \Exception('Missing review ID in request');
+
+        if (!is_int($decodedBody->id))
+            throw new \Exception('Review ID must be an integer');
+        
+        $recoveredReview = $doctrineManager->getRepository('AppBundle:Review')
+            ->findBy(['id' => $decodedBody->id]);
+        
+        if (count($recoveredReview) === 0)
+            throw new \Exception('Unable to recover the review with the ID: ' . $decodedBody->id);
+        
+        return [
+            'decodedBody' => $decodedBody,
+            'recoveredReview' => $recoveredReview[0]
+        ];
+    }
+
+
+    private function persistAnalysisResults(Entity\Review $review, Service\AnalyzerResponse $analysisResults, EntityManagerInterface $doctrineManager) : void {
         $fullResults = $analysisResults->getFullResults();
         $analysisCollection = new \Doctrine\Common\Collections\ArrayCollection();
         foreach ($fullResults as $topicName => $topicResult) {
@@ -182,36 +227,6 @@ class ReviewsController extends ApiBaseController {
         $doctrineManager->persist($review);
 
         $doctrineManager->flush();
-    }
-
-    private function newReviewValidations(Request $request, EntityManagerInterface $doctrineManager) : ?\stdClass {
-        $decodedBody = json_decode($request->getContent());
-
-        if (!isset($decodedBody->text))
-            throw new \Exception('Missing text in request');
-        
-        return $decodedBody;
-    }
-
-    private function modifyReviewValidations(Request $request, EntityManagerInterface $doctrineManager) : array {
-        $decodedBody = json_decode($request->getContent());
-
-        if (!isset($decodedBody->id))
-            throw new \Exception('Missing review ID in request');
-
-        if (!is_int($decodedBody->id))
-            throw new \Exception('Review ID must be an integer');
-        
-        $recoveredReview = $doctrineManager->getRepository('AppBundle:Review')
-            ->findBy(['id' => $decodedBody->id]);
-        
-        if (count($recoveredReview) === 0)
-            throw new \Exception('Unable to recover the review with the ID: ' . $decodedBody->id);
-        
-        return [
-            'decodedBody' => $decodedBody,
-            'recoveredReview' => $recoveredReview[0]
-        ];
     }
 
 }

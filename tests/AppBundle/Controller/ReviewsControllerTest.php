@@ -56,14 +56,23 @@ class ReviewsControllerTest extends BaseHelperClass {
     }
 
     private function _testBadRequestNewReview() {
-        $response = $this->getResponse(
-            'POST',
-            '/api/reviews/new/',
+        $badRequests = [
             json_encode([
                 'missingtext' => '123'
+            ]),
+            json_encode([
+                'text' => ''
             ])
-        );
-        $this->assertEquals(400, $response['code']);
+        ];
+
+        foreach ($badRequests as $badRequest) {
+            $response = $this->getResponse(
+                'POST',
+                '/api/reviews/new/',
+                $badRequest
+            );
+            $this->assertEquals(400, $response['code']);
+        }
     }
 
     private function _testModifyReview() {
