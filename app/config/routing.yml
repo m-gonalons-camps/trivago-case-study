@@ -16,7 +16,7 @@ API.reviews.testAnalyzer:
 API.reviews.analyzeAll:
     path: /api/reviews/analyze/all/
     defaults: {_controller: AppBundle\Controller\ReviewsController::analyzeAllReviews}
-    methods: [POST]
+    methods: [GET, POST]
 
 API.reviews.analyze:
     path: /api/reviews/analyze/{reviewId}
@@ -24,18 +24,23 @@ API.reviews.analyze:
     methods: [POST]
 
 API.reviews.get:
-    path: /api/reviews/{reviewId}
-    defaults: {_controller: AppBundle\Controller\ReviewsController::getReviews, reviewId: null}
+    path: /api/reviews/
+    defaults: {_controller: AppBundle\Controller\ReviewsController::getReviews}
     methods: [GET]
 
 API.reviews.upload:
     path: /api/reviews/upload/
     defaults: {_controller: AppBundle\Controller\ReviewsController::uploadReviews}
-    methods: [PUT]
+    methods: [POST, PUT]
 
 API.reviews.new:
     path: /api/reviews/new/
     defaults: {_controller: AppBundle\Controller\ReviewsController::newReview}
+    methods: [POST]
+
+API.reviews.modify:
+    path: /api/reviews/modify/
+    defaults: {_controller: AppBundle\Controller\ReviewsController::modifyReview}
     methods: [POST]
 
 API.reviews.delete:
@@ -47,8 +52,8 @@ API.reviews.delete:
 
 
 API.topics.get:
-    path: /api/topics/{topicId}
-    defaults: {_controller: AppBundle\Controller\TopicsController::getTopics, topicId: null}
+    path: /api/topics/
+    defaults: {_controller: AppBundle\Controller\TopicsController::getTopics}
     methods: [GET]
 
 API.topics.new:
@@ -57,7 +62,7 @@ API.topics.new:
     methods: [POST]
 
 API.topics.modify:
-    path: /api/topics/modify/{topicId}
+    path: /api/topics/modify/
     defaults: {_controller: AppBundle\Controller\TopicsController::modifyTopic}
     methods: [POST]
 
@@ -66,25 +71,26 @@ API.topics.delete:
     defaults: {_controller: AppBundle\Controller\TopicsController::deleteTopic}
     methods: [DELETE]
 
-API.topics.getAliases:
-    path: /api/topics/aliases/{topicId}/{aliasId}
-    defaults: {_controller: AppBundle\Controller\TopicsController::getTopicAliases, aliasId: null}
+
+API.topics.getTopicAliases:
+    path: /api/topics/aliases/
+    defaults: {_controller: AppBundle\Controller\TopicsAliasesController::getTopicAliases}
     methods: [GET]
 
 API.topics.newAlias:
-    path: /api/topics/aliases/{topicId}/new
-    defaults: {_controller: AppBundle\Controller\TopicsController::newTopicAlias}
+    path: /api/topics/aliases/new/
+    defaults: {_controller: AppBundle\Controller\TopicsAliasesController::newTopicAlias}
     methods: [POST]
 
 API.topics.modifyAlias:
-    path: /api/topics/aliases/{topicId}/modify/{aliasId}
-    defaults: {_controller: AppBundle\Controller\TopicsController::modifyTopicAlias}
+    path: /api/topics/aliases/modify/
+    defaults: {_controller: AppBundle\Controller\TopicsAliasesController::modifyTopicAlias}
     methods: [POST]
 
 API.topics.deleteAlias:
-    path: /api/topics/aliases/{topicId}/delete/{aliasId}
-    defaults: {_controller: AppBundle\Controller\TopicsController::modifyTopicAlias}
-    methods: [POST]
+    path: /api/topics/aliases/delete/{aliasId}
+    defaults: {_controller: AppBundle\Controller\TopicsAliasesController::deleteTopicAlias}
+    methods: [DELETE]
 
 
 
@@ -112,8 +118,8 @@ API.criteria.delete:
 
 
 API.emphasizers.get:
-    path: /api/emphasizers/{emphasizerId}
-    defaults: {_controller: AppBundle\Controller\EmphasizersController::getEmphasizer, emphasizerId: null}
+    path: /api/emphasizers/
+    defaults: {_controller: AppBundle\Controller\EmphasizersController::getEmphasizer}
     methods: [GET]
 
 API.emphasizers.new:

@@ -16,8 +16,8 @@ class DBPopulationCommand extends ContainerAwareCommand {
 
     protected function configure() : void {
         $this->setName('db:populate')
-            ->setDescription('Populates the criteria, emphasizers, topics and topics_aliases tables.')
-            ->setHelp('This command will populate the tables criteria, emphasizers topics and topics_aliases with the default and minimum data needed for running the application.');
+            ->setDescription('Populates the criteria, emphasizers, topics, topics_aliases and reviews tables.')
+            ->setHelp('This command will populate the tables criteria, emphasizers topics, topics_aliases and reviews with the default and minimum data needed for running the application.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) {
@@ -27,6 +27,7 @@ class DBPopulationCommand extends ContainerAwareCommand {
         $this->generateTopics();
         $this->generateCriteria();
         $this->generateEmphasizers();
+        $this->generateReviews();
 
         $this->doctrineManager->flush();
 
@@ -61,7 +62,8 @@ class DBPopulationCommand extends ContainerAwareCommand {
             "AppBundle:Topic",
             "AppBundle:TopicAlias",
             "AppBundle:Emphasizer",
-            "AppBundle:Criteria"
+            "AppBundle:Criteria",
+            "AppBundle:Review"
         ]);
     }
 
@@ -98,6 +100,14 @@ class DBPopulationCommand extends ContainerAwareCommand {
             $emphasizerEntity->setName($emphasizerName);
             $emphasizerEntity->setScoreModifier($scoreModifier);
             $this->doctrineManager->persist($emphasizerEntity);
+        }
+    }
+
+    private function generateReviews() : void {
+        foreach ($this->jsonData->reviews as $review) {
+            $reviewEntity = new Entity\Review;
+            $reviewEntity->setText($review);
+            $this->doctrineManager->persist($reviewEntity);
         }
     }
 }

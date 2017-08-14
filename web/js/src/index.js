@@ -5,15 +5,15 @@ window.AnalyzerGUI = (() => {
 
         AnalyzerGUI.baseUrl = "http://" + backendParameters.httpHost;
 
-        AnalyzerGUI.Selectors = require("./Selectors");
+        AnalyzerGUI.GridConfig = require("./GridConfig");
         AnalyzerGUI.EventsManager = new (require("./EventsManager"))();
         AnalyzerGUI.Navigation = new (require("./Navigation"))();
-        AnalyzerGUI.Reviews = new (require("./Reviews"))();
-        AnalyzerGUI.Criteria = new (require("./Criteria"))();
-        AnalyzerGUI.Emphasizers = new (require("./Emphasizers"))();
+        AnalyzerGUI.ReviewsAnalyzer = new (require("./ReviewsAnalyzer"))();
+        AnalyzerGUI.CSVUploader = new (require("./CSVUploader"))();
 
         AnalyzerGUI.EventsManager.addEventListeners();
-        AnalyzerGUI.Reviews.loadGrid();
+        AnalyzerGUI.GridConfig.allowDecimalFieldTypes();
+        AnalyzerGUI.Navigation.loadGrid(AnalyzerGUI.GridConfig.Reviews);
     },
 
     loadDependencies = () => {
@@ -24,8 +24,6 @@ window.AnalyzerGUI = (() => {
         require("bootstrap");
         require("jsgrid");
         require("../../node_modules/jquery.json-viewer/json-viewer/jquery.json-viewer.js");
-
-        require("../../css/index.css");
     };
 
     return {init: init};

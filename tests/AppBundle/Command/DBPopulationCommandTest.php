@@ -20,7 +20,8 @@ class DBPopulationCommandTest extends KernelTestCase {
         "AppBundle:TopicAlias",
         "AppBundle:Topic",
         "AppBundle:Emphasizer",
-        "AppBundle:Criteria"
+        "AppBundle:Criteria",
+        "AppBundle:Review"
     ];
 
     public function testExecute() : void {

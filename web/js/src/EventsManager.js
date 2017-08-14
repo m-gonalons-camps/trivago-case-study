@@ -3,49 +3,70 @@
 module.exports = class {
 
     addEventListeners() {
-        AnalyzerGUI.Selectors.navReviewsButton.click(this.navReviewsButtonHasBeenClicked);
-        AnalyzerGUI.Selectors.navTopicsButton.click(this.navTopicsButtonHasBeenClicked);
-        AnalyzerGUI.Selectors.navCriteriaButton.click(this.navCriteriaButtonHasBeenClicked);
-        AnalyzerGUI.Selectors.navEmphasizersButton.click(this.navEmphasizersButtonHasBeenClicked);
+        $('#navReviewsButton').click(this.navReviewsButtonHasBeenClicked);
+        $('#navTopicsButton').click(this.navTopicsButtonHasBeenClicked);
+        $('#navCriteriaButton').click(this.navCriteriaButtonHasBeenClicked);
+        $('#navEmphasizersButton').click(this.navEmphasizersButtonHasBeenClicked);
+        $("#topicAliasesGridButton").click(this.switchToTopicAliasesButtonHasBeenClicked);
 
-        AnalyzerGUI.Selectors.testAnalyzerButton.click(this.testAnalyzerButtonHasBeenClicked);
-        AnalyzerGUI.Selectors.modalTestAnalyzeButton.click(this.testAnalyzeModalButtonHasBeenClicked);
+        $("#testAnalyzerButton").click(this.testAnalyzerButtonHasBeenClicked);
+        $("#modalTestAnalyzeButton").click(this.testAnalyzeModalButtonHasBeenClicked);
+
+        $('#uploadReviewsButton').click(this.uploadCSVReviewsButtoHasBeenClicked);
+        $('#analyzeAllButton').click(this.analyzeAllReviewsButtonHasBeenClicked);
+        $('#formButtonUploadCSV').click(this.formUploadCSVButtonHasBeenClicked);
     }
 
     navReviewsButtonHasBeenClicked(clickEvent) {
         AnalyzerGUI.Navigation.changeSection(
             $(clickEvent.currentTarget),
-            AnalyzerGUI.Reviews
+            AnalyzerGUI.GridConfig.Reviews
         );
     }
 
     navTopicsButtonHasBeenClicked(clickEvent) {
         AnalyzerGUI.Navigation.changeSection(
             $(clickEvent.currentTarget),
-            AnalyzerGUI.Topics
+            AnalyzerGUI.GridConfig.Topics
         );
     }
 
     navCriteriaButtonHasBeenClicked(clickEvent) {
         AnalyzerGUI.Navigation.changeSection(
             $(clickEvent.currentTarget),
-            AnalyzerGUI.Criteria
+            AnalyzerGUI.GridConfig.Criteria
         );
     }
 
     navEmphasizersButtonHasBeenClicked(clickEvent) {
         AnalyzerGUI.Navigation.changeSection(
             $(clickEvent.currentTarget),
-            AnalyzerGUI.Emphasizers
+            AnalyzerGUI.GridConfig.Emphasizers
         );
     }
 
+    switchToTopicAliasesButtonHasBeenClicked(clickEvent) {
+        AnalyzerGUI.Navigation.loadGrid(AnalyzerGUI.GridConfig.TopicsAliases);
+    }
+
     testAnalyzerButtonHasBeenClicked(clickEvent) {
-        AnalyzerGUI.Reviews.showTestAnalyzerModal(clickEvent);
+        AnalyzerGUI.ReviewsAnalyzer.showTestAnalyzerModal(clickEvent);
     }
 
     testAnalyzeModalButtonHasBeenClicked(clickEvent) {
-        AnalyzerGUI.Reviews.testAnalyzeAndRenderResults(clickEvent);
+        AnalyzerGUI.ReviewsAnalyzer.testAnalyzeAndRenderResults(clickEvent);
+    }
+
+    uploadCSVReviewsButtoHasBeenClicked(clickEvent) {
+        $('#modalUploadFile').modal();
+    }
+
+    analyzeAllReviewsButtonHasBeenClicked(clickEvent) {
+        AnalyzerGUI.ReviewsAnalyzer.analyzeALL(clickEvent);
+    }
+
+    formUploadCSVButtonHasBeenClicked(clickEvent) {
+        AnalyzerGUI.CSVUploader.uploadFile(clickEvent);
     }
 
 };

@@ -13,6 +13,9 @@ use Doctrine\ORM\PersistentCollection;
  */
 class Topic
 {
+
+    const UNKNOWN_TOPIC_NAME = "unknown";
+
     /**
      * @var int
      *

@@ -8,26 +8,23 @@ use Doctrine\ORM\EntityManagerInterface;
 
 use AppBundle\Entity\Criteria;
 
-class CriteriaController extends Controller {
+class CriteriaController extends ApiBaseController {
 
     public function getCriteria(Request $request) : JsonResponse {
-        $criteriaRepository = $this->get('doctrine')->getManager()->getRepository('AppBundle:Criteria');
-        $serializer = $this->get('jms_serializer');
-
-        if (count($request->query))
-            $result = $criteriaRepository->getFiltered($this->getFiltersForRetrievingCriteria($request));
-        else
-            $result = $criteriaRepository->findAll();
-
-        return new JsonResponse(json_decode($serializer->serialize($result, 'json')));
+        return $this->getEntities(
+            $request,
+            $this->get('doctrine')->getManager()->getRepository('AppBundle:Criteria'),
+            ['id', 'keyword', 'score']
+        );
     }
 
     public function newCriteria(Request $request) : JsonResponse {
         $doctrineManager = $this->get('doctrine')->getManager();
+
         try {
             $decodedBody = $this->newCriteriaValidations($request, $doctrineManager);
         } catch (\Exception $e) {
-            return new JsonResponse(['error' => $e->getMessage()], JsonResponse::HTTP_BAD_REQUEST);
+            return $this->errorResponse($e->getMessage());
         }
 
         $newCriteria = new Criteria();
@@ -41,14 +38,18 @@ class CriteriaController extends Controller {
 
     public function modifyCriteria(Request $request) : JsonResponse {
         $doctrineManager = $this->get('doctrine')->getManager();
+
         try {
             $validationResult = $this->modifyCriteriaValidations($request, $doctrineManager);
         } catch (\Exception $e) {
-            return new JsonResponse(['error' => $e->getMessage()], JsonResponse::HTTP_BAD_REQUEST);
+            return $this->errorResponse($e->getMessage());
         }
 
-        $validationResult['recoveredCriteria']->setKeyword($validationResult['decodedBody']->keyword);
-        $validationResult['recoveredCriteria']->setScore($validationResult['decodedBody']->score);
+        if (isset($validationResult['decodedBody']->keyword))
+            $validationResult['recoveredCriteria']->setKeyword($validationResult['decodedBody']->keyword);
+
+        if ($validationResult['decodedBody']->score)
+            $validationResult['recoveredCriteria']->setScore($validationResult['decodedBody']->score);
 
         $doctrineManager->persist($validationResult['recoveredCriteria']);
         $doctrineManager->flush();
@@ -58,10 +59,14 @@ class CriteriaController extends Controller {
 
     public function deleteCriteria(int $criteriaId) : JsonResponse {
         $doctrineManager = $this->get('doctrine')->getManager();
+
         try {
-            $recoveredCriteria = $this->deleteCriteriaValidations($criteriaId, $doctrineManager);
+            $recoveredCriteria = $this->deleteEntityValidations(
+                $doctrineManager->getRepository('AppBundle:Criteria'),
+                $criteriaId
+            );
         } catch (\Exception $e) {
-            return new JsonResponse(['error' => $e->getMessage()], JsonResponse::HTTP_BAD_REQUEST);
+            return $this->errorResponse($e->getMessage());
         }
 
         $doctrineManager->remove($recoveredCriteria);
@@ -111,26 +116,6 @@ class CriteriaController extends Controller {
             'decodedBody' => $decodedBody,
             'recoveredCriteria' => $recoveredCriteria[0]
         ];
-    }
-
-    private function deleteCriteriaValidations(int $criteriaId, EntityManagerInterface $doctrineManager) : ?Criteria {
-        $recoveredCriteria = $doctrineManager->getRepository('AppBundle:Criteria')
-            ->findBy(['id' => $criteriaId]);
-        
-        if (count($recoveredCriteria) === 0)
-            throw new \Exception('Unable to recover the criteria with the ID: ' . $decodedBody->id);
-
-        return $recoveredCriteria[0];
-    }
-
-    private function getFiltersForRetrievingCriteria(Request $request) : ?array {
-        $parameters = ['id', 'keyword', 'score'];
-        $filters = [];
-
-        foreach ($parameters as $parameter)
-            if ($request->get($parameter)) $filters[$parameter] = $request->get($parameter);
-
-        return $filters;
     }
 
 }

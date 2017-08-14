@@ -25,7 +25,7 @@ class TopicAlias
      * @var Entity\Topic
      *
      * @ORM\ManyToOne(targetEntity="Topic")
-     * @ORM\JoinColumn(name="id_topic", referencedColumnName="id", nullable=false)
+     * @ORM\JoinColumn(name="id_topic", referencedColumnName="id", nullable=false, onDelete="CASCADE")
      */
     private $topic;
 

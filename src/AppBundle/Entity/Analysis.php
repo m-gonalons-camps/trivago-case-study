@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\PersistentCollection;
 
 /**
  * Analysis
@@ -24,8 +25,8 @@ class Analysis
     /**
      * @var Entity\Review
      *
-     * @ORM\ManyToOne(targetEntity="Review")
-     * @ORM\JoinColumn(name="id_review", referencedColumnName="id", nullable=false)
+     * @ORM\ManyToOne(targetEntity="Review", cascade={"persist"})
+     * @ORM\JoinColumn(name="id_review", referencedColumnName="id", nullable=false, onDelete="CASCADE")
      */
     private $review;
 
@@ -45,12 +46,22 @@ class Analysis
     private $score;
 
     /**
+    * @var PersistentCollection
+    *
+    * @ORM\OneToMany(targetEntity="AnalysisCriteria", mappedBy="analysis")
+    */
+    private $analysisCriteria;
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="created_at", type="datetime")
      */
     private $createdAt;
 
+    public function __construct() {
+        $this->createdAt = new \DateTime();
+    }
 
     public function getId() : int {
         return $this->id;
@@ -90,6 +101,15 @@ class Analysis
 
     public function getCreatedAt() : \Datetime {
         return $this->createdAt;
+    }
+
+    public function setAnalysisCriteria(PersistentCollection $analysisCriteria) : Analysis {
+        $this->analysisCriteria = $analysisCriteria;
+        return $this;
+    }
+
+    public function getAnalysisCriteria() : PersistentCollection {
+        return $this->analysisCriteria;
     }
 }
 

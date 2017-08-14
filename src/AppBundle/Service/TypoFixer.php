@@ -5,6 +5,8 @@ namespace AppBundle\Service;
 class TypoFixer implements ITypoFixer {
 
     public function fix(string &$stringToFix) : void {
+        if (! $this->isPspellInstalled()) return;
+
         $words = str_word_count($stringToFix, 1);
 
         foreach ($words as $word) {
@@ -42,6 +44,10 @@ class TypoFixer implements ITypoFixer {
         }
 
         return $bestSuggestion['suggestion'];
+    }
+
+    private function isPspellInstalled() {
+         return function_exists('pspell_new');
     }
 
 }

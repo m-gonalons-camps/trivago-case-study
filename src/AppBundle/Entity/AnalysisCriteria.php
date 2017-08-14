@@ -24,8 +24,8 @@ class AnalysisCriteria
     /**
      * @var Entity\Analysis
      *
-     * @ORM\ManyToOne(targetEntity="Analysis")
-     * @ORM\JoinColumn(name="id_analysis", referencedColumnName="id", nullable=false)
+     * @ORM\ManyToOne(targetEntity="Analysis", cascade={"persist"})
+     * @ORM\JoinColumn(name="id_analysis", referencedColumnName="id", nullable=false, onDelete="CASCADE")
      */
     private $analysis;
 
@@ -75,7 +75,7 @@ class AnalysisCriteria
         return $this->criteria;
     }
 
-    public function setEmphasizer(Emphasizer $emphasizer) : AnalysisCriteria {
+    public function setEmphasizer(?Emphasizer $emphasizer) : AnalysisCriteria {
         $this->emphasizer = $emphasizer;
         return $this;
     }
