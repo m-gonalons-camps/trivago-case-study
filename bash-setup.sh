@@ -6,7 +6,7 @@ composer install;
 
 # Install yarn dependencies
 cd web;
-yarn;
+yarn --no-bin-links;
 node_modules/webpack/bin/webpack.js;
 cd ../;
 
