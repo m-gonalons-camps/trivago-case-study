@@ -21,7 +21,7 @@ class DefaultAnalyzerTest extends WebTestCase {
 
         foreach ($testCases as $testCase) {
             $result = $this->DefaultAnalyzer->analyze($testCase['review'])->getFullResults();
-            $this->assertEquals($testCase['expectedResult'], $result);
+            $this->assertEquals(ksort($testCase['expectedResult']), ksort($result));
         }
     }
 
@@ -64,7 +64,7 @@ class DefaultAnalyzerTest extends WebTestCase {
                 ]
             ]
         ],[
-            'review' => 'The restaurnt is fantassticc!',
+            'review' => 'The restaurant is fantastic!',
             'expectedResult' => [
                 'restaurant' => [
                     'score' => 100,
