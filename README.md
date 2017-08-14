@@ -2,7 +2,7 @@
 
 ## Database model
 ---
-_(This model was done using mysql-workbench. The types may differ for SQLite)_
+_(This model was done using mysql-workbench. The types may differ for SQLite. SQLite was used in the application.)_
 ![Graph](https://drive.google.com/uc?export=download&id=0B1HUczm7Goblb01NMEUwTmpBczA)
 
 ##### __Reviews__
