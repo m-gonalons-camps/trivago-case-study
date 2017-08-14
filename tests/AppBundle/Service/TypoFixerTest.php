@@ -15,6 +15,11 @@ class TypoFixerTest extends WebTestCase {
     }
 
     public function testTypoFixer() {
+        if (! function_exists('pspell_new')) {
+            echo "\n\nphp7.1-pspell extension is not enabled. Aborting tests for TypoFixer.\n\n";
+            return;
+        }
+
         $review = 'This is a revieww with typos in it.';
         $expectedResult = 'This is a review with typos in it.';
 
