@@ -70,8 +70,23 @@ You can now clone the repository in a folder of your choice
 - _git clone git@github.com:m-gonalons-camps/trivago-case-study.git FOLDER_NAME_
 
 or unzip the file with the code (which contains the cloned repository) in a folder of your choice.
-In the root folder you will find the file "bash-setup.sh". This bash script
-.....
 
-Important: you will notice that assetic bundle is not installed, and therefore we don't execute the command "php bin/console assetic:dump".
-I prefered to use webpack for bundling JS and CSS.
+In the root folder you will find the file "bash-setup.sh".
+This bash script executes the needed commands for setting-up the application.
+It will install composer dependencies, yarn dependencies, create the database, create the tables using symfony's commands, populate the database with some topics, criteria and reviews and finally it will launch the server and listen in port 8000.
+
+___Important___
+You will notice that assetic bundle is not installed, and therefore we don't execute the command __"php bin/console assetic:dump"__. Instead, I used webpack for bundling the JS & CSS files.
+On another hand, regarding the command __"php app/console doctrine:migrations:migrate"__:
+I realized that this was not generating the SQL for generating the foreign keys, even though they are correctly mapped in the entities.
+For generating the tables, I used the command __"php bin/console doctrine:schema:update --force"__, since this one generated the correct SQL for the foreign keys.
+The command __doctrine:migrations:migrate__ is still available and can be used, but it will not generate the foreign keys and therefore the onCascade mappings will not work properly.
+
+
+
+## GUI
+---
+
+
+## Code
+---

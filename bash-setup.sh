@@ -15,10 +15,10 @@ mkdir -p var/databases/;
 php bin/console doctrine:database:create;
 
 # Create database tables
-### We do the following command twice because
-### if only executed once, the foreign keys are not
-### being applied. When executed the second time,
-### it applies correctly the foreign keys.
+### We execute the following command twice because if it's only executed once, 
+### the foreign keys are not being applied at all.
+### When executed the second time, it executes the correct SQL for the foreign keys.
+### I don't know why it happens.
 php bin/console doctrine:schema:update --force;
 php bin/console doctrine:schema:update --force;
 
